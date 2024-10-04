@@ -81,12 +81,12 @@ RPX offers four modes of operation:
 - `\E`: Euler's number
 - `\P`: Pi
 
-### Random Number
-- `\r`: Random number (0 to 1 in real/complex mode)
-
 ### Variable Operations
 - `$` followed by a letter (a-z) for variable operations
 - `u` to update variables (e.g., `3 5 + $x u`)
+
+### Random Number
+- `$R`: Random number (0 to 1 in real/complex mode)
 
 ### Function Operations
 - `!` followed by a letter (a-z) for function call
