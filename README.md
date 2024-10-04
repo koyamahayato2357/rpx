@@ -98,13 +98,13 @@ RPX offers four modes of operation:
 - `@s`: Access specific stack value
 
 ### Other
-- `( )`: Parentheses for grouping
+- `( )`: Specify the valid range of the operator
 - `;`: Start of a comment (ignored until end of line)
 
 ## Commands
 - `:d[a-z(name)][1-9(argc)]`: Define function
 - `:tc`: Toggle between real and complex number mode
-- `:tp`: Toggle output in complex mode between polar and complex notation
+- `:tp`: Toggle between explicit and implicit function in plot
 - `:o`: Optimize expression (e.g., remove unnecessary spaces)
 - `:p`: Plot graph (argument is $1)
 
@@ -116,6 +116,8 @@ RPX offers four modes of operation:
 5. Complex mode: `3 4i +` -> 3.000000 + 4.000000i
 8. Matrix addition: `[2 1,2,3,4,][2,4,5,6,7,]+` -> [2 5,7,9,11,]
 9. Matrix inverse: `[3 1,1,1m,2m,0,1,0,2,1,]~` -> [3 -0.5,-0.75,0.25,0.5,0.25,0.25,-1,-0.5,0.5,]
+10. Plot fn: `:p $1s` -> Graph of sin(x)
+11. Plot implicit fn: `:p $12^($22^)+1-` -> Circle of radius 1
 
 ## Error Handling
 - Unknown operators or functions result in an error message
