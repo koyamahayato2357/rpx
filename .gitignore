@@ -1,0 +1,7 @@
+a.out
+.cache
+.build
+compile_commands.json
+rpx
+doc/html
+doc/latex
