@@ -86,7 +86,7 @@ void startup_message() {
  */
 void proc_input(char *input_buf) {
   if (*input_buf == ':') {
-    ignerr proccmds(input_buf + 1);
+    ignerr proc_cmds(input_buf + 1);
   } else {
     elem_t res;
     try res = eval_f(input_buf);
@@ -782,7 +782,7 @@ void print_matrix(matrix_t result) {
  * @brief Process command
  * @param[in] cmd Command input
  */
-void proccmds(char *cmd) {
+void proc_cmds(char *cmd) {
   rtinfo_t info_r = get_rtinfo('r');
   plotcfg_t pcfg = get_plotcfg();
 

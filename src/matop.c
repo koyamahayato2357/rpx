@@ -26,7 +26,7 @@ matrix_t new_matrix(size_t rows, size_t cols) {
 }
 
 /**
- * @brief Matrix add
+ * @brief Addition between matrices
  * @throws ERR_DIMENTION_MISMATCH
  */
 matrix_t madd(matrix_t *lhs, matrix_t *rhs) {
@@ -42,7 +42,7 @@ matrix_t madd(matrix_t *lhs, matrix_t *rhs) {
 }
 
 /**
- * @brief Matrix sub
+ * @brief Sub between matrices
  * @throws ERR_DIMENTION_MISMATCH
  */
 matrix_t msub(matrix_t *lhs, matrix_t *rhs) {
@@ -58,7 +58,7 @@ matrix_t msub(matrix_t *lhs, matrix_t *rhs) {
 }
 
 /**
- * @brief Matrix mul
+ * @brief Mul between matrices
  * @throws ERR_DIMENTION_MISMATCH
  */
 matrix_t mmul(matrix_t *lhs, matrix_t *rhs) {
@@ -109,7 +109,11 @@ double det(matrix_t *A) {
   return result;
 }
 
-// Gaussian elimination
+/**
+ * @brief Calculate inverse matrix with Gaussian elimination
+ * @param[in] A Matrix
+ * @return Inverted A
+ */
 matrix_t inverse_matrix(matrix_t *A) {
   int dim = A->rows;
 
@@ -165,6 +169,11 @@ matrix_t inverse_matrix(matrix_t *A) {
   return result;
 }
 
+/**
+ * @brief Scalar mul
+ * @param[in/out] lhs Matrix
+ * @param[in] rhs Scalar
+ */
 void smul(matrix_t *lhs, double complex rhs) {
   for (size_t i = 0; i < lhs->rows * lhs->cols; i++)
     lhs->matrix[i] *= rhs;

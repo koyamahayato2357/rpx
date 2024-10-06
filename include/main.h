@@ -11,7 +11,7 @@ typedef enum {
   RTYPE_REAL = 0x01,
   RTYPE_COMP = 0x02,
   RTYPE_MATR = 0x04,
-} rtype_t;
+} rtype_t /* result type */;
 
 //! @brief Wrapper of types to handle
 typedef union {
@@ -35,4 +35,4 @@ void print_elem(elem_t);
 void print_real(double);
 void print_complex(double complex);
 void print_matrix(matrix_t);
-void proccmds(char *);
+void proc_cmds(char *);

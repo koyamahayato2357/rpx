@@ -8,12 +8,21 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+/**
+ * @brief Get terminal window size
+ * @return Struct in which window size if stored
+ */
 struct winsize get_winsz() {
   struct winsize w;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
   return w;
 }
 
+/**
+ * @brief Check if the decimal part is 0
+ * @param[in] arg Checked double number
+ * @return Is decimal part 0
+ */
 bool isint(double arg) {
   uint64_t x = *(uint64_t *)&arg;
   uint64_t mantissa = (x & 0x000fffffffffffff);
@@ -33,17 +42,28 @@ test(isint) {
   expect(!isint(-10.4));
 }
 
+/**
+ * @brief Skip pointer to first non-white-space char
+ */
 void skipspcs(char **str) {
   for (; isspace(**str); (*str)++)
     ;
 }
 
+/**
+ * @brief Skip pointer to the char following the comma
+ * @param[in/out] s String pointer
+ */
 void skip_untilcomma(char **s) {
   for (; **s != ',' && **s != '\0'; (*s)++)
     ;
   *s += **s == ',';
 }
 
+/**
+ * @brief Nullable free
+ * @param[in] p Nullable pointer
+ */
 void nfree(void *p) {
   if (p)
     free(p);

@@ -16,20 +16,20 @@ typedef struct {
 
   char prevexpr[BUFSIZE];
   void (*plotexpr)(char *);
-} plotcfg_t;
+} plotcfg_t /* plot config */;
 
 typedef struct {
   char expr[ALPN][BUFSIZE];
   size_t argc[ALPN];
   double argv[9];
-} uf_t;
+} uf_t /* user function */;
 
 typedef struct {
   elem_t hist[BUFSIZE];
   size_t histi;
   elem_t usrvar[ALPN];
   uf_t usrfn;
-} rtinfo_t;
+} rtinfo_t /* runtime info */;
 
 plotcfg_t get_plotcfg();
 void set_plotcfg(plotcfg_t);

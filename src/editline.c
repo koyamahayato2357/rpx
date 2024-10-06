@@ -173,8 +173,8 @@ void fwdw(char **cur, char *len) {
   if (*cur >= len)
     return;
 
-  bool wasalnum = isalnum(**cur);
-  bool wasspace = isspace(**cur);
+  int wasalnum = isalnum(**cur);
+  int wasspace = isspace(**cur);
   (*cur)++;
   for (; !isspace(**cur) ^ wasspace && *cur != len &&
          !(isalnum(**cur) ^ wasalnum);
@@ -190,9 +190,9 @@ test(fwdw) {
   char *len = buf + strlen(buf);
 
   fwdw(&cur, len);
-  expect(*cur == 't');
+  expect(cur == buf + 7);
   fwdw(&cur, len);
-  expect(*cur == '.');
+  expect(cur == buf + 11);
 }
 
 /**
@@ -208,7 +208,7 @@ void bwdw(char *buf, char **cur) {
   for (; isspace(**cur); (*cur)--)
     ;
 
-  bool wasalnum = isalnum(**cur);
+  int wasalnum = isalnum(**cur);
   for (; !isspace(*(*cur - 1)) && *cur != buf &&
          !(isalnum(*(*cur - 1)) ^ wasalnum);
        (*cur)--) {
@@ -220,9 +220,9 @@ test(bwdw) {
   char *cur = buf + strlen(buf);
 
   bwdw(buf, &cur);
-  expect(*cur == '.');
+  expect(cur == buf + 11);
   bwdw(buf, &cur);
-  expect(*cur == 't');
+  expect(cur == buf + 7);
 }
 
 /**
@@ -445,7 +445,7 @@ void insbind(char c, char *buf, char **cur, char **len) {
   }
 }
 
-void (*handle_printable)(char c, char *buf, char **cur, char **len) = insbind;
+auto handle_printable = insbind;
 
 /**
  * @brief Behavior in normal mode
@@ -511,12 +511,13 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     char *end = *cur;
     char input = getchar();
     char *dst, *src;
-    if (input != 'i' && input != 'a') {
+    if (input == 'i' || input == 'a') {
+      ignerr handle_txtobj(getchar(), buf, *cur, *len, &dst, &src);
+    } else {
       ignerr nrmbind(input, buf, &end, len);
       dst = lesser(*cur, end);
       src = bigger(*cur, end);
-    } else
-      ignerr handle_txtobj(getchar(), buf, *cur, *len, &dst, &src);
+    }
 
     deletes(dst, src, len);
     *cur = dst;
