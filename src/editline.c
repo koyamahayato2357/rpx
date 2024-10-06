@@ -285,13 +285,13 @@ test(bwdW) {
  */
 void handle_es(char key, char *buf, char **cur, char **len) {
   switch (key) {
-  case '3':
-    if (getchar() == '~') {
-      if (*len == *cur)
-        return;
-      memmove(*cur, *cur + 1, *len - *cur - 1);
-      (*len)--;
-    }
+  case '3': // delete key
+    if (getchar() != '~')
+      break;
+    if (*len == *cur)
+      break;
+    memmove(*cur, *cur + 1, *len - *cur - 1);
+    (*len)--;
     break;
   case 'C':
     ignerr movecur(1, buf, cur, *len);
