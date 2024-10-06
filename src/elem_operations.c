@@ -3,7 +3,6 @@
 #include "errcode.h"
 #include "exception.h"
 #include "matrix_operations.h"
-#include <assert.h>
 #include <stdbit.h>
 #include <string.h>
 #include <tgmath.h>
