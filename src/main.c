@@ -14,18 +14,18 @@
  */
 
 #include "main.h"
-#include "arithmetic_functions.h"
+#include "arthfn.h"
 #include "chore.h"
 #include "editline.h"
-#include "elem_operations.h"
+#include "elemop.h"
 #include "errcode.h"
 #include "error.h"
 #include "exception.h"
-#include "graph_plot.h"
-#include "matrix_operations.h"
-#include "optimize_expr.h"
+#include "graphplot.h"
+#include "matop.h"
+#include "optexpr.h"
 #include "rc.h"
-#include "system_conf.h"
+#include "sysconf.h"
 #include "testing.h"
 #include <ctype.h>
 #include <limits.h>

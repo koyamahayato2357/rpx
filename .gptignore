@@ -1,0 +1,9 @@
+.cache/*
+.git/*
+rpx
+compile_commands.json
+.gitignore
+.gptignore
+.clang*
+doc/*
+*.svg

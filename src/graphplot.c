@@ -1,7 +1,7 @@
-#include "graph_plot.h"
+#include "graphplot.h"
 #include "chore.h"
 #include "main.h"
-#include "system_conf.h"
+#include "sysconf.h"
 #include <stdio.h>
 #include <sys/ioctl.h>
 

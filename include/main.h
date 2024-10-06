@@ -4,7 +4,7 @@
 #include <stdio.h>
 #define BUFSIZE 256
 
-#include "matrix_operations.h"
+#include "matop.h"
 
 //! @brief Set of types to handle
 typedef enum {

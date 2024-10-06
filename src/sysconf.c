@@ -1,4 +1,4 @@
-#include "system_conf.h"
+#include "sysconf.h"
 
 plotcfg_t pcfg;
 rtinfo_t info_r;

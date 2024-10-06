@@ -1,5 +1,5 @@
-#include "matrix_operations.h"
-#include "arithmetic_functions.h"
+#include "matop.h"
+#include "arthfn.h"
 #include "chore.h"
 #include "errcode.h"
 #include "error.h"

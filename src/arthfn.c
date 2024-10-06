@@ -1,4 +1,4 @@
-#include "arithmetic_functions.h"
+#include "arthfn.h"
 #include <tgmath.h>
 
 double gcd(double n, double m) {

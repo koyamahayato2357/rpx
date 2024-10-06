@@ -1,8 +1,8 @@
-#include "elem_operations.h"
+#include "elemop.h"
 #include "chore.h"
 #include "errcode.h"
 #include "exception.h"
-#include "matrix_operations.h"
+#include "matop.h"
 #include <stdbit.h>
 #include <string.h>
 #include <tgmath.h>
