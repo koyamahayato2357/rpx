@@ -1,7 +1,7 @@
 /*
  * Usage
  * ----------------------------------------------------------------------------
- * Ignore error          | try maybe_throw();
+ * Ignore error          | ignerr maybe_throw();
  * ----------------------------------------------------------------------------
  * Specific error        | try maybe_throw();
  *                       | catch (ERR_LIKE_THIS) puts("aaa");

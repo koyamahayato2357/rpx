@@ -116,7 +116,7 @@ void reader_loop(FILE *fp) {
   char input_buf[BUFSIZE];
   while (fgets(input_buf, BUFSIZE, fp) != nullptr) {
     if (*input_buf == ':') {
-      try proccmds(input_buf + 1);
+      ignerr proccmds(input_buf + 1);
     } else {
       elem_t res;
       try res = eval_f(input_buf);
@@ -131,7 +131,7 @@ void reader_loop_stdin() {
   char input_buf[BUFSIZE] = {};
   while (editline(BUFSIZE, input_buf)) {
     if (*input_buf == ':') {
-      try proccmds(input_buf + 1);
+      ignerr proccmds(input_buf + 1);
     } else {
       elem_t res;
       try res = eval_f(input_buf);
@@ -485,7 +485,7 @@ elem_t eval_expr_complex(char *expr) {
       break;
     case '~': {
       matrix temp = rsp->elem.matr.matrix;
-      try rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
+      ignerr rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
       free(temp);
     } break;
 

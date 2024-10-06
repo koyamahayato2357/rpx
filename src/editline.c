@@ -48,15 +48,15 @@ test(movecur) {
   char *cur = buf;
   char *len = buf + strlen(buf);
 
-  try movecur(1, buf, &cur, len);
+  ignerr movecur(1, buf, &cur, len);
   expect(cur == buf + 1);
-  try movecur(3, buf, &cur, len);
+  ignerr movecur(3, buf, &cur, len);
   expect(cur == buf + 4);
-  try movecur(-4, buf, &cur, len);
+  ignerr movecur(-4, buf, &cur, len);
   expect(cur == buf);
-  try movecur(-1, buf, &cur, len);
+  ignerr movecur(-1, buf, &cur, len);
   expect(cur == buf);
-  try movecur(999, buf, &cur, len);
+  ignerr movecur(999, buf, &cur, len);
   expect(cur == len);
 }
 
@@ -149,7 +149,7 @@ test(findmove) {
   expect(*cur == 'e');
   findmove('s', -1, buf, &cur, len);
   expect(*cur == 's');
-  try {
+  ignerr {
     findmove('z', 1, buf, &cur, len);
     unreachable;
   }
@@ -288,10 +288,10 @@ void handle_es(char key, char *buf, char **cur, char **len) {
     }
     break;
   case 'C':
-    try movecur(1, buf, cur, *len);
+    ignerr movecur(1, buf, cur, *len);
     break;
   case 'D':
-    try movecur(-1, buf, cur, *len);
+    ignerr movecur(-1, buf, cur, *len);
     break;
   case 'F':
     *cur = *len;
@@ -329,15 +329,15 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
     *begin = cur;
     break;
   case 'b':
-    try findmove(')', 1, buf, &cur, len);
+    ignerr findmove(')', 1, buf, &cur, len);
     *end = cur;
-    try findmove('(', -1, buf, &cur, len);
+    ignerr findmove('(', -1, buf, &cur, len);
     *begin = cur + 1;
     break;
   case ']':
-    try findmove(']', 1, buf, &cur, len);
+    ignerr findmove(']', 1, buf, &cur, len);
     *end = cur;
-    try findmove('[', -1, buf, &cur, len);
+    ignerr findmove('[', -1, buf, &cur, len);
     *begin = cur + 1;
     break;
   default:
@@ -452,10 +452,10 @@ void (*handle_printable)(char c, char *buf, char **cur, char **len) = insbind;
 void nrmbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
   case 'h':
-    try movecur(-1, buf, cur, *len);
+    ignerr movecur(-1, buf, cur, *len);
     break;
   case 'l':
-    try movecur(1, buf, cur, *len);
+    ignerr movecur(1, buf, cur, *len);
     break;
   case 'w':
     fwdw(cur, *len);
@@ -470,10 +470,10 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     bwdW(buf, cur, *len);
     break;
   case 'f':
-    try findmove(getchar(), 1, buf, cur, *len);
+    ignerr findmove(getchar(), 1, buf, cur, *len);
     break;
   case 'F':
-    try findmove(getchar(), -1, buf, cur, *len);
+    ignerr findmove(getchar(), -1, buf, cur, *len);
     break;
   case 't':
     try findmove(getchar(), 1, buf, cur, *len);
@@ -506,11 +506,11 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     char input = getchar();
     char *dst, *src;
     if (input != 'i' && input != 'a') {
-      try nrmbind(input, buf, &end, len);
+      ignerr nrmbind(input, buf, &end, len);
       dst = lesser(*cur, end);
       src = bigger(*cur, end);
     } else
-      try handle_txtobj(getchar(), buf, *cur, *len, &dst, &src);
+      ignerr handle_txtobj(getchar(), buf, *cur, *len, &dst, &src);
 
     deletes(dst, src, len);
     *cur = dst;
@@ -527,7 +527,7 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     **cur = getchar();
     break;
   case '[':
-    try handle_es(getchar(), buf, cur, len);
+    ignerr handle_es(getchar(), buf, cur, len);
     handle_printable = insbind;
     break;
   default:
@@ -564,7 +564,7 @@ bool editline(int sz, char *buf) {
       break;
 
     default:
-      try handle_printable(c, buf, &cur, &len);
+      ignerr handle_printable(c, buf, &cur, &len);
       break;
     }
     printf("\033[2K\r%s\r", buf);

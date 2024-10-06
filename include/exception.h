@@ -29,3 +29,4 @@ void EXCEPTION_H_cl(int **g);
 #define capture(cap) for (int cap = EXCEPTION_H_errcode; cap; cap = 0)
 #define retry throw(ERR_RETRY)
 #define throw(e) longjmp(EXCEPTION_H_jb[EXCEPTION_H_nest - 1], e)
+#define ignerr try
