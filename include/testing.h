@@ -31,8 +31,11 @@ extern int TESTING_H_fail;
 #define test(name) void TESTING_H_dummy##name()
 #endif
 
-void _expect(bool, unsigned int);
-#define expect(cond) _expect(cond, __LINE__)
+#define expect(cond)                                                           \
+  if (!(cond)) {                                                               \
+    printf("Failed at %s:%d %s ", __FILE__, __LINE__, #cond);                   \
+    throw(1);                                                                  \
+  }
 
 #define EPSILON 1e-5
 // Helper function to compare doubles with epsilon
