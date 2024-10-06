@@ -15,9 +15,9 @@ struct winsize get_winsz() {
 }
 
 bool isint(double arg) {
-  uint64_t *x = (uint64_t *)&arg;
-  uint64_t mantissa = (*x & 0x000fffffffffffff);
-  uint16_t expo = (*x >> 52) & 0x7ff;
+  uint64_t x = *(uint64_t *)&arg;
+  uint64_t mantissa = (x & 0x000fffffffffffff);
+  uint16_t expo = (x >> 52) & 0x7ff;
 
   return expo > 1023 && !((mantissa << (expo - 1023)) & 0x000fffffffffffff);
 }
