@@ -81,6 +81,21 @@ void startup_message() {
 }
 
 /**
+ * @brief Process input
+ * @param[in] input_buf input
+ */
+void proc_input(char *input_buf) {
+  if (*input_buf == ':') {
+    ignerr proccmds(input_buf + 1);
+  } else {
+    elem_t res;
+    try res = eval_f(input_buf);
+    catchany capture(errcode) disperr(__FUNCTION__, codetomsg(errcode));
+    print_elem(res);
+  }
+}
+
+/**
  * @brief Process argument list
  * @param[in] argc arg count
  * @param[in] argv arg value
@@ -114,31 +129,15 @@ void proc_alist(int argc, char **argv) {
  */
 void reader_loop(FILE *fp) {
   char input_buf[BUFSIZE];
-  while (fgets(input_buf, BUFSIZE, fp) != nullptr) {
-    if (*input_buf == ':') {
-      ignerr proccmds(input_buf + 1);
-    } else {
-      elem_t res;
-      try res = eval_f(input_buf);
-      catchany capture(errcode) disperr(__FUNCTION__, codetomsg(errcode));
-      print_elem(res);
-    }
-  }
+  while (fgets(input_buf, BUFSIZE, fp) != nullptr)
+    proc_input(input_buf);
 }
 
 //! @brief Interactive input loop
 void reader_loop_stdin() {
   char input_buf[BUFSIZE] = {};
-  while (editline(BUFSIZE, input_buf)) {
-    if (*input_buf == ':') {
-      ignerr proccmds(input_buf + 1);
-    } else {
-      elem_t res;
-      try res = eval_f(input_buf);
-      catchany capture(errcode) disperr(__FUNCTION__, codetomsg(errcode));
-      print_elem(res);
-    }
-  }
+  while (editline(BUFSIZE, input_buf))
+    proc_input(input_buf);
 }
 
 /**
