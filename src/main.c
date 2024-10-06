@@ -101,26 +101,31 @@ void proc_input(char *input_buf) {
  * @param[in] argv arg value
  */
 void proc_alist(int argc, char **argv) {
-  for (int i = 1; i < argc; i++)
-    if (argv[i][0] != '-') {
-      FILE *fp = fopen(argv[i], "r");
-      if (fp == nullptr) {
-        disperr(__FUNCTION__, "File not found: %s", argv[i]);
-        exit(1);
-      }
-      reader_loop(fp);
-      fclose(fp);
-
-    } else {
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] == '-') // interpreted as a option
       switch (argv[i][1]) {
       case 'h':
         startup_message();
+        continue;
+      case 'r':
+        proc_input(argv[++i]);
+        continue;
+      case 'q':
         exit(0);
       default:
         disperr(__FUNCTION__, "Unknown option: %c", argv[i][1]);
         exit(1);
       }
+
+    // interpreted as a file name
+    FILE *fp = fopen(argv[i], "r");
+    if (fp == nullptr) {
+      disperr(__FUNCTION__, "File not found: %s", argv[i]);
+      exit(1);
     }
+    reader_loop(fp);
+    fclose(fp);
+  }
 }
 
 /**
