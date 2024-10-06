@@ -4,4 +4,4 @@
 ; Scalar mul
 [1 4,5,6,7,]5*
 ; Expr in the elem
-[2 1c,1sm,1s,1c][1 $x,$y]*
+[2 1c,1sm,1s,1c,][1 $x,$y,]*
