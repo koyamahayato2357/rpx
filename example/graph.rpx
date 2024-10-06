@@ -1,0 +1,15 @@
+; Parabola
+:p $12^            ; x^2
+
+; Draw circle
+:tp                ; implicit function mode
+:p $12^($22^)1m+   ; x^2 + y^2 + (-1)
+
+; Expand range
+:tp                ; explicit mode
+:spr10,20m,30,40m  ; -20 <= x <= 10, -40 <= y <= 30
+:p $1              ; x
+
+; Expand display range
+:spd40,40          ; 40x40 (length)
+:p $1
