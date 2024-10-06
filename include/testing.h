@@ -5,6 +5,8 @@
 #include <tgmath.h>
 
 #ifdef TEST_MODE
+extern int TESTING_H_success;
+extern int TESTING_H_fail;
 #define test(name)                                                             \
   void TESTING_H_tester##name();                                               \
   __attribute__((constructor)) void TESTING_H_testrunner##name() {             \
@@ -16,9 +18,11 @@
     try TESTING_H_tester##name();                                              \
     catchany capture(e) {                                                      \
       puts("\033[31m[NG]\033[0m");                                             \
-      exit(1);                                                                 \
+      TESTING_H_fail++;                                                        \
+      return;                                                                  \
     }                                                                          \
     puts("\033[32m[OK]\033[0m");                                               \
+    TESTING_H_success++;                                                       \
   }                                                                            \
   void TESTING_H_tester##name()
 
