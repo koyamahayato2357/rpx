@@ -26,9 +26,11 @@ test(isint) {
   expect(isint(5.0));
   expect(isint(3.000));
   expect(isint(100));
+  expect(isint(-10));
   expect(!isint(5.6));
   expect(!isint(10.9));
   expect(!isint(99.99999));
+  expect(!isint(-10.4));
 }
 
 void skipspcs(char **str) {
