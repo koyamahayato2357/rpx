@@ -1,8 +1,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-void disperr(const char *funcname, const char *errmsgfmt, ...) {
 #ifndef TEST_MODE
+void disperr(const char *funcname, const char *errmsgfmt, ...) {
   va_list ap;
   va_start(ap, errmsgfmt);
 
@@ -12,5 +12,5 @@ void disperr(const char *funcname, const char *errmsgfmt, ...) {
   fputs("\033[0m\n", stderr);
 
   va_end(ap);
-#endif
 }
+#endif
