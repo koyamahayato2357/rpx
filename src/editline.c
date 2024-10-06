@@ -48,15 +48,21 @@ test(movecur) {
   char *cur = buf;
   char *len = buf + strlen(buf);
 
-  ignerr movecur(1, buf, &cur, len);
+  movecur(1, buf, &cur, len);
   expect(cur == buf + 1);
-  ignerr movecur(3, buf, &cur, len);
+  movecur(3, buf, &cur, len);
   expect(cur == buf + 4);
-  ignerr movecur(-4, buf, &cur, len);
+  movecur(-4, buf, &cur, len);
   expect(cur == buf);
-  ignerr movecur(-1, buf, &cur, len);
+  ignerr {
+    movecur(-1, buf, &cur, len);
+    unreachable;
+  }
   expect(cur == buf);
-  ignerr movecur(999, buf, &cur, len);
+  ignerr {
+    movecur(999, buf, &cur, len);
+    unreachable;
+  }
   expect(cur == len);
 }
 
@@ -74,9 +80,9 @@ void deletes(char *begin, char *end, char **len) {
 
 test(deletes) {
   char str[] = "sample text.";
-  char *len = &str[strlen(str)];
+  char *len = str + strlen(str);
   char *begin = str;
-  char *end = &str[7];
+  char *end = str + 7;
 
   deletes(begin, end, &len);
   expect(!strcmp(str, "text."));
@@ -167,8 +173,8 @@ void fwdw(char **cur, char *len) {
   if (*cur >= len)
     return;
 
-  int wasalnum = isalnum(**cur);
-  int wasspace = isspace(**cur);
+  bool wasalnum = isalnum(**cur);
+  bool wasspace = isspace(**cur);
   (*cur)++;
   for (; !isspace(**cur) ^ wasspace && *cur != len &&
          !(isalnum(**cur) ^ wasalnum);
@@ -202,7 +208,7 @@ void bwdw(char *buf, char **cur) {
   for (; isspace(**cur); (*cur)--)
     ;
 
-  int wasalnum = isalnum(**cur);
+  bool wasalnum = isalnum(**cur);
   for (; !isspace(*(*cur - 1)) && *cur != buf &&
          !(isalnum(*(*cur - 1)) ^ wasalnum);
        (*cur)--) {
