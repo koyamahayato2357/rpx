@@ -10,7 +10,7 @@
  * SNAN:      (double)nan
  * BUFSIZE:   0x100
  * rtype_t:   enum {RTYPE_REAL, RTYPE_COMP, RTYPE_MATR, RTYPE_LAST}
- * result_t:  union {double, double complex, long long, matrix_t}
+ * result_t:  union {double, double complex, matrix_t}
  */
 
 #include "main.h"
