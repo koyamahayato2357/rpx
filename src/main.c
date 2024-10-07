@@ -367,7 +367,8 @@ elem_t eval_expr_real(char *expr) {
       if (islower(*++expr)) {
         int fname = *expr - 'a';
         rsp -= info.usrfn.argc[fname] - 1;
-        memcpy(info.usrfn.argv, rsp, info.usrfn.argc[fname]);
+        memcpy(info.usrfn.argv, rsp, info.usrfn.argc[fname] * sizeof(double));
+        set_rtinfo('r', info);
         *rsp = eval_expr_real(info.usrfn.expr[fname]).elem.real;
       }
       break;
@@ -794,7 +795,7 @@ void proc_cmds(char *cmd) {
     info_r.usrfn.argc[fname] = *cmd++ - '0';
     optexpr(BUFSIZE, cmd);
     strncpy(info_r.usrfn.expr[fname], cmd, BUFSIZE);
-    set_plotcfg(pcfg);
+    set_rtinfo('r', info_r);
     break;
   case 't': // toggle
     switch (*++cmd) {
