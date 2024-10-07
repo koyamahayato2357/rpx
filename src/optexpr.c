@@ -25,50 +25,50 @@ void optexpr(int exprn, char *arg_expr) {
   char *expr = arg_expr;
   rm_exprspcs(&expr);
 
-  expr = arg_expr;
-  char *grpbgn = expr;
-  bool isvar1st = false;
-  for (; *expr != '\0'; expr++) {
-    if (*expr == '$') {
-      expr++;
-      if (isdigit(*expr)) {
-        char vname = *expr;
-        if (grpbgn == expr - 1) {
-          isvar1st = true;
-          grpbgn = expr + 1;
-        } else
-          *(expr - 1) = *expr = ' ';
-
-        for (;; expr++) {
-          if (!is_op(*expr) && *expr != '\0')
-            continue;
-          char temp = *(expr + 1);
-          *(expr + 1) = '\0';
-          double res = eval_expr_real(grpbgn).elem.real;
-          *(expr + 1) = temp;
-          int len = expr - grpbgn;
-          int n = snprintf(grpbgn, len, "%lf", res);
-          if (n > len) {
-            strcpy(expr + n - len, expr);
-            snprintf(grpbgn, n, "%lf", res);
-          }
-          grpbgn += n;
-          if (!isvar1st) {
-            if (n >= len)
-              strcpy(grpbgn + 2, grpbgn);
-            *grpbgn = '$';
-            *(grpbgn + 1) = vname;
-            grpbgn += 2;
-          }
-          if (n < len)
-            memmove(grpbgn, expr, len + 1);
-          grpbgn = expr;
-          goto end;
-        }
-      }
-    }
-  }
-end:
+//   expr = arg_expr;
+//   char *grpbgn = expr;
+//   bool isvar1st = false;
+//   for (; *expr != '\0'; expr++) {
+//     if (*expr == '$') {
+//       expr++;
+//       if (isdigit(*expr)) {
+//         char vname = *expr;
+//         if (grpbgn == expr - 1) {
+//           isvar1st = true;
+//           grpbgn = expr + 1;
+//         } else
+//           *(expr - 1) = *expr = ' ';
+//
+//         for (;; expr++) {
+//           if (!is_op(*expr) && *expr != '\0')
+//             continue;
+//           char temp = *(expr + 1);
+//           *(expr + 1) = '\0';
+//           double res = eval_expr_real(grpbgn).elem.real;
+//           *(expr + 1) = temp;
+//           int len = expr - grpbgn;
+//           int n = snprintf(grpbgn, len, "%lf", res);
+//           if (n > len) {
+//             strcpy(expr + n - len, expr);
+//             snprintf(grpbgn, n, "%lf", res);
+//           }
+//           grpbgn += n;
+//           if (!isvar1st) {
+//             if (n >= len)
+//               strcpy(grpbgn + 2, grpbgn);
+//             *grpbgn = '$';
+//             *(grpbgn + 1) = vname;
+//             grpbgn += 2;
+//           }
+//           if (n < len)
+//             memmove(grpbgn, expr, len + 1);
+//           grpbgn = expr;
+//           goto end;
+//         }
+//       }
+//     }
+//   }
+// end:
   // for (; *expr != '\0';) {
   //   if (*++expr == '$') {
   //     grpbgn = expr;
