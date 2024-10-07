@@ -254,7 +254,7 @@ elem_t eval_expr_real(char *expr) {
       }
       break;
 
-    case 'i':
+    case 'i': // integer operations
       switch (*++expr) {
       case 'g': {
         double x = *rsp--;
