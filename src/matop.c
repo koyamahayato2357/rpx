@@ -4,6 +4,7 @@
 #include "errcode.h"
 #include "error.h"
 #include "exception.h"
+#include "testing.h"
 
 matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
@@ -25,12 +26,27 @@ matrix_t new_matrix(size_t rows, size_t cols) {
   return result;
 }
 
+bool mcheckdim(matrix_t *lhs, matrix_t *rhs) {
+  return lhs->rows == rhs->rows && lhs->cols == rhs->cols;
+}
+
+bool meq(matrix_t *lhs, matrix_t *rhs) {
+  if (!mcheckdim(lhs, rhs))
+    return false;
+
+  for (size_t i = 0; i < lhs->cols * lhs->rows; i++)
+    if (!complex_eq(lhs->matrix[i], rhs->matrix[i]))
+      return false;
+
+  return true;
+}
+
 /**
  * @brief Addition between matrices
  * @throws ERR_DIMENTION_MISMATCH
  */
 matrix_t madd(matrix_t *lhs, matrix_t *rhs) {
-  if (lhs->rows != rhs->rows || lhs->cols != rhs->cols)
+  if (!mcheckdim(lhs, rhs))
     throw(ERR_DIMENTION_MISMATCH);
 
   matrix_t result = new_matrix(lhs->rows, lhs->cols);

@@ -14,6 +14,7 @@ typedef struct {
 } matrix_t;
 
 matrix_t new_matrix(size_t, size_t);
+bool meq(matrix_t *, matrix_t *);
 matrix_t madd(matrix_t *, matrix_t *);
 matrix_t msub(matrix_t *, matrix_t *);
 matrix_t mmul(matrix_t *, matrix_t *);

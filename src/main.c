@@ -199,6 +199,27 @@ elem_t eval_expr_real(char *expr) {
       for (; rbp + 1 < rsp; *(rbp + 1) = pow(*(rbp + 1), *rsp--))
         ;
       break;
+    case '=':
+      for (; rbp + 1 < rsp && double_eq(*(rsp - 1), *rsp); rsp--)
+        ;
+      *(rbp + 1) = rbp + 1 == rsp;
+      if (rbp + 1 != rsp)
+        rsp = rbp + 1;
+      break;
+    case '<':
+      for (; rbp + 1 < rsp && *(rsp - 1) < *rsp; rsp--)
+        ;
+      *(rbp + 1) = rbp + 1 == rsp;
+      if (rbp + 1 != rsp)
+        rsp = rbp + 1;
+      break;
+    case '>':
+      for (; rbp + 1 < rsp && *(rsp - 1) > *rsp; rsp--)
+        ;
+      *(rbp + 1) = rbp + 1 == rsp;
+      if (rbp + 1 != rsp)
+        rsp = rbp + 1;
+      break;
 
     case 'a':
       switch (*++expr) {
@@ -493,6 +514,13 @@ elem_t eval_expr_complex(char *expr) {
       ignerr rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
       free(temp);
     } break;
+    case '=':
+      for (; rbp + 1 < rsp && elem_eq(rsp - 1, rsp); rsp--)
+        ;
+      (rbp + 1)->elem.real = rbp + 1 == rsp;
+      if (rbp + 1 != rsp)
+        rsp = rbp + 1;
+      break;
 
     case 'a':
       switch (*++expr) {
