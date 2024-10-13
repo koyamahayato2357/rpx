@@ -1,3 +1,3 @@
 #pragma once
 
-void optexpr(int, char *);
+void optexpr(char *);
