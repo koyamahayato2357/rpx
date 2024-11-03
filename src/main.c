@@ -200,7 +200,7 @@ elem_t eval_expr_real(char *expr) {
         ;
       break;
     case '=':
-      for (; rbp + 1 < rsp && double_eq(*(rsp - 1), *rsp); rsp--)
+      for (; rbp + 1 < rsp && eq(*(rsp - 1), *rsp); rsp--)
         ;
       *(rbp + 1) = rbp + 1 == rsp;
       if (rbp + 1 != rsp)
@@ -414,30 +414,30 @@ end:
 }
 
 test(eval_expr_real) {
-  expect(double_eq(eval_expr_real("1 2 3 4 5 +").elem.real, 15.0));
-  expect(double_eq(eval_expr_real("4 5 ^").elem.real, 1024.0));
-  expect(double_eq(eval_expr_real("1s2^(1c2^)+").elem.real, 1.0));
-  expect(double_eq(eval_expr_real("  5    6    10    - 5  /").elem.real, -2.2));
+  expecteq(15.0, eval_expr_real("1 2 3 4 5 +").elem.real);
+  expecteq(1024.0, eval_expr_real("4 5 ^").elem.real);
+  expecteq(1.0, eval_expr_real("1s2^(1c2^)+").elem.real);
+  expecteq(-2.2, eval_expr_real("  5    6    10    - 5  /").elem.real);
 
   // Test ANS functionality
   eval_expr_real("5");
-  expect(double_eq(eval_expr_real("@a").elem.real, 5.0));
+  expecteq(5.0, eval_expr_real("@a").elem.real);
 
   // Test variable operations
   eval_expr_real("10 $x u");
-  expect(double_eq(eval_expr_real("$x 2 *").elem.real, 20.0));
+  expecteq(20.0, eval_expr_real("$x 2 *").elem.real);
 
   // Test more complex expressions
-  expect(double_eq(eval_expr_real("2 3 ^ (4 5 *) + (6 7 /) -").elem.real,
+  expect(eq(eval_expr_real("2 3 ^ (4 5 *) + (6 7 /) -").elem.real,
                    27.142857));
 
   // Test trigonometric functions
-  expect(double_eq(eval_expr_real("\\P 2 / s").elem.real, 1.0));
-  expect(double_eq(eval_expr_real("\\P 4 / c").elem.real, 0.707107));
+  expecteq(1.0, eval_expr_real("\\P 2 / s").elem.real);
+  expecteq(0.707107, eval_expr_real("\\P 4 / c").elem.real);
 
   // Test logarithmic functions
-  expect(double_eq(eval_expr_real("2 l2").elem.real, 1.0));
-  expect(double_eq(eval_expr_real("100 lc").elem.real, 2.0));
+  expecteq(1.0, eval_expr_real("2 l2").elem.real);
+  expecteq(2.0, eval_expr_real("100 lc").elem.real);
 
   // Test error handling
   expect(isinf(eval_expr_real("1 0 /").elem.real));
@@ -670,60 +670,60 @@ test(eval_expr_complex) {
   double complex result;
 
   result = eval_expr_complex("1 2i +").elem.comp;
-  expect(complex_eq(result, 1.0 + 2.0 * I));
+  expecteq(1.0 + 2.0 * I, result);
 
   result = eval_expr_complex("4i 5 ^").elem.comp;
-  expect(complex_eq(result, 1024.0 * I));
+  expecteq(1024.0 * I, result);
 
   result = eval_expr_complex("1 1i + (2 2i +) *").elem.comp;
-  expect(complex_eq(result, 0 + 4.0 * I));
+  expecteq(0 + 4.0 * I, result);
 
   // Test complex trigonometric functions
   result = eval_expr_complex("1 1i + s").elem.comp;
-  expect(complex_eq(result, 1.2984575814159773 + 0.6349639147847361 * I));
+  expecteq(1.2984575814159773 + 0.6349639147847361 * I, result);
 
   // Test complex logarithm
   result = eval_expr_complex("\\P i l").elem.comp;
-  expect(complex_eq(result, 1.1447298858494002 + 1.5707963267948967 * I));
+  expecteq(1.1447298858494002 + 1.5707963267948967 * I, result);
 
   matrix_t resultm;
 
   // Test matrix addition
   resultm = eval_expr_complex("[2 1,2,3,4,][2 5,6,7,8,]+").elem.matr;
   expect(resultm.rows == 2 && resultm.cols == 2);
-  expect(double_eq(resultm.matrix[0], 6.0));
-  expect(double_eq(resultm.matrix[1], 8.0));
-  expect(double_eq(resultm.matrix[2], 10.0));
-  expect(double_eq(resultm.matrix[3], 12.0));
+  expecteq(6.0, resultm.matrix[0]);
+  expecteq(8.0, resultm.matrix[1]);
+  expecteq(10.0, resultm.matrix[2]);
+  expecteq(12.0, resultm.matrix[3]);
   free(resultm.matrix);
 
   // Test matrix multiplication
   char expr2[] = "[2 1,2,3,4,][2 5,6,7,8,]*";
   resultm = eval_expr_complex(expr2).elem.matr;
   expect(resultm.rows == 2 && resultm.cols == 2);
-  expect(double_eq(resultm.matrix[0], 19.0));
-  expect(double_eq(resultm.matrix[1], 22.0));
-  expect(double_eq(resultm.matrix[2], 43.0));
-  expect(double_eq(resultm.matrix[3], 50.0));
+  expecteq(19.0, resultm.matrix[0]);
+  expecteq(22.0, resultm.matrix[1]);
+  expecteq(43.0, resultm.matrix[2]);
+  expecteq(50.0, resultm.matrix[3]);
   free(resultm.matrix);
 
   // Test matrix inverse
   char expr3[] = "[2 1,2,3,4,]~";
   resultm = eval_expr_complex(expr3).elem.matr;
   expect(resultm.rows == 2 && resultm.cols == 2);
-  expect(double_eq(resultm.matrix[0], -2.0));
-  expect(double_eq(resultm.matrix[1], 1.0));
-  expect(double_eq(resultm.matrix[2], 1.5));
-  expect(double_eq(resultm.matrix[3], -0.5));
+  expecteq(-2.0, resultm.matrix[0]);
+  expecteq(1.0, resultm.matrix[1]);
+  expecteq(1.5, resultm.matrix[2]);
+  expecteq(-0.5, resultm.matrix[3]);
   free(resultm.matrix);
 
   // Scalar multiplication
   char expr4[] = "[3 5,6,7,] 5 *";
   resultm = eval_expr_complex(expr4).elem.matr;
   expect(resultm.rows == 1 && resultm.cols == 3);
-  expect(double_eq(resultm.matrix[0], 25));
-  expect(double_eq(resultm.matrix[1], 30));
-  expect(double_eq(resultm.matrix[2], 35));
+  expecteq(25, resultm.matrix[0]);
+  expecteq(30, resultm.matrix[1]);
+  expecteq(35, resultm.matrix[2]);
   free(resultm.matrix);
 }
 

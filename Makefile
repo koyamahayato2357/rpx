@@ -23,7 +23,7 @@ build:
 	$(CC) $(SRCDIR)/*.c $(CFLAGS) $(OPTFLAGS) $(LDFLAGS) -o $(OUTFILE)
 
 debug:
-	clang-18 -std=c23 $(SRCDIR)/*.c $(DEBUGFLAGS) $(LDFLAGS) -I$(INCDIR) -o $(OUTFILE)
+	clang-18 -std=c23 $(SRCDIR)/*.c $(DEBUGFLAGS) $(LDFLAGS) -o $(OUTFILE)
 	$(DB) $(OUTFILE)
 
 test:
@@ -37,7 +37,7 @@ run:
 	./$(OUTFILE)
 
 analyze:
-	clang-tidy $(SRCS) -- -I$(INCDIR) $(CFLAGS) -std=c23
+	clang-tidy $(SRCS) -- $(CFLAGS) -std=c23
 
 clean:
 	rm -rf $(BUILDDIR) $(OUTFILE)

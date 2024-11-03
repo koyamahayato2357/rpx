@@ -554,9 +554,14 @@ bool editline(int sz, char *buf) {
   char *len = buf;
 
   struct termios orig_termios;
+  // getchar() becomes like getch() in MSVC
   enable_rawmode(&orig_termios);
 
-  while ((c = getchar()) != '\n' && c != CTRL_D && len < sz + buf) {
+  while (true) {
+    c = getchar();
+    if (c == '\n' || c == CTRL_D || buf + sz < len)
+      break;
+
     switch (c) {
     case ES:
       handle_printable = nrmbind;
@@ -574,9 +579,7 @@ bool editline(int sz, char *buf) {
       ignerr handle_printable(c, buf, &cur, &len);
       break;
     }
-    printf("\033[2K\r%s\r", buf);
-    if (cur > buf)
-      printf("\033[%ldC", cur - buf);
+    printf(ESEL(2) "\r%s\033[%ldG", buf, cur - buf + 1);
   }
   putchar('\n');
   disable_rawmode(&orig_termios);

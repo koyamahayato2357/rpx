@@ -1,6 +1,7 @@
 #pragma once
 
 typedef enum {
+  ERR_RETRY = 1,
   ERR_SUCCESS = 0,
   ERR_UNKNOWN_CHAR = -1,
   ERR_UNKNOWN_FN = -2,
@@ -14,7 +15,14 @@ typedef enum {
   ERR_CHAR_NOT_FOUND = -10,
   ERR_ALLOCATION_FAILURE = -11,
   ERR_UNKNOWN_COMMAND = -12,
-  ERR_RETRY = -13,
+  ERR_REACHED_UNREACHABLE = -13
 } errcode_t;
 
-char *codetomsg(int);
+#define panic(e)                                                               \
+  do {                                                                         \
+    printf("Panicked at " HERE " ");                                           \
+    puts(codetomsg(e));                                                        \
+    exit(e);                                                                   \
+  } while (0)
+
+char const *codetomsg(int);

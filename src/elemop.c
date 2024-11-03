@@ -19,7 +19,7 @@ bool elem_eq(elem_t *lhs, elem_t *rhs) {
   if (lhs->rtype != rhs->rtype)
     return false;
   if (lhs->rtype == RTYPE_COMP)
-    return complex_eq(lhs->elem.comp, rhs->elem.comp);
+    return eq(lhs->elem.comp, rhs->elem.comp);
   if (lhs->rtype == RTYPE_MATR)
     return meq(&lhs->elem.matr, &rhs->elem.matr);
   return false;

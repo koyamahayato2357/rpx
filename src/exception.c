@@ -47,7 +47,7 @@ int EXCEPTION_H_nest;
 
 void EXCEPTION_H_cl(int **g) { (**g)--; }
 
-void _throw() { throw(1); }
+void _throw() { throw(-1); }
 void _nothrow() {}
 
 test(exception) {
@@ -61,12 +61,12 @@ test(exception) {
   try {
     try _throw();
     catchany capture(errcode) {
-      if (errcode != 1)
+      if (errcode != -1)
         unreachable;
     }
   }
   try _throw();
-  catchor(2) unreachable;
+  catchor(0) unreachable;
   int i = 0;
   try _throw();
   catchany {

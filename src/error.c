@@ -1,3 +1,4 @@
+#include "ansiesc.h"
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -7,9 +8,9 @@ void disperr(const char *funcname, const char *errmsgfmt, ...) {
   va_start(ap, errmsgfmt);
 
   fprintf(stderr, "\n[%s]\n", funcname);
-  fprintf(stderr, "  \033[31mError: ");
+  fprintf(stderr, "  " ESCRED "Error: ");
   vfprintf(stderr, errmsgfmt, ap);
-  fputs("\033[0m\n", stderr);
+  fputs(ESCLR "\n", stderr);
 
   va_end(ap);
 }

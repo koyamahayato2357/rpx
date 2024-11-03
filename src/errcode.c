@@ -1,6 +1,6 @@
 #include "errcode.h"
 
-char *codetomsg(int code) {
+char const *codetomsg(int code) {
   switch (code) {
   case ERR_SUCCESS:
     return "success";

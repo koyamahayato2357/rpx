@@ -35,7 +35,7 @@ bool meq(matrix_t *lhs, matrix_t *rhs) {
     return false;
 
   for (size_t i = 0; i < lhs->cols * lhs->rows; i++)
-    if (!complex_eq(lhs->matrix[i], rhs->matrix[i]))
+    if (!eq(lhs->matrix[i], rhs->matrix[i]))
       return false;
 
   return true;

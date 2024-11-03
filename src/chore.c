@@ -1,6 +1,7 @@
 #include "chore.h"
 #include "errcode.h"
 #include "exception.h"
+#include "exproriented.h"
 #include "testing.h"
 #include <ctype.h>
 #include <stdint.h>
@@ -74,9 +75,10 @@ void nfree(void *p) {
  * @param[in] sz Memory size
  * @throws ERR_ALLOCATION_FAILURE
  */
-void *ealloc(int sz) {
-  void *mem = malloc(sz);
-  if (mem == nullptr)
-    throw(ERR_ALLOCATION_FAILURE);
-  return mem;
-}
+void *ealloc(int sz) { return malloc(sz) ?: p$throw(ERR_ALLOCATION_FAILURE); }
+
+/**
+ * @brief panic alloc
+ * @param[in] sz Memory size
+ */
+void *palloc(int sz) { return malloc(sz) ?: p$panic(ERR_ALLOCATION_FAILURE); }
