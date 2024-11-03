@@ -428,8 +428,7 @@ test(eval_expr_real) {
   expecteq(20.0, eval_expr_real("$x 2 *").elem.real);
 
   // Test more complex expressions
-  expect(eq(eval_expr_real("2 3 ^ (4 5 *) + (6 7 /) -").elem.real,
-                   27.142857));
+  expect(eq(eval_expr_real("2 3 ^ (4 5 *) + (6 7 /) -").elem.real, 27.142857));
 
   // Test trigonometric functions
   expecteq(1.0, eval_expr_real("\\P 2 / s").elem.real);
@@ -461,7 +460,7 @@ elem_t eval_expr_complex(char *expr) {
     if (*expr == '[') {
       (++rsp)->rtype = RTYPE_MATR;
       expr++;
-      matrix_t val = {.matrix = malloc(MAT_INITSIZE * sizeof(double complex))};
+      matrix_t val = {.matrix = palloc(MAT_INITSIZE * sizeof(double complex))};
       matrix curelem = val.matrix;
       val.cols = strtol(expr, &expr, 10);
       for (; *expr != ']';) {
@@ -690,7 +689,6 @@ test(eval_expr_complex) {
 
   // Test matrix addition
   resultm = eval_expr_complex("[2 1,2,3,4,][2 5,6,7,8,]+").elem.matr;
-  expect(resultm.rows == 2 && resultm.cols == 2);
   expecteq(6.0, resultm.matrix[0]);
   expecteq(8.0, resultm.matrix[1]);
   expecteq(10.0, resultm.matrix[2]);
@@ -700,7 +698,8 @@ test(eval_expr_complex) {
   // Test matrix multiplication
   char expr2[] = "[2 1,2,3,4,][2 5,6,7,8,]*";
   resultm = eval_expr_complex(expr2).elem.matr;
-  expect(resultm.rows == 2 && resultm.cols == 2);
+  expecteq(2, resultm.rows);
+  expecteq(2, resultm.cols);
   expecteq(19.0, resultm.matrix[0]);
   expecteq(22.0, resultm.matrix[1]);
   expecteq(43.0, resultm.matrix[2]);
@@ -710,7 +709,8 @@ test(eval_expr_complex) {
   // Test matrix inverse
   char expr3[] = "[2 1,2,3,4,]~";
   resultm = eval_expr_complex(expr3).elem.matr;
-  expect(resultm.rows == 2 && resultm.cols == 2);
+  expecteq(2, resultm.rows);
+  expecteq(2, resultm.cols);
   expecteq(-2.0, resultm.matrix[0]);
   expecteq(1.0, resultm.matrix[1]);
   expecteq(1.5, resultm.matrix[2]);
@@ -720,7 +720,8 @@ test(eval_expr_complex) {
   // Scalar multiplication
   char expr4[] = "[3 5,6,7,] 5 *";
   resultm = eval_expr_complex(expr4).elem.matr;
-  expect(resultm.rows == 1 && resultm.cols == 3);
+  expecteq(1, resultm.rows);
+  expecteq(3, resultm.cols);
   expecteq(25, resultm.matrix[0]);
   expecteq(30, resultm.matrix[1]);
   expecteq(35, resultm.matrix[2]);

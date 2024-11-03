@@ -13,3 +13,4 @@ void skipspcs(char **);
 void skip_untilcomma(char **);
 void nfree(void *);
 void *ealloc(int);
+void *palloc(int);

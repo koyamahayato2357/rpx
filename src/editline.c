@@ -49,21 +49,21 @@ test(movecur) {
   char *len = buf + strlen(buf);
 
   movecur(1, buf, &cur, len);
-  expect(cur == buf + 1);
+  expecteq(buf + 1, cur);
   movecur(3, buf, &cur, len);
-  expect(cur == buf + 4);
+  expecteq(buf + 4, cur);
   movecur(-4, buf, &cur, len);
-  expect(cur == buf);
+  expecteq(buf, cur);
   ignerr {
     movecur(-1, buf, &cur, len);
     unreachable;
   }
-  expect(cur == buf);
+  expecteq(buf, cur);
   ignerr {
     movecur(999, buf, &cur, len);
     unreachable;
   }
-  expect(cur == len);
+  expecteq(len, cur);
 }
 
 /**
@@ -150,18 +150,18 @@ test(findmove) {
   char *len = buf + strlen(buf);
 
   findmove(' ', 1, buf, &cur, len);
-  expect(*cur == ' ');
+  expecteq(' ', *cur);
   findmove('e', 1, buf, &cur, len);
-  expect(*cur == 'e');
+  expecteq('e', *cur);
   findmove('s', -1, buf, &cur, len);
-  expect(*cur == 's');
+  expecteq('s', *cur);
   ignerr {
     findmove('z', 1, buf, &cur, len);
     unreachable;
   }
-  expect(*cur == 's');
+  expecteq('s', *cur);
   findmove('.', 1, buf, &cur, len);
-  expect(*cur == '.');
+  expecteq('.', *cur);
 }
 
 /**
@@ -190,9 +190,9 @@ test(fwdw) {
   char *len = buf + strlen(buf);
 
   fwdw(&cur, len);
-  expect(cur == buf + 7);
+  expecteq(buf + 7, cur);
   fwdw(&cur, len);
-  expect(cur == buf + 11);
+  expecteq(buf + 11, cur);
 }
 
 /**
@@ -220,9 +220,9 @@ test(bwdw) {
   char *cur = buf + strlen(buf);
 
   bwdw(buf, &cur);
-  expect(cur == buf + 11);
+  expecteq(buf + 11, cur);
   bwdw(buf, &cur);
-  expect(cur == buf + 7);
+  expecteq(buf + 7, cur);
 }
 
 /**
@@ -243,9 +243,9 @@ test(fwdW) {
   char *len = buf + strlen(buf);
 
   fwdW(buf, &cur, len);
-  expect(*cur == 't');
+  expecteq('t', *cur);
   fwdW(buf, &cur, len);
-  expect(*cur == '\0');
+  expecteq('\0', *cur);
 }
 
 /**
@@ -270,9 +270,9 @@ test(bwdW) {
   char *len = buf + strlen(buf);
 
   bwdW(buf, &cur, len);
-  expect(*cur == 't');
+  expecteq('t', *cur);
   bwdW(buf, &cur, len);
-  expect(*cur == 's');
+  expecteq('s', *cur);
 }
 
 /**
@@ -397,13 +397,13 @@ test(inserts) {
   inserts(strlen(str1), str1, 0, &cur, &len, buf + 256 - len);
   expect(!strcmp(buf, "sample textnew string."));
   expect(!strcmp(cur, "new string."));
-  expect(len - buf == (long)strlen(buf));
+  expecteq(strlen(buf), (size_t)(len - buf));
 
   char str2[] = "extra string";
   inserts(strlen(str2), str2, 6, &cur, &len, buf + 256 - len);
   expect(!strcmp(buf, "sample textextra stringnew string."));
   expect(!strcmp(cur, "stringnew string."));
-  expect(len - buf == (long)strlen(buf));
+  expecteq(strlen(buf), (size_t)(len - buf));
 }
 
 /**
