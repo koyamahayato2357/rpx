@@ -16,11 +16,7 @@ matrix_t NAN_matrix(size_t rows, size_t cols) {
 matrix_t new_matrix(size_t rows, size_t cols) {
   matrix mat;
 
-  try mat = ealloc(rows * cols * sizeof(double complex));
-  catch (ERR_ALLOCATION_FAILURE) {
-    disperr(__FUNCTION__, "failed to allocate memory");
-    exit(1);
-  }
+  mat = palloc(rows * cols * sizeof(double complex));
 
   matrix_t result = {.rows = rows, .cols = cols, .matrix = mat};
   return result;
