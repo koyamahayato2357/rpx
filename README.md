@@ -48,11 +48,11 @@ RPX offers four modes of operation:
 - Spaces are required only to delimit numbers (e.g., `5 3m4i+` for 5-3+4i)
 
 ## Operators and Functions
-### Basic Arithmetic
+### Basic Arithmetic Operators
 - `+` (addition), `-` (subtraction), `*` (multiplication), `/` (division)
 - `%` (modulo), `^` (exponentiation)
 
-### Unary Operators
+### Unary Functions
 - `A` (absolute value)
 - `m` (negate)
 - `i` (multiply by i, for complex mode)
@@ -71,10 +71,10 @@ RPX offers four modes of operation:
 ### Rounding Functions
 - `C` (ceil), `F` (floor), `R` (round)
 
-### Angle Conversion
+### Angle Conversion Functions
 - `r` (degree to radian), `d` (radian to degree)
 
-### Matrix Operations
+### Matrix Operation Functions
 - `~` (Inverse Matrix)
 
 ## Special Features
@@ -109,6 +109,11 @@ RPX offers four modes of operation:
 - `:o`: Optimize expression (e.g., remove unnecessary spaces)
 - `:p`: Plot graph (argument is $1)
 
+## CommandLine Options
+- `-h`: Show help
+- `-r`: Evaluate following argument as expression
+- `-q`: Quit
+
 ## Examples
 1. Basic arithmetic: `3 4 + 2 *` -> 14.000000
 2. Using constants: `\P 2 / s` -> 1.000000 (sin(Pi/2))
@@ -119,6 +124,9 @@ RPX offers four modes of operation:
 9. Matrix inverse: `[3 1,1,1m,2m,0,1,0,2,1,]~` -> [3 -0.5,-0.75,0.25,0.5,0.25,0.25,-1,-0.5,0.5,]
 10. Plot fn: `:p $1s` -> Graph of sin(x)
 11. Plot implicit fn: `:p $12^($22^)+1-` -> Circle of radius 1
+12. Display help and exit: `rpx -h -q`
+13. One-shot calculator: `rpx -r "1 1 +" -q`
+14. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
 
 ## Error Handling
 - Unknown operators or functions result in an error message
