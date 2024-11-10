@@ -33,8 +33,8 @@ void load_initscript(char const *path) {
   strncpy(fname, configpath, configpathlen);
 
   while ((entry = readdir(dp)) != nullptr) {
-    if (entry->d_name[0] == '.') // ignore hidden files
-      continue;
+    if (entry->d_name[0] == '.')
+      continue; // ignore hidden files
     strncpy(fname + configpathlen, entry->d_name, BUFSIZE - configpathlen);
     FILE *fp dropfile = fopen(fname, "r");
     reader_loop(fp);

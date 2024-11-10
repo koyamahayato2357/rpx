@@ -89,28 +89,26 @@ void elem_div(elem_t *lhs, elem_t *rhs) {
 }
 
 void elem_pow(elem_t *lhs, elem_t *rhs) {
-  if (lhs->rtype == RTYPE_COMP)
+  if (lhs->rtype == RTYPE_COMP) {
     lhs->elem.comp = pow(lhs->elem.comp, rhs->elem.comp);
-  else {
-    if (creal(rhs->elem.comp) < 0) {
-      matrix_t temp;
-
-      temp = inverse_matrix(&lhs->elem.matr);
-
-      free(lhs->elem.matr.matrix);
-      lhs->elem.matr = temp;
-      rhs->elem.comp *= -1;
-    }
-
-    unsigned long long n = (unsigned long long)creal(rhs->elem.comp);
-    matrix_t A = new_matrix(lhs->elem.matr.rows, lhs->elem.matr.cols);
-    memcpy(A.matrix, lhs->elem.matr.matrix,
-           A.rows * A.cols * sizeof(double complex));
-    for (size_t i = 1; i < n; i++) {
-      matrix_t temp = mmul(&lhs->elem.matr, &A);
-      free(lhs->elem.matr.matrix);
-      lhs->elem.matr = temp;
-    }
-    free(A.matrix);
+    return;
   }
+
+  if (creal(rhs->elem.comp) < 0) {
+    matrix_t temp = inverse_matrix(&lhs->elem.matr);
+    free(lhs->elem.matr.matrix);
+    lhs->elem.matr = temp;
+    rhs->elem.comp *= -1;
+  }
+
+  unsigned long long n = (unsigned long long)creal(rhs->elem.comp);
+  matrix_t A = new_matrix(lhs->elem.matr.rows, lhs->elem.matr.cols);
+  memcpy(A.matrix, lhs->elem.matr.matrix,
+         A.rows * A.cols * sizeof(double complex));
+  for (size_t i = 1; i < n; i++) {
+    matrix_t temp = mmul(&lhs->elem.matr, &A);
+    free(lhs->elem.matr.matrix);
+    lhs->elem.matr = temp;
+  }
+  free(A.matrix);
 }

@@ -1,6 +1,5 @@
 #include "chore.h"
 #include "errcode.h"
-#include "exception.h"
 #include "exproriented.h"
 #include "testing.h"
 #include <ctype.h>

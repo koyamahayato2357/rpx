@@ -4,7 +4,7 @@ CFLAGS = -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall -Wextra -flto=f
 LDFLAGS = -lm -fuse-ld=lld
 OPTFLAGS = -O3 -ffast-math -fno-finite-math-only -DNDEBUG -Wl,--gc-sections -Wl,--icf=all -s
 TSTFLAGS = -DTEST_MODE -fsanitize=address -fcoverage-mapping -fprofile-instr-generate
-DEBUGFLAGS = -g -fsanitize=address -D_FORTIFY_SOURCE=2
+DEBUGFLAGS = -g3
 SRCDIR = src
 INCDIR = include
 TSTDIR = test
@@ -23,7 +23,7 @@ build:
 	$(CC) $(SRCDIR)/*.c $(CFLAGS) $(OPTFLAGS) $(LDFLAGS) -o $(OUTFILE)
 
 debug:
-	clang-18 -std=c23 $(SRCDIR)/*.c $(DEBUGFLAGS) $(LDFLAGS) -o $(OUTFILE)
+	clang-18 -std=c23 $(SRCDIR)/*.c -I$(INCDIR) $(DEBUGFLAGS) $(LDFLAGS) -o $(OUTFILE)
 	$(DB) $(OUTFILE)
 
 test:

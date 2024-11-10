@@ -1,5 +1,6 @@
 #pragma once
 #include "errcode.h"
+#include "exception.h"
 
 #define $break $(break)
 #define $continue $(continue)

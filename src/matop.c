@@ -2,9 +2,8 @@
 #include "arthfn.h"
 #include "chore.h"
 #include "errcode.h"
-#include "error.h"
 #include "exception.h"
-#include "testing.h"
+#include "gene.h"
 
 matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
@@ -58,7 +57,7 @@ matrix_t madd(matrix_t *lhs, matrix_t *rhs) {
  * @throws ERR_DIMENTION_MISMATCH
  */
 matrix_t msub(matrix_t *lhs, matrix_t *rhs) {
-  if (lhs->rows != rhs->rows || lhs->cols != rhs->cols)
+  if (!mcheckdim(lhs, rhs))
     throw(ERR_DIMENTION_MISMATCH);
 
   matrix_t result = new_matrix(lhs->rows, lhs->cols);
