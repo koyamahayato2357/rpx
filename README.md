@@ -113,6 +113,7 @@ RPX offers four modes of operation:
 - `-h`: Show help
 - `-r`: Evaluate following argument as expression
 - `-q`: Quit
+Arguments whose first letter is not '-' are interpreted as file name.
 
 ## Examples
 1. Basic arithmetic: `3 4 + 2 *` -> 14.000000
@@ -127,6 +128,7 @@ RPX offers four modes of operation:
 12. Display help and exit: `rpx -h -q`
 13. One-shot calculator: `rpx -r "1 1 +" -q`
 14. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
+15. Run script files: `rpx sample1.rpx sample2.rpx sample3.rpx`
 
 ## Error Handling
 - Unknown operators or functions result in an error message
