@@ -651,7 +651,7 @@ end:
     *rhs = *rsp;
   } else
     info_c.hist[info_c.histi++].elem.comp = rsp->elem.comp;
-
+  set_rtinfo('c', info_c);
   return *rsp;
 }
 
