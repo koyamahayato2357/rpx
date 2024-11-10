@@ -45,6 +45,7 @@ RPX offers four modes of operation:
 - Complex numbers: Use 'i' operator (e.g., `3m 4 i +` for -3+4i)
 - Polar coordinates: Use 'p' operator (e.g., `1(\P2/)p` for 1i)
 - Matrices: Use `[columns elements,]` format (e.g., `[2 1,2,3,4,]` for a 2x2 matrix)
+- Spaces are required only to delimit numbers (e.g., `5 3m4i+` for 5-3+4i)
 
 ## Operators and Functions
 ### Basic Arithmetic
@@ -83,19 +84,19 @@ RPX offers four modes of operation:
 
 ### Variable Operations
 - `$` followed by a letter (a-z) for variable operations
-- `u` to update variables (e.g., `3 5 + $x u`)
+- `u` to update variables (e.g., `3 5 + $x u` for $x=3+5)
 
 ### Random Number
-- `$R`: Random number (0 to 1 in real/complex mode)
+- `$R`: Random number (0 to 1)
 
 ### Function Operations
 - `!` followed by a letter (a-z) for function call
 
-### Builtin Operations
+### Builtin Operations (can be dangerous)
 - `@a`: Reference to previous result (ANS)
-- `@h`: Access to result history
+- `@h`: Access to result history (e.g., `5 @h` for 5 previous history)
 - `@p`: Duplicate the top stack value
-- `@s`: Access specific stack value
+- `@s`: Access specific stack value (e.g., `5 @h` for 5 previous stack value)
 
 ### Other
 - `( )`: Specify the valid range of the operator
