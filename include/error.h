@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef TEST_MODE
-void disperr(const char *, const char *, ...);
+void disperr(char const *, char const *, ...);
 #else
 #define disperr(a, b, ...)
 #endif

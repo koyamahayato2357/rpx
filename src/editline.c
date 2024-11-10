@@ -376,7 +376,7 @@ void insertc(char c, char **cur, char **len) {
  * @param[in] margin Number of characters can be added to the buffer
  * @throws ERR_BUFFER_DEPLETION
  */
-void inserts(int slen, const char *s, int curpos, char **cur, char **len,
+void inserts(int slen, char const *s, int curpos, char **cur, char **len,
              int margin) {
   if (slen > margin)
     throw(ERR_BUFFER_DEPLETION);

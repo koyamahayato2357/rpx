@@ -5,5 +5,5 @@
 
 void movecur(int, char *, char **, char *);
 void findmove(char, int, char *, char **, char *);
-void inserts(int, const char *, int, char **, char **, int);
+void inserts(int, char const *, int, char **, char **, int);
 bool editline(int, char *);

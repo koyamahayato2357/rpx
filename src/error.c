@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #ifndef TEST_MODE
-void disperr(const char *funcname, const char *errmsgfmt, ...) {
+void disperr(char const *funcname, char const *errmsgfmt, ...) {
   va_list ap;
   va_start(ap, errmsgfmt);
 

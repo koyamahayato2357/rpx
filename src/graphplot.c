@@ -29,7 +29,7 @@ bool ispointgraph(double y0, double y1, double y) {
          (y1 > y - pcfg.dy && y - pcfg.dy > y0);
 }
 
-static void drawaxisx(const double xn, const int dsplysz, const double dx) {
+static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   putchar('\t');
   putchar('+');
   for (int i = 0; i < dsplysz / FONTRATIO; i++)
@@ -59,10 +59,7 @@ void plotexpr(char *expr) {
       info.usrfn.argv[0] = x1;
       set_rtinfo('r', info);
       double y1 = eval_expr_real(expr).elem.real;
-      if (ispointgraph(y0, y1, y))
-        putchar('*');
-      else
-        putchar(' ');
+      putchar(ispointgraph(y0, y1, y) ? '*' : ' ');
       y0 = y1;
     }
 
@@ -92,10 +89,7 @@ void plotexpr_implicit(char *expr) {
       info.usrfn.argv[1] = y1;
       set_rtinfo('r', info);
       double res1 = eval_expr_real(expr).elem.real;
-      if (ispointgraph(res0, res1, 0))
-        putchar('*');
-      else
-        putchar(' ');
+      putchar(ispointgraph(res0, res1, 0) ? '*' : ' ');
       res0 = res1;
     }
 
@@ -106,8 +100,8 @@ void plotexpr_implicit(char *expr) {
   drawaxisx(pcfg.xn, pcfg.dispx, pcfg.dx);
 }
 
-void set_pbounds(const double xx, const double xn, const double yx,
-                 const double yn) {
+void set_pbounds(double const xx, double const xn, double const yx,
+                 double const yn) {
   plotcfg_t pcfg = get_plotcfg();
 
   pcfg.xx = xx;
