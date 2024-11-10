@@ -114,12 +114,12 @@ void proc_alist(int argc, char **argv) {
       case 'q':
         exit(0);
       default:
-        panic(ERR_UNKNOWN_OPTION, "%c", argv[i][1]);
+        panic(ERR_UNKNOWN_OPTION, "%c ", argv[i][1]);
       }
 
     // interpreted as a file name
     FILE *fp dropfile =
-        fopen(argv[i], "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s", argv[i]);
+        fopen(argv[i], "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s ", argv[i]);
     reader_loop(fp);
   }
 }
