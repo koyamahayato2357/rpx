@@ -23,9 +23,8 @@ RPX (RPN eXtended) is a powerful calculator that uses Reverse Polish Notation (R
 
 ## Basic Concepts
 - Uses Reverse Polish Notation (RPN)
-- Operands are pushed onto a stack
-- Operators act on the stack elements
 - No parallel processing
+- No GUI
 - Low keystrokes
 
 ## Modes of Operation
