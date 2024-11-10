@@ -21,6 +21,7 @@ void optexpr(char *arg_expr) {
   char *expr = arg_expr;
   rm_exprspcs(&expr);
 
+  // orz
   //   expr = arg_expr;
   //   char *grpbgn = expr;
   //   bool isvar1st = false;

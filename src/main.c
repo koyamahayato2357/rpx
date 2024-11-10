@@ -88,12 +88,12 @@ void startup_message() {
 void proc_input(char *input_buf) {
   if (*input_buf == ':') {
     ignerr proc_cmds(input_buf + 1);
-  } else {
-    elem_t res;
-    try res = eval_f(input_buf);
-    catchany capture(errcode) disperr(__FUNCTION__, codetomsg(errcode));
-    print_elem(res);
+    return;
   }
+  elem_t res;
+  try res = eval_f(input_buf);
+  catchany capture(e) disperr(__FUNCTION__, codetomsg(e));
+  print_elem(res);
 }
 
 /**
@@ -199,22 +199,19 @@ elem_t eval_expr_real(char *expr) {
       for (; rbp + 1 < rsp && eq(*(rsp - 1), *rsp); rsp--)
         ;
       *(rbp + 1) = rbp + 1 == rsp;
-      if (rbp + 1 != rsp)
-        rsp = rbp + 1;
+      rsp = rbp + 1;
       break;
     case '<':
       for (; rbp + 1 < rsp && *(rsp - 1) < *rsp; rsp--)
         ;
       *(rbp + 1) = rbp + 1 == rsp;
-      if (rbp + 1 != rsp)
-        rsp = rbp + 1;
+      rsp = rbp + 1;
       break;
     case '>':
       for (; rbp + 1 < rsp && *(rsp - 1) > *rsp; rsp--)
         ;
       *(rbp + 1) = rbp + 1 == rsp;
-      if (rbp + 1 != rsp)
-        rsp = rbp + 1;
+      rsp = rbp + 1;
       break;
 
     case 'a':
@@ -371,13 +368,12 @@ elem_t eval_expr_real(char *expr) {
         }
       } else if (isdigit(*expr)) {
         *++rsp = info.usrfn.argv[*expr - '0' - 1];
-      } else {
+      } else
         switch (*expr) {
         case 'R': // random number between 0 and 1
           *++rsp = rand() / (double)RAND_MAX;
           break;
         }
-      }
       break;
 
     case '!': // function operation
@@ -462,7 +458,6 @@ elem_t eval_expr_complex(char *expr) {
       for (; *expr != ']';) {
         *curelem++ = eval_expr_complex(expr).elem.comp;
         skip_untilcomma(&expr);
-        skipspcs(&expr);
       }
       val.rows = (curelem - val.matrix) / val.cols;
       rsp->elem.matr = val;
@@ -505,9 +500,8 @@ elem_t eval_expr_complex(char *expr) {
         elem_pow((rbp + 1), rsp--);
       break;
     case '~': {
-      matrix temp = rsp->elem.matr.matrix;
+      matrix temp drop = rsp->elem.matr.matrix;
       ignerr rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
-      free(temp);
     } break;
     case '=':
       for (; rbp + 1 < rsp && elem_eq(rsp - 1, rsp); rsp--)
