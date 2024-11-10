@@ -5,7 +5,7 @@
 #define $continue $(continue)
 #define $return(...) $(return __VA_ARGS__)
 #define $unreachable $(unreachable)
-#define $panic(e) $(panic(e))
+#define $panic(e, ...) $(panic(e __VA_OPT__(, ) __VA_ARGS__))
 #define $throw(e) $(throw(e))
 
 // use in pointer calculation
@@ -13,7 +13,7 @@
 #define p$continue p$(continue)
 #define p$return(a) p$(return a)
 #define p$unreachable p$(unreachable)
-#define p$panic(e) p$(panic(e))
+#define p$panic(e, ...) p$(panic(e __VA_OPT__(, ) __VA_ARGS__))
 #define p$throw(e) p$(throw(e))
 
 #define $if(cond) (cond) ?

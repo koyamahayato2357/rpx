@@ -15,12 +15,13 @@ typedef enum {
   ERR_CHAR_NOT_FOUND = -10,
   ERR_ALLOCATION_FAILURE = -11,
   ERR_UNKNOWN_COMMAND = -12,
-  ERR_REACHED_UNREACHABLE = -13
+  ERR_REACHED_UNREACHABLE = -13,
+  ERR_UNKNOWN_OPTION = -14
 } errcode_t;
 
-#define panic(e)                                                               \
+#define panic(e, ...)                                                          \
   do {                                                                         \
-    printf("Panicked at " HERE " ");                                           \
+    printf("Panicked at " HERE " " __VA_ARGS__);                               \
     puts(codetomsg(e));                                                        \
     exit(e);                                                                   \
   } while (0)

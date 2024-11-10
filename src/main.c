@@ -21,6 +21,7 @@
 #include "errcode.h"
 #include "error.h"
 #include "exception.h"
+#include "exproriented.h"
 #include "graphplot.h"
 #include "matop.h"
 #include "optexpr.h"
@@ -113,18 +114,13 @@ void proc_alist(int argc, char **argv) {
       case 'q':
         exit(0);
       default:
-        disperr(__FUNCTION__, "Unknown option: %c", argv[i][1]);
-        exit(1);
+        panic(ERR_UNKNOWN_OPTION, "%c", argv[i][1]);
       }
 
     // interpreted as a file name
-    FILE *fp = fopen(argv[i], "r");
-    if (fp == nullptr) {
-      disperr(__FUNCTION__, "File not found: %s", argv[i]);
-      exit(1);
-    }
+    FILE *fp dropfile =
+        fopen(argv[i], "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s", argv[i]);
     reader_loop(fp);
-    fclose(fp);
   }
 }
 
