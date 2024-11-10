@@ -82,3 +82,10 @@ void *ealloc(int sz) { return malloc(sz) ?: p$throw(ERR_ALLOCATION_FAILURE); }
  * @param[in] sz Memory size
  */
 void *palloc(int sz) { return malloc(sz) ?: p$panic(ERR_ALLOCATION_FAILURE); }
+
+/**
+ * @brief free for drop
+ */
+void free_cl(void *p) { free(*(void **)p); }
+void fclose_cl(FILE **fp) { fclose(*fp); }
+void closedir_cl(DIR **fp) { closedir(*fp); }

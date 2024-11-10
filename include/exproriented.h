@@ -3,7 +3,7 @@
 
 #define $break $(break)
 #define $continue $(continue)
-#define $return(a) $(return a)
+#define $return(...) $(return __VA_ARGS__)
 #define $unreachable $(unreachable)
 #define $panic(e) $(panic(e))
 #define $throw(e) $(throw(e))

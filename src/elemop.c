@@ -2,8 +2,8 @@
 #include "chore.h"
 #include "errcode.h"
 #include "exception.h"
+#include "gene.h"
 #include "matop.h"
-#include "testing.h"
 #include <stdbit.h>
 #include <string.h>
 #include <tgmath.h>
