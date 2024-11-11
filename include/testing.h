@@ -32,32 +32,30 @@ extern int TESTING_H_fail;
   }                                                                            \
   void TESTING_H_tester##name(jmp_buf jb [[maybe_unused]])
 #define EXPAND(x) x
-#define GET_MACRO(_1, _2, _3, _4, _5, NAME, ...) NAME
-#define FOR_EACH_1(macro, a) macro(a)
-#define FOR_EACH_2(macro, a, ...)                                              \
-  macro(a), EXPAND(FOR_EACH_1(macro, __VA_ARGS__))
-#define FOR_EACH_3(macro, a, ...)                                              \
-  macro(a), EXPAND(FOR_EACH_2(macro, __VA_ARGS__))
-#define FOR_EACH_4(macro, a, ...)                                              \
-  macro(a), EXPAND(FOR_EACH_3(macro, __VA_ARGS__))
-#define FOR_EACH(...)                                                          \
-  GET_MACRO(__VA_ARGS__, FOR_EACH_4, FOR_EACH_3, FOR_EACH_2, FOR_EACH_1)       \
-  (__VA_ARGS__)
-#define MEMBER_NAME(member) t->member
-#define MEMBER_NAMES(...) FOR_EACH(MEMBER_NAME, __VA_ARGS__)
-#define test_table(name, fn, datast, cases, ...)                               \
-  typedef datast ds##name;                                                     \
+#define ARGS_0
+#define ARGS_1 t->a1
+#define ARGS_2 t->a1, t->a2
+#define ARGS_3 t->a1, t->a2, t->a3
+#define ARGS_4 t->a1, t->a2, t->a3, t->a4
+#define ARGS_5 t->a1, t->a2, t->a3, t->a4, t->a5
+#define ARGS_6 t->a1, t->a2, t->a3, t->a4, t->a5, t->a6
+#define ARGS_7 t->a1, t->a2, t->a3, t->a4, t->a5, t->a6, t->a7
+#define ARGS_N(n) ARGS_##n
+#define test_table(name, fn, fargc, ...)                                       \
+  _Static_assert(fargc <= 7, "too many argument");                             \
+  typedef typeof(__VA_ARGS__[0]) ds##name;                                     \
   __attribute__((constructor)) void TESTING_H_tabletester##name() {            \
-    ds##name *data = cases;                                                    \
+    ds##name *data = (ds##name *)__VA_ARGS__;                                  \
     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8;                           \
     printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "...");                   \
     fflush(stdout);                                                            \
     for (int TESTING_H_i = 0; TESTING_H_i < TESTING_H_COL; TESTING_H_i++)      \
       putchar('\t');                                                           \
     printf(ESTHN "=> ");                                                       \
-    for (size_t i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {            \
+    for (size_t i = 0; i < sizeof(__VA_ARGS__) / sizeof(__VA_ARGS__[0]);       \
+         i++) {                                                                \
       ds##name *t = &data[i];                                                  \
-      auto result = fn(MEMBER_NAMES(__VA_ARGS__));                             \
+      auto result = fn(ARGS_N(fargc));                                         \
       if (result != t->result) {                                               \
         printf("Record %zu expected ", i);                                     \
         printany(t->result);                                                   \
@@ -93,6 +91,18 @@ extern int TESTING_H_fail;
     printany(lhs);                                                             \
     printf(" found ");                                                         \
     printany(rhs);                                                             \
+    printf(" at " HERE);                                                       \
+    longjmp(jb, 1);                                                            \
+  } while (0)
+
+#define expectneq(lhs, rhs)                                                    \
+  do {                                                                         \
+    if (!eq((typeof(rhs))lhs, rhs))                                            \
+      break;                                                                   \
+    printf("Not expected equal ");                                             \
+    printf(#lhs);                                                              \
+    printf(" and ");                                                           \
+    printf(#rhs);                                                              \
     printf(" at " HERE);                                                       \
     longjmp(jb, 1);                                                            \
   } while (0)
