@@ -34,12 +34,12 @@ extern int TESTING_H_fail;
 #define EXPAND(x) x
 #define ARGS_0
 #define ARGS_1 t->a1
-#define ARGS_2 t->a1, t->a2
-#define ARGS_3 t->a1, t->a2, t->a3
-#define ARGS_4 t->a1, t->a2, t->a3, t->a4
-#define ARGS_5 t->a1, t->a2, t->a3, t->a4, t->a5
-#define ARGS_6 t->a1, t->a2, t->a3, t->a4, t->a5, t->a6
-#define ARGS_7 t->a1, t->a2, t->a3, t->a4, t->a5, t->a6, t->a7
+#define ARGS_2 ARGS_1, t->a2
+#define ARGS_3 ARGS_2, t->a3
+#define ARGS_4 ARGS_3, t->a4
+#define ARGS_5 ARGS_4, t->a5
+#define ARGS_6 ARGS_5, t->a6
+#define ARGS_7 ARGS_6, t->a7
 #define ARGS_N(n) ARGS_##n
 #define test_table(name, fn, fargc, ...)                                       \
   _Static_assert(fargc <= 7, "too many argument");                             \
