@@ -25,6 +25,7 @@
 #include "graphplot.h"
 #include "matop.h"
 #include "optexpr.h"
+#include "phyconst.h"
 #include "rc.h"
 #include "sysconf.h"
 #include "testing.h"
@@ -346,14 +347,7 @@ elem_t eval_expr_real(char *expr) {
       break;
 
     case '\\': // special variables and CONSTANTS
-      switch (*++expr) {
-      case 'E': // Euler's
-        *++rsp = M_E;
-        break;
-      case 'P': // pie
-        *++rsp = M_PI;
-        break;
-      }
+      *++rsp = get_const(*++expr);
       break;
 
     case '$': // variable oparation
@@ -600,14 +594,7 @@ elem_t eval_expr_complex(char *expr) {
       break;
 
     case '\\': // special variables and CONSTANTS
-      switch (*++expr) {
-      case 'E': // Euler's
-        (++rsp)->elem.comp = M_E;
-        break;
-      case 'P': // pie
-        (++rsp)->elem.comp = M_PI;
-        break;
-      }
+      (++rsp)->elem.comp = get_const(*++expr);
       break;
 
     case '$': { // variable oparation
