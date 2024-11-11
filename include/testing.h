@@ -42,7 +42,7 @@ extern int TESTING_H_fail;
 #define ARGS_N(n) ARGS_##n
 #define test_table(name, fn, fargc, ...)                                       \
   _Static_assert(fargc <= 7, "too many argument");                             \
-  typedef typeof(__VA_ARGS__[0]) ds##name;                                     \
+  typedef typeof(*__VA_ARGS__) ds##name;                                       \
   __attribute__((constructor)) void TESTING_H_tabletester##name() {            \
     ds##name *data = (ds##name *)__VA_ARGS__;                                  \
     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8;                           \
@@ -51,8 +51,7 @@ extern int TESTING_H_fail;
     for (int TESTING_H_i = 0; TESTING_H_i < TESTING_H_COL; TESTING_H_i++)      \
       putchar('\t');                                                           \
     printf(ESTHN "=> ");                                                       \
-    for (size_t i = 0; i < sizeof(__VA_ARGS__) / sizeof(__VA_ARGS__[0]);       \
-         i++) {                                                                \
+    for (size_t i = 0; i < sizeof(__VA_ARGS__) / sizeof(*__VA_ARGS__); i++) {  \
       ds##name *t = &data[i];                                                  \
       auto result = fn(ARGS_N(fargc));                                         \
       if (!eq(result, t->result)) {                                            \
