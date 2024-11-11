@@ -31,7 +31,6 @@ extern int TESTING_H_fail;
     TESTING_H_success++;                                                       \
   }                                                                            \
   void TESTING_H_tester##name(jmp_buf jb [[maybe_unused]])
-#define EXPAND(x) x
 #define ARGS_0
 #define ARGS_1 t->a1
 #define ARGS_2 ARGS_1, t->a2
