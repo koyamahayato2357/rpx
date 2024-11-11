@@ -56,7 +56,7 @@ extern int TESTING_H_fail;
          i++) {                                                                \
       ds##name *t = &data[i];                                                  \
       auto result = fn(ARGS_N(fargc));                                         \
-      if (result != t->result) {                                               \
+      if (!eq(result, t->result)) {                                            \
         printf("Record %zu expected ", i);                                     \
         printany(t->result);                                                   \
         printf(" found ");                                                     \
