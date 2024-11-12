@@ -63,12 +63,9 @@ double get_const(char idx) {
   return consts[idx - 'A' - (idx >= 'a') * ('a' - 'Z' - 1)];
 }
 
-test_table(get_const, get_const, 1,
-           (struct {
-             char a1;
-             double result;
-           }[]){{'c', 299792458},
-                {'P', M_PI},
-                {'R', 8.3144626181532},
-                {'E', M_E},
-                {'k', 1.380649e-23}})
+test_table(get_const, get_const, (double, char),
+           {{299792458, 'c'},
+            {M_PI, 'P'},
+            {8.3144626181532, 'R'},
+            {M_E, 'E'},
+            {1.380649e-23, 'k'}})
