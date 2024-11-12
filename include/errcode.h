@@ -1,4 +1,5 @@
 #pragma once
+#include <stdlib.h>
 
 typedef enum {
   ERR_RETRY = 1,
