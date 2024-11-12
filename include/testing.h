@@ -53,14 +53,13 @@ extern int TESTING_H_fail;
     printf(ESTHN "=> ");                                                       \
     for (size_t i = 0; i < sizeof(__VA_ARGS__) / sizeof(*__VA_ARGS__); i++) {  \
       ds##name *t = &data[i];                                                  \
-      auto result = fn(ARGS_N(fargc));                                         \
+      typeof(t->result) result = fn(ARGS_N(fargc));                            \
       if (!eq(result, t->result)) {                                            \
-        printf("Record %zu expected ", i);                                     \
+        printf("Test case %zu failed: expected ", i);                          \
         printany(t->result);                                                   \
         printf(" found ");                                                     \
         printany(result);                                                      \
-        putchar(' ');                                                          \
-        puts(ESCRED "[NG]" ESCLR);                                             \
+        puts(" " ESCRED "[NG]" ESCLR);                                         \
         TESTING_H_fail++;                                                      \
         return;                                                                \
       }                                                                        \
