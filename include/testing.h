@@ -36,7 +36,6 @@ extern int TESTING_H_fail;
 #define ARGS_2 ARGS_1, t->a2
 #define ARGS_3 ARGS_2, t->a3
 #define ARGS_4 ARGS_3, t->a4
-#define ARGS_N(n) ARGS_##n
 #define GET_ARG_1(_1, ...) _1
 #define GET_ARG_2(_1, _2, ...) _2
 #define GET_ARG_3(_1, _2, _3, ...) _3
