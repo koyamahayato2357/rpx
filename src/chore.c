@@ -31,16 +31,15 @@ bool isint(double arg) {
   return expo > 1023 && !((mantissa << (expo - 1023)) & 0x000fffffffffffff);
 }
 
-test(isint) {
-  expect(isint(5.0));
-  expect(isint(3.000));
-  expect(isint(100));
-  expect(isint(-10));
-  expect(!isint(5.6));
-  expect(!isint(10.9));
-  expect(!isint(99.99999));
-  expect(!isint(-10.4));
-}
+test_table(isint, isint, (bool, double),
+           {{true, 5.0},
+            {true, 3.000},
+            {true, 100},
+            {true, -10},
+            {false, 5.6},
+            {false, 10.9},
+            {false, 99.99999},
+            {false, -10.4}});
 
 /**
  * @brief Skip pointer to first non-white-space char

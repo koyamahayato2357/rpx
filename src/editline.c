@@ -4,6 +4,7 @@
 #include "chore.h"
 #include "errcode.h"
 #include "exception.h"
+#include "exproriented.h"
 #include "main.h"
 #include "testing.h"
 #include <ctype.h>
@@ -30,17 +31,9 @@ void disable_rawmode(struct termios *orig_termios) {
  * @param[in] buf Start of line
  * @param[in/out] cur Cursor pointer
  * @param[in] len End of line
- * @throws ERR_CURSOR_OUT_OF_RANGE
  */
 void movecur(int n, char *buf, char **cur, char *len) {
-  if (n > len - *cur) {
-    *cur = len;
-    throw(ERR_CURSOR_OUT_OF_RANGE);
-  } else if (-n > *cur - buf) {
-    *cur = buf;
-    throw(ERR_CURSOR_OUT_OF_RANGE);
-  } else
-    *cur += n;
+  *cur = $if(n > len - *cur) len $else $if(-n > *cur - buf) buf $else * cur + n;
 }
 
 test(movecur) {
@@ -85,7 +78,7 @@ test(deletes) {
   char *end = str + 7;
 
   deletes(begin, end, &len);
-  expect(!strcmp(str, "text."));
+  expecteq("text.", (char *)str);
 }
 
 /**
@@ -134,14 +127,7 @@ char *findc_r(char c, char *buf, char *cur) {
  * @throws ERR_CHAR_NOT_FOUND
  */
 void findmove(char c, int dir, char *buf, char **cur, char *len) {
-  char *newcur;
-
-  if (dir > 0)
-    newcur = findc(c, *cur, len);
-  else
-    newcur = findc_r(c, buf, *cur);
-
-  *cur = newcur;
+  *cur = $if(dir > 0) findc(c, *cur, len) $else findc_r(c, buf, *cur);
 }
 
 test(findmove) {
@@ -294,10 +280,10 @@ void handle_es(char key, char *buf, char **cur, char **len) {
     (*len)--;
     break;
   case 'C':
-    ignerr movecur(1, buf, cur, *len);
+    movecur(1, buf, cur, *len);
     break;
   case 'D':
-    ignerr movecur(-1, buf, cur, *len);
+    movecur(-1, buf, cur, *len);
     break;
   case 'F':
     *cur = *len;
@@ -395,14 +381,14 @@ test(inserts) {
 
   char str1[] = "new string";
   inserts(strlen(str1), str1, 0, &cur, &len, buf + 256 - len);
-  expect(!strcmp(buf, "sample textnew string."));
-  expect(!strcmp(cur, "new string."));
+  expecteq("sample textnew string.", (char *)buf);
+  expecteq("new string.", cur);
   expecteq(strlen(buf), (size_t)(len - buf));
 
   char str2[] = "extra string";
   inserts(strlen(str2), str2, 6, &cur, &len, buf + 256 - len);
-  expect(!strcmp(buf, "sample textextra stringnew string."));
-  expect(!strcmp(cur, "stringnew string."));
+  expecteq("sample textextra stringnew string.", (char *)buf);
+  expecteq("stringnew string.", cur);
   expecteq(strlen(buf), (size_t)(len - buf));
 }
 
@@ -458,10 +444,10 @@ auto handle_printable = insbind;
 void nrmbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
   case 'h':
-    ignerr movecur(-1, buf, cur, *len);
+    movecur(-1, buf, cur, *len);
     break;
   case 'l':
-    ignerr movecur(1, buf, cur, *len);
+    movecur(1, buf, cur, *len);
     break;
   case 'w':
     fwdw(cur, *len);

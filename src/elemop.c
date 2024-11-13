@@ -47,12 +47,9 @@ void elem_sub(elem_t *lhs, elem_t *rhs) {
     throw(ERR_TYPE_MISMATCH);
 
   if (rhs->rtype == RTYPE_MATR) {
-    matrix temp = lhs->elem.matr.matrix;
-
+    matrix temp drop = lhs->elem.matr.matrix;
     lhs->elem.matr = msub(&lhs->elem.matr, &rhs->elem.matr);
-
-    nfree(temp);
-    nfree(rhs->elem.matr.matrix);
+    free(rhs->elem.matr.matrix);
     return;
   }
 
@@ -61,12 +58,9 @@ void elem_sub(elem_t *lhs, elem_t *rhs) {
 
 rtype_t elem_mul(elem_t *lhs, elem_t *rhs) {
   if (lhs->rtype == RTYPE_MATR && rhs->rtype == RTYPE_MATR) {
-    matrix temp = lhs->elem.matr.matrix;
-
+    matrix temp drop = lhs->elem.matr.matrix;
     lhs->elem.matr = mmul(&lhs->elem.matr, &rhs->elem.matr);
-
-    nfree(temp);
-    nfree(rhs->elem.matr.matrix);
+    free(rhs->elem.matr.matrix);
     return RTYPE_MATR;
   } else if (lhs->rtype == RTYPE_MATR && rhs->rtype == RTYPE_COMP) {
     smul(&lhs->elem.matr, rhs->elem.comp);

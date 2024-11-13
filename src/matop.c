@@ -13,12 +13,9 @@ matrix_t NAN_matrix(size_t rows, size_t cols) {
 }
 
 matrix_t new_matrix(size_t rows, size_t cols) {
-  matrix mat;
-
-  mat = palloc(rows * cols * sizeof(double complex));
-
-  matrix_t result = {.rows = rows, .cols = cols, .matrix = mat};
-  return result;
+  return (matrix_t){.rows = rows,
+                    .cols = cols,
+                    .matrix = palloc(rows * cols * sizeof(double complex))};
 }
 
 bool mcheckdim(matrix_t *lhs, matrix_t *rhs) {
@@ -37,36 +34,23 @@ bool meq(matrix_t *lhs, matrix_t *rhs) {
 }
 
 /**
- * @brief Addition between matrices
+ * @brief Add/Sub between matrices
  * @throws ERR_DIMENTION_MISMATCH
  */
-matrix_t madd(matrix_t *lhs, matrix_t *rhs) {
-  if (!mcheckdim(lhs, rhs))
-    throw(ERR_DIMENTION_MISMATCH);
-
-  matrix_t result = new_matrix(lhs->rows, lhs->cols);
-
-  for (size_t i = 0; i < lhs->rows * lhs->cols; i++)
-    result.matrix[i] = lhs->matrix[i] + rhs->matrix[i];
-
-  return result;
-}
-
-/**
- * @brief Sub between matrices
- * @throws ERR_DIMENTION_MISMATCH
- */
-matrix_t msub(matrix_t *lhs, matrix_t *rhs) {
-  if (!mcheckdim(lhs, rhs))
-    throw(ERR_DIMENTION_MISMATCH);
-
-  matrix_t result = new_matrix(lhs->rows, lhs->cols);
-
-  for (size_t i = 0; i < lhs->rows * lhs->cols; i++)
-    result.matrix[i] = lhs->matrix[i] - rhs->matrix[i];
-
-  return result;
-}
+#define MOPS(name, op)                                                      \
+  matrix_t m##name(matrix_t *lhs, matrix_t *rhs) {                             \
+    if (!mcheckdim(lhs, rhs))                                                  \
+      throw(ERR_DIMENTION_MISMATCH);                                           \
+                                                                               \
+    matrix_t result = new_matrix(lhs->rows, lhs->cols);                        \
+                                                                               \
+    for (size_t i = 0; i < lhs->rows * lhs->cols; i++)                         \
+      result.matrix[i] = lhs->matrix[i] op rhs->matrix[i];                     \
+                                                                               \
+    return result;                                                             \
+  }
+MOPS(add, +)
+MOPS(sub, -)
 
 /**
  * @brief Mul between matrices
