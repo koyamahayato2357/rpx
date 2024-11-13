@@ -6,18 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-void set_configpath(char const *specified_configpath, int len,
-                    char *configpath) {
-  char const *configdir = specified_configpath ?: "/.config/rpx/";
+void set_configpath(char const *specified_cfgpath, int len, char *cfgpath) {
+  char const *configdir = specified_cfgpath ?: "/.config/rpx/";
   char const *homedir = getenv("HOME") ?: ".";
-  int const cdlen = strlen(configdir);
   int const hdlen = strlen(homedir);
 
-  if (hdlen + cdlen + 1 >= len)
-    return;
-
-  memcpy(configpath, homedir, hdlen);
-  memcpy(configpath + hdlen, configdir, cdlen + 1);
+  strncpy(cfgpath, homedir, len);
+  strncpy(cfgpath + hdlen, configdir, len - hdlen);
 }
 
 void load_initscript(char const *path) {
