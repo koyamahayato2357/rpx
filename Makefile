@@ -3,7 +3,7 @@ DB = lldb
 CFLAGS = -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall -Wextra -flto=full -fwhole-program-vtables -fforce-emit-vtables -fvirtual-function-elimination -ffunction-sections -fdata-sections -faddrsig -march=native -mtune=native
 LDFLAGS = -lm -fuse-ld=lld
 OPTFLAGS = -O3 -ffast-math -fno-finite-math-only -DNDEBUG -Wl,--gc-sections -Wl,--icf=all -s
-TSTFLAGS = -DTEST_MODE -fsanitize=address -fcoverage-mapping -fprofile-instr-generate
+TSTFLAGS = -DTEST_MODE -g
 DEBUGFLAGS = -g3
 SRCDIR = src
 INCDIR = include
