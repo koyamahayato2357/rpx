@@ -181,18 +181,20 @@ elem_t eval_expr_real(char const *expr) {
       OP_CASE_EQA(=)
       OP_CASE_EQA(>)
       OP_CASE_EQA(<)
+      OVERWRITE_REAL('A', fabs)
+      OVERWRITE_REAL('g', tgamma)
+      OVERWRITE_REAL('s', sin)
+      OVERWRITE_REAL('c', cos)
+      OVERWRITE_REAL('t', tan)
+      OVERWRITE_REAL('C', ceil)
+      OVERWRITE_REAL('F', floor)
+      OVERWRITE_REAL('R', round)
 
     case 'a':
       switch (*++expr) {
-      case 's': // asin
-        *rsp = asin(*rsp);
-        break;
-      case 'c': // acos
-        *rsp = acos(*rsp);
-        break;
-      case 't': // atan
-        *rsp = atan(*rsp);
-        break;
+        OVERWRITE_REAL('s', asin)
+        OVERWRITE_REAL('c', acos)
+        OVERWRITE_REAL('t', atan)
       case 'v': { // average
         int n = rsp - rbp;
         for (; rsp > rbp + 1; *(rbp + 1) += *rsp--)
@@ -206,15 +208,9 @@ elem_t eval_expr_real(char const *expr) {
 
     case 'h':
       switch (*++expr) {
-      case 's': // sinh
-        *rsp = sinh(*rsp);
-        break;
-      case 'c': // cosh
-        *rsp = cosh(*rsp);
-        break;
-      case 't': // tanh
-        *rsp = tanh(*rsp);
-        break;
+        OVERWRITE_REAL('s', sinh)
+        OVERWRITE_REAL('c', cosh)
+        OVERWRITE_REAL('t', tanh)
       default:
         throw(ERR_UNKNOWN_FN);
       }
@@ -222,15 +218,9 @@ elem_t eval_expr_real(char const *expr) {
 
     case 'l':
       switch (*++expr) {
-      case '2': // log2
-        *rsp = log2(*rsp);
-        break;
-      case 'c': // common log
-        *rsp = log10(*rsp);
-        break;
-      case 'e': // natural log
-        *rsp = log(*rsp);
-        break;
+        OVERWRITE_REAL('2', log2)
+        OVERWRITE_REAL('c', log10)
+        OVERWRITE_REAL('e', log)
       default:
         throw(ERR_UNKNOWN_FN);
       }
@@ -261,30 +251,6 @@ elem_t eval_expr_real(char const *expr) {
       double x = *rsp--;
       *rsp = log(*rsp) / log(x);
     } break;
-    case 'A':
-      *rsp = fabs(*rsp);
-      break;
-    case 'g':
-      *rsp = tgamma(*rsp);
-      break;
-    case 's': // sin
-      *rsp = sin(*rsp);
-      break;
-    case 'c': // cos
-      *rsp = cos(*rsp);
-      break;
-    case 't': // tan
-      *rsp = tan(*rsp);
-      break;
-    case 'C':
-      *rsp = ceil(*rsp);
-      break;
-    case 'F':
-      *rsp = floor(*rsp);
-      break;
-    case 'R':
-      *rsp = round(*rsp);
-      break;
     case 'r': // to radian
       *rsp *= M_PI / 180;
       break;
@@ -445,6 +411,10 @@ elem_t eval_expr_complex(char const *expr) {
       OP_CASE_ELEM(mul, *)
       OP_CASE_ELEM(div, /)
       OP_CASE_ELEM(pow, ^)
+      OVERWRITE_COMP('A', fabs)
+      OVERWRITE_COMP('s', sin)
+      OVERWRITE_COMP('c', cos)
+      OVERWRITE_COMP('t', tan)
 
     case '~': {
       matrix temp drop = rsp->elem.matr.matrix;
@@ -460,15 +430,9 @@ elem_t eval_expr_complex(char const *expr) {
 
     case 'a':
       switch (*++expr) {
-      case 's': // asin
-        rsp->elem.comp = asin(rsp->elem.comp);
-        break;
-      case 'c': // acos
-        rsp->elem.comp = acos(rsp->elem.comp);
-        break;
-      case 't': // atan
-        rsp->elem.comp = atan(rsp->elem.comp);
-        break;
+        OVERWRITE_COMP('s', asin)
+        OVERWRITE_COMP('c', acos)
+        OVERWRITE_COMP('t', atan)
       default:
         throw(ERR_UNKNOWN_FN);
       }
@@ -476,15 +440,9 @@ elem_t eval_expr_complex(char const *expr) {
 
     case 'h':
       switch (*++expr) {
-      case 's': // sinh
-        rsp->elem.comp = sinh(rsp->elem.comp);
-        break;
-      case 'c': // cosh
-        rsp->elem.comp = cosh(rsp->elem.comp);
-        break;
-      case 't': // tanh
-        rsp->elem.comp = tanh(rsp->elem.comp);
-        break;
+        OVERWRITE_COMP('s', sinh)
+        OVERWRITE_COMP('c', cosh)
+        OVERWRITE_COMP('t', tanh)
       default:
         throw(ERR_UNKNOWN_FN);
       }
@@ -498,18 +456,6 @@ elem_t eval_expr_complex(char const *expr) {
       double x = (rsp--)->elem.comp;
       rsp->elem.comp = log(rsp->elem.comp) / log(x);
     } break;
-    case 'A':
-      rsp->elem.comp = fabs(rsp->elem.comp);
-      break;
-    case 's': // sin
-      rsp->elem.comp = sin(rsp->elem.comp);
-      break;
-    case 'c': // cos
-      rsp->elem.comp = cos(rsp->elem.comp);
-      break;
-    case 't': // tan
-      rsp->elem.comp = tan(rsp->elem.comp);
-      break;
     case 'r': // to radian
       rsp->elem.comp *= M_PI / 180;
       break;

@@ -25,6 +25,12 @@
     while (rbp + 1 < rsp)                                                      \
       elem_##tok(rbp + 1, rsp--);                                              \
     break;
+#define OVERWRITE(cas, var, fn)                                                \
+  case cas:                                                                    \
+    var = fn(var);                                                             \
+    break;
+#define OVERWRITE_REAL(cas, fn) OVERWRITE(cas, *rsp, fn)
+#define OVERWRITE_COMP(cas, fn) OVERWRITE(cas, rsp->elem.comp, fn)
 
 #include "matop.h"
 
