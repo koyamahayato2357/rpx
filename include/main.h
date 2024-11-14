@@ -4,24 +4,24 @@
 #include <stdio.h>
 #define BUFSIZE 256
 #define OP_CASE_ARTHM(op)                                                      \
-  case #op[0]:                                                                 \
+  case *#op:                                                                   \
     for (; rbp + 1 < rsp; rbp[1] op## = *rsp--)                                \
       ;                                                                        \
     break;
 #define OP_CASE_ADV(op, f)                                                     \
-  case #op[0]:                                                                 \
+  case *#op:                                                                   \
     for (; rbp + 1 < rsp; rbp[1] = f(rbp[1], *rsp--))                          \
       ;                                                                        \
     break;
 #define OP_CASE_EQA(op)                                                        \
-  case #op[0]:                                                                 \
+  case *#op:                                                                   \
     for (; rbp + 1 < rsp && *(rsp - 1) op## = *rsp; rsp--)                     \
       ;                                                                        \
     *(rbp + 1) = rbp + 1 == rsp;                                               \
     rsp = rbp + 1;                                                             \
     break;
 #define OP_CASE_ELEM(tok, op)                                                  \
-  case #op[0]:                                                                 \
+  case *#op:                                                                   \
     while (rbp + 1 < rsp)                                                      \
       elem_##tok(rbp + 1, rsp--);                                              \
     break;
