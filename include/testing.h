@@ -41,7 +41,6 @@ extern int TESTING_H_fail;
 #define GET_ARG_3(_1, _2, _3, ...) _3
 #define GET_ARG_4(_1, _2, _3, _4, ...) _4
 #define GET_ARG_5(_1, _2, _3, _4, _5, ...) _5
-#define GET_ARG_N(n, ...) GET_ARG_##n(__VA_ARGS__)
 #define MEM_DEF_1(_1) _1 a0;
 #define MEM_DEF_2(_1, _2) MEM_DEF_1(_1) _2 a1;
 #define MEM_DEF_3(_1, _2, _3) MEM_DEF_2(_1, _2) _3 a2;
