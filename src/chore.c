@@ -44,7 +44,7 @@ test_table(isint, isint, (bool, double),
 /**
  * @brief Skip pointer to first non-white-space char
  */
-void skipspcs(char **str) {
+void skipspcs(char const **str) {
   for (; isspace(**str); (*str)++)
     ;
 }
@@ -53,7 +53,7 @@ void skipspcs(char **str) {
  * @brief Skip pointer to the char following the comma
  * @param[in/out] s String pointer
  */
-void skip_untilcomma(char **s) {
+void skip_untilcomma(char const **s) {
   for (; **s != ',' && **s != '\0'; (*s)++)
     ;
   *s += **s == ',';

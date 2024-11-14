@@ -15,7 +15,7 @@ typedef struct {
   double dy; // increase in y per square
 
   char prevexpr[BUFSIZE];
-  void (*plotexpr)(char *);
+  void (*plotexpr)(char const *);
 } plotcfg_t /* plot config */;
 
 typedef struct {

@@ -167,7 +167,7 @@ void fwdw(char **cur, char *len) {
        (*cur)++)
     ;
 
-  skipspcs(cur);
+  skipspcs((char const **)cur);
 }
 
 test(fwdw) {
@@ -220,7 +220,7 @@ test(bwdw) {
 void fwdW(char *buf, char **cur, char *len) {
   try findmove(' ', 1, buf, cur, len);
   catchany *cur = len;
-  skipspcs(cur);
+  skipspcs((char const **)cur);
 }
 
 test(fwdW) {

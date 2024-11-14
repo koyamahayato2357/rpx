@@ -148,14 +148,14 @@ void reader_loop_stdin() {
  * @return Expression evaluation result
  * @throws ERR_UNKNOWN_FN ERR_UNKNOWN_CHAR
  */
-elem_t eval_expr_real(char *expr) {
+elem_t eval_expr_real(char const *expr) {
   double operand_stack[BUFSIZE] = {0};
   double *rsp = operand_stack, *rbp = operand_stack;
   rtinfo_t info = get_rtinfo('r');
 
   for (;; expr++) {
     if (isdigit(*expr))
-      *++rsp = strtod(expr, &expr);
+      *++rsp = strtod(expr, (char **)&expr);
     if (isspace(*expr))
       continue;
     if (*expr == '\0')
@@ -267,9 +267,6 @@ elem_t eval_expr_real(char *expr) {
     case 'g':
       *rsp = tgamma(*rsp);
       break;
-    case 'm': // negative sign
-      *rsp *= -1;
-      break;
     case 's': // sin
       *rsp = sin(*rsp);
       break;
@@ -293,6 +290,9 @@ elem_t eval_expr_real(char *expr) {
       break;
     case 'd': // to degree
       *rsp *= 180 / M_PI;
+      break;
+    case 'm': // negative sign
+      *rsp *= -1;
       break;
 
     case '@': // system functions
@@ -400,7 +400,7 @@ test(eval_expr_real) {
  * @param expr String of expression
  * @return elem_t Expression evaluation result
  */
-elem_t eval_expr_complex(char *expr) {
+elem_t eval_expr_complex(char const *expr) {
   elem_t operand_stack[BUFSIZE] = {0};
   elem_t *rsp = operand_stack, *rbp = operand_stack;
   rtinfo_t info_c = get_rtinfo('c');
@@ -408,14 +408,14 @@ elem_t eval_expr_complex(char *expr) {
   for (;; expr++) {
     if (isdigit(*expr)) {
       (++rsp)->rtype = RTYPE_COMP;
-      rsp->elem.comp = strtod(expr, &expr);
+      rsp->elem.comp = strtod(expr, (char **)&expr);
     }
     if (*expr == '[') {
       (++rsp)->rtype = RTYPE_MATR;
       expr++;
       matrix_t val = {.matrix = palloc(MAT_INITSIZE * sizeof(double complex))};
       matrix curelem = val.matrix;
-      val.cols = strtol(expr, &expr, 10);
+      val.cols = strtol(expr, (char **)&expr, 10);
       for (; *expr != ']';) {
         *curelem++ = eval_expr_complex(expr).elem.comp;
         skip_untilcomma(&expr);
@@ -501,12 +501,6 @@ elem_t eval_expr_complex(char *expr) {
     case 'A':
       rsp->elem.comp = fabs(rsp->elem.comp);
       break;
-    case 'm': // negative sign
-      rsp->elem.comp *= -1;
-      break;
-    case 'i': // imaginary number
-      rsp->elem.comp *= 1i;
-      break;
     case 's': // sin
       rsp->elem.comp = sin(rsp->elem.comp);
       break;
@@ -521,6 +515,12 @@ elem_t eval_expr_complex(char *expr) {
       break;
     case 'd': // to degree
       rsp->elem.comp *= 180 / M_PI;
+      break;
+    case 'm': // negative sign
+      rsp->elem.comp *= -1;
+      break;
+    case 'i': // imaginary number
+      rsp->elem.comp *= 1i;
       break;
     case 'p': { // polar
       double complex theta = (rsp--)->elem.comp;
@@ -775,7 +775,7 @@ void proc_cmds(char *cmd) {
   } break;
   case 'p':
     cmd++;
-    skipspcs(&cmd);
+    skipspcs((char const **)&cmd);
     if (*cmd == '\0') {
       plotexpr(pcfg.prevexpr);
       break;

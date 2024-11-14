@@ -1,6 +1,5 @@
 #include "optexpr.h"
 #include "chore.h"
-#include "main.h"
 #include <ctype.h>
 #include <string.h>
 
@@ -9,7 +8,7 @@ void rm_exprspcs(char **expr) {
   for (; **expr != '\0'; (*expr)++) {
     if (isspace(**expr)) { // skip unnecessary spaces
       char *dstptr = *expr;
-      skipspcs(expr);
+      skipspcs((char const **)expr);
       dstptr += dstptr != start && isdigit(*(dstptr - 1)) && isdigit(**expr);
       memmove(dstptr, *expr, strlen(*expr) + 1);
       *expr = dstptr;
