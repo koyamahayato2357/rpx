@@ -37,6 +37,7 @@ void EXCEPTION_H_cl(int **g);
       panic(e);                                                                \
     longjmp(EXCEPTION_H_jb[EXCEPTION_H_nest - 1], e);                          \
   } while (0)
+#undef unreachable // undef default unreachable
 #define unreachable                                                            \
   longjmp(EXCEPTION_H_jb[EXCEPTION_H_nest - 1], ERR_REACHED_UNREACHABLE)
 #define ignerr try
