@@ -3,6 +3,28 @@
 #pragma once
 #include <stdio.h>
 #define BUFSIZE 256
+#define OP_CASE_ARTHM(op)                                                      \
+  case #op[0]:                                                                 \
+    for (; rbp + 1 < rsp; rbp[1] op## = *rsp--)                                \
+      ;                                                                        \
+    break;
+#define OP_CASE_ADV(op, f)                                                     \
+  case #op[0]:                                                                 \
+    for (; rbp + 1 < rsp; rbp[1] = f(rbp[1], *rsp--))                          \
+      ;                                                                        \
+    break;
+#define OP_CASE_EQA(op)                                                        \
+  case #op[0]:                                                                 \
+    for (; rbp + 1 < rsp && *(rsp - 1) op## = *rsp; rsp--)                     \
+      ;                                                                        \
+    *(rbp + 1) = rbp + 1 == rsp;                                               \
+    rsp = rbp + 1;                                                             \
+    break;
+#define OP_CASE_ELEM(tok, op)                                                  \
+  case #op[0]:                                                                 \
+    while (rbp + 1 < rsp)                                                      \
+      elem_##tok(rbp + 1, rsp--);                                              \
+    break;
 
 #include "matop.h"
 
@@ -29,8 +51,8 @@ typedef struct {
 void proc_alist(int, char **);
 void reader_loop(FILE *);
 void reader_loop_stdin();
-elem_t eval_expr_real(char *);
-elem_t eval_expr_complex(char *);
+elem_t eval_expr_real(char const *);
+elem_t eval_expr_complex(char const *);
 void print_elem(elem_t);
 void print_real(double);
 void print_complex(double complex);

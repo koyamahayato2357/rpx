@@ -172,48 +172,15 @@ elem_t eval_expr_real(char *expr) {
       *rsp = *(rsp + 1);
       break;
 
-    case '+':
-      for (; rbp + 1 < rsp; *(rbp + 1) += *rsp--)
-        ;
-      break;
-    case '-':
-      for (; rbp + 1 < rsp; *(rbp + 1) -= *rsp--)
-        ;
-      break;
-    case '*':
-      for (; rbp + 1 < rsp; *(rbp + 1) *= *rsp--)
-        ;
-      break;
-    case '/':
-      for (; rbp + 1 < rsp; *(rbp + 1) /= *rsp--)
-        ;
-      break;
-    case '%':
-      for (; rbp + 1 < rsp; *(rbp + 1) = fmod(*(rbp + 1), *rsp--))
-        ;
-      break;
-    case '^':
-      for (; rbp + 1 < rsp; *(rbp + 1) = pow(*(rbp + 1), *rsp--))
-        ;
-      break;
-    case '=':
-      for (; rbp + 1 < rsp && eq(*(rsp - 1), *rsp); rsp--)
-        ;
-      *(rbp + 1) = rbp + 1 == rsp;
-      rsp = rbp + 1;
-      break;
-    case '<':
-      for (; rbp + 1 < rsp && *(rsp - 1) < *rsp; rsp--)
-        ;
-      *(rbp + 1) = rbp + 1 == rsp;
-      rsp = rbp + 1;
-      break;
-    case '>':
-      for (; rbp + 1 < rsp && *(rsp - 1) > *rsp; rsp--)
-        ;
-      *(rbp + 1) = rbp + 1 == rsp;
-      rsp = rbp + 1;
-      break;
+      OP_CASE_ARTHM(+)
+      OP_CASE_ARTHM(-)
+      OP_CASE_ARTHM(*)
+      OP_CASE_ARTHM(/)
+      OP_CASE_ADV(%, fmod)
+      OP_CASE_ADV(^, pow)
+      OP_CASE_EQA(=)
+      OP_CASE_EQA(>)
+      OP_CASE_EQA(<)
 
     case 'a':
       switch (*++expr) {
@@ -473,26 +440,12 @@ elem_t eval_expr_complex(char *expr) {
       *rsp = *(rsp + 1);
       break;
 
-    case '+':
-      while (rbp + 1 < rsp)
-        elem_add((rbp + 1), rsp--);
-      break;
-    case '-':
-      while (rbp + 1 < rsp)
-        elem_sub((rbp + 1), rsp--);
-      break;
-    case '*':
-      while (rbp + 1 < rsp)
-        elem_mul((rbp + 1), rsp--);
-      break;
-    case '/':
-      while (rbp + 1 < rsp)
-        elem_div((rbp + 1), rsp--);
-      break;
-    case '^':
-      while (rbp + 1 < rsp)
-        elem_pow((rbp + 1), rsp--);
-      break;
+      OP_CASE_ELEM(add, +)
+      OP_CASE_ELEM(sub, -)
+      OP_CASE_ELEM(mul, *)
+      OP_CASE_ELEM(div, /)
+      OP_CASE_ELEM(pow, ^)
+
     case '~': {
       matrix temp drop = rsp->elem.matr.matrix;
       ignerr rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
