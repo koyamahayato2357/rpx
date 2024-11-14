@@ -4,6 +4,7 @@ CFLAGS = -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall -Wextra -flto=f
 LDFLAGS = -lm -fuse-ld=lld
 OPTFLAGS = -O3 -ffast-math -fno-finite-math-only -DNDEBUG -Wl,--gc-sections -Wl,--icf=all -s
 TSTFLAGS = -DTEST_MODE -fsanitize=address -g
+BNCHFLAGS = -DBENCHMARK_MODE
 DEBUGFLAGS = -g3
 SRCDIR = src
 INCDIR = include
@@ -28,6 +29,10 @@ debug:
 
 test:
 	clang-18 -std=c23 $(SRCDIR)/*.c $(CFLAGS) $(TSTFLAGS) $(LDFLAGS) -I$(INCDIR) -o $(OUTFILE)
+	./$(OUTFILE)
+
+bench:
+	$(CC) $(SRCDIR)/*.c $(CFLAGS) $(BNCHFLAGS) $(OPTFLAGS) $(LDFLAGS) -o $(OUTFILE)
 	./$(OUTFILE)
 
 asm: $(SRCS)
