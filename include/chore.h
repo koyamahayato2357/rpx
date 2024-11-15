@@ -1,6 +1,6 @@
 #pragma once
-#include <stdio.h>
 #include <dirent.h>
+#include <stdio.h>
 
 #define TOSTR(x) #x
 #define TO2STR(x) TOSTR(x)
@@ -16,8 +16,8 @@
 
 struct winsize get_winsz();
 bool isint(double) __attribute__((const));
-void skipspcs(char **);
-void skip_untilcomma(char **);
+void skipspcs(char const **);
+void skip_untilcomma(char const **);
 void nfree(void *);
 void *ealloc(int);
 void *palloc(int);

@@ -3,7 +3,7 @@
 #include "chore.h"
 #include "testing.h"
 
-double consts[ALPN * 2] = {
+double const consts[ALPN * 2] = {
     0,               // A
     0,               // B
     0,               // C

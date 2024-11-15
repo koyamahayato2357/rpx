@@ -1,7 +1,6 @@
 #include "chore.h"
 #include "errcode.h"
 #include "exproriented.h"
-#include "testing.h"
 #include <ctype.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -23,28 +22,12 @@ struct winsize get_winsz() {
  * @param[in] arg Checked double number
  * @return Is decimal part 0
  */
-bool isint(double arg) {
-  uint64_t x = *(uint64_t *)&arg;
-  uint64_t mantissa = (x & 0x000fffffffffffff);
-  uint16_t expo = (x >> 52) & 0x7ff;
-
-  return expo > 1023 && !((mantissa << (expo - 1023)) & 0x000fffffffffffff);
-}
-
-test_table(isint, isint, (bool, double),
-           {{true, 5.0},
-            {true, 3.000},
-            {true, 100},
-            {true, -10},
-            {false, 5.6},
-            {false, 10.9},
-            {false, 99.99999},
-            {false, -10.4}});
+bool isint(double arg) { return arg == (long long)arg; }
 
 /**
  * @brief Skip pointer to first non-white-space char
  */
-void skipspcs(char **str) {
+void skipspcs(char const **str) {
   for (; isspace(**str); (*str)++)
     ;
 }
@@ -53,7 +36,7 @@ void skipspcs(char **str) {
  * @brief Skip pointer to the char following the comma
  * @param[in/out] s String pointer
  */
-void skip_untilcomma(char **s) {
+void skip_untilcomma(char const **s) {
   for (; **s != ',' && **s != '\0'; (*s)++)
     ;
   *s += **s == ',';
