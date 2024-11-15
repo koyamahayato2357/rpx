@@ -1,4 +1,5 @@
 #pragma once
+#include "main.h"
 
-// double temp_eval(char *);
+elem_t eval_expr_real(char const *);
 

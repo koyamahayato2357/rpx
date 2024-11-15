@@ -57,7 +57,6 @@ typedef struct {
 void proc_alist(int, char **);
 void reader_loop(FILE *);
 void reader_loop_stdin();
-elem_t eval_expr_real(char const *);
 elem_t eval_expr_complex(char const *);
 void print_elem(elem_t);
 void print_real(double);

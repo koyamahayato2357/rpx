@@ -10,10 +10,10 @@
 #include <math.h>
 #include <stdlib.h>
 
-char *expr;
+char const *expr;
 rtinfo_t info;
 
-double temp_eval(char *);
+elem_t eval_expr_real(char const *);
 
 #define PUSH(x) *++*rsp = x
 #define POP *(*rsp)--
@@ -100,12 +100,13 @@ void rpx_const(double **rbp [[maybe_unused]], double **rsp) {
 }
 
 void rpx_parse(double **rbp [[maybe_unused]], double **rsp) {
-  PUSH(strtod(expr, &expr));
+  PUSH(strtod(expr, (char **)&expr));
   expr--;
 }
 
 void rpx_space(double **rbp [[maybe_unused]], double **rsp [[maybe_unused]]) {
   skipspcs((char const **)&expr);
+  expr--;
 }
 
 #define CASE_TWOARGFN(c, f)                                                    \
@@ -145,16 +146,16 @@ void rpx_callfn(double **rbp [[maybe_unused]], double **rsp) {
   *rsp -= info.usrfn.argc[fname] - 1;
   memcpy(info.usrfn.argv, *rsp, info.usrfn.argc[fname] * sizeof(double));
   set_rtinfo('r', info);
-  **rsp = temp_eval(info.usrfn.expr[fname]);
+  **rsp = eval_expr_real(info.usrfn.expr[fname]).elem.real;
 }
 
 void rpx_vars(double **rbp [[maybe_unused]], double **rsp) {
   if (islower(*++expr)) {
     char vname = *expr++;
     skipspcs((char const **)&expr);
-    if (*expr == 'u')
+    if (*expr == 'u') {
       info.usrvar[vname - 'a'].elem.real = **rsp;
-    else {
+    } else {
       *++*rsp = info.usrvar[vname - 'a'].elem.real;
       expr--;
     }
@@ -169,16 +170,16 @@ void rpx_vars(double **rbp [[maybe_unused]], double **rsp) {
 }
 
 void rpx_end(double **rbp [[maybe_unused]], double **rsp [[maybe_unused]]) {
-  expr[1] = '\0';
+  ((char *)expr)[1] = '\0';
 }
 
 void rpx_grpbgn(double **rbp, double **rsp) {
-  *++*rsp = (double)(long)*rbp;
+  *++*(long **)rsp = (long)*rbp;
   *rbp = *rsp;
 }
 
 void rpx_grpend(double **rbp, double **rsp) {
-  *rbp = (double *)(long)**rbp;
+  *rbp = **(double ***)rbp;
   (*rsp)--;
   **rsp = *(*rsp + 1);
 }
@@ -281,7 +282,12 @@ void (*eval_table['~' - ' ' + 1])(double **, double **) = {
     nullptr,    // '~'
 };
 
-double temp_eval(char *a_expr) {
+/**
+ * @brief Evaluate real number expression
+ * @param expr String of expression
+ * @return Expression evaluation result
+ */
+elem_t eval_expr_real(char const *a_expr) {
   expr = a_expr;
   info = get_rtinfo('r');
   double stack[100];
@@ -291,34 +297,34 @@ double temp_eval(char *a_expr) {
   if (info.histi < BUFSIZE)
     info.hist[info.histi++].elem.real = *rsp;
   set_rtinfo('r', info);
-  return *rsp;
+  return (elem_t){.rtype = RTYPE_REAL, .elem = {.real = *rsp}};
 }
 
-bench(temp_eval) {
-  temp_eval("1 2 3 4 5 +");
-  temp_eval("4 5 ^");
-  temp_eval("1s2^(1c2^)+");
-  temp_eval("  5    6    10    - 5  /");
+bench(eval_expr_real) {
+  eval_expr_real("1 2 3 4 5 +");
+  eval_expr_real("4 5 ^");
+  eval_expr_real("1s2^(1c2^)+");
+  eval_expr_real("  5    6    10    - 5  /");
 
   // Test ANS functionality
-  temp_eval("5");
-  temp_eval("@a");
+  eval_expr_real("5");
+  eval_expr_real("@a");
 
   // Test variable operations
-  temp_eval("10 $x u");
-  temp_eval("$x 2 *");
+  eval_expr_real("10 $x u");
+  eval_expr_real("$x 2 *");
 
   // Test more complex expressions
-  temp_eval("2 3 ^ (4 5 *) + (6 7 /) -");
+  eval_expr_real("2 3 ^ (4 5 *) + (6 7 /) -");
 
   // Test trigonometric functions
-  temp_eval("\\P 2 / s");
-  temp_eval("\\P 4 / c");
+  eval_expr_real("\\P 2 / s");
+  eval_expr_real("\\P 4 / c");
 
   // Test logarithmic functions
-  temp_eval("2 l2");
-  temp_eval("100 lc");
+  eval_expr_real("2 l2");
+  eval_expr_real("100 lc");
 
   // Test error handling
-  temp_eval("1 0 /");
+  eval_expr_real("1 0 /");
 }
