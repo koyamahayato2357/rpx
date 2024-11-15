@@ -15,7 +15,7 @@ rtinfo_t info;
 
 elem_t eval_expr_real(char const *);
 
-#define PUSH(x) *++*rsp = x
+#define PUSH *++*rsp
 #define POP *(*rsp)--
 
 #define DEF_ARTHMS(tok, op)                                                    \
@@ -36,7 +36,7 @@ void rpx_pow(double **rbp, double **rsp) {
 }
 
 void rpx_eql(double **rbp, double **rsp) {
-  for (; *rbp + 1 < *rsp && eq(*(*rsp - 1), **rsp); (*rsp)--)
+  for (; *rbp + 1 < *rsp && eq(*(*rsp - 1), **rsp); POP)
     ;
   *(*rbp + 1) = *rbp + 1 == *rsp;
   *rsp = *rbp + 1;
@@ -44,7 +44,7 @@ void rpx_eql(double **rbp, double **rsp) {
 
 #define DEF_LTGT(tok, op)                                                      \
   void rpx_##tok(double **rbp, double **rsp) {                                 \
-    for (; *rbp + 1 < *rsp && *(*rsp - 1) op * *rsp; (*rsp)--)                 \
+    for (; *rbp + 1 < *rsp && *(*rsp - 1) op * *rsp; POP)                      \
       ;                                                                        \
     *(*rbp + 1) = *rbp + 1 == *rsp;                                            \
     *rsp = *rbp + 1;                                                           \
@@ -91,16 +91,16 @@ DEF_TWOCHARFN(arc, 's', asin, 'c', acos, 't', atan)
 DEF_TWOCHARFN(log, '2', log2, 'c', log10, 'e', log)
 
 void rpx_logbase(double **rbp [[maybe_unused]], double **rsp) {
-  double x = *(*rsp)--;
+  double x = POP;
   **rsp = log(**rsp) / log(x);
 }
 
 void rpx_const(double **rbp [[maybe_unused]], double **rsp) {
-  PUSH(get_const(*++expr));
+  PUSH = get_const(*++expr);
 }
 
 void rpx_parse(double **rbp [[maybe_unused]], double **rsp) {
-  PUSH(strtod(expr, (char **)&expr));
+  PUSH = strtod(expr, (char **)&expr);
   expr--;
 }
 
@@ -126,14 +126,14 @@ void rpx_intfn(double **rbp [[maybe_unused]], double **rsp) {
 void rpx_sysfn(double **rbp [[maybe_unused]], double **rsp) {
   switch (*++expr) {
   case 'a': // ANS
-    *++*rsp = info.hist[info.histi - 1].elem.real;
+    PUSH = info.hist[info.histi - 1].elem.real;
     break;
   case 'h':
     **rsp = info.hist[info.histi - (int)**rsp - 1].elem.real;
     break;
   case 'p':
+    PUSH = **rsp;
     (*rsp)++;
-    **rsp = *(*rsp - 1);
     break;
   case 's':
     **rsp = *(*rsp - (int)**rsp - 1);
@@ -156,15 +156,15 @@ void rpx_vars(double **rbp [[maybe_unused]], double **rsp) {
     if (*expr == 'u') {
       info.usrvar[vname - 'a'].elem.real = **rsp;
     } else {
-      *++*rsp = info.usrvar[vname - 'a'].elem.real;
+      PUSH = info.usrvar[vname - 'a'].elem.real;
       expr--;
     }
   } else if (isdigit(*expr))
-    *++*rsp = info.usrfn.argv[*expr - '0' - 1];
+    PUSH = info.usrfn.argv[*expr - '0' - 1];
   else
     switch (*expr) {
     case 'R':
-      *++*rsp = rand() / (double)RAND_MAX;
+      PUSH = rand() / (double)RAND_MAX;
       break;
     }
 }
