@@ -12,49 +12,48 @@
 
 char const *expr;
 rtinfo_t info;
+double *rbp, *rsp;
 
 elem_t eval_expr_real(char const *);
 
-#define PUSH *++*rsp
-#define POP *(*rsp)--
+#define PUSH *++rsp
+#define POP *rsp--
 
 #define DEF_ARTHMS(tok, op)                                                    \
-  void rpx_##tok(double **rbp, double **rsp) {                                 \
-    for (; *rbp + 1 < *rsp; *(*rbp + 1) op## = POP)                            \
+  void rpx_##tok() {                                                           \
+    for (; rbp + 1 < rsp; rbp[1] op## = POP)                                   \
       ;                                                                        \
   }
 APPLY_ARTHM(DEF_ARTHMS)
 
-void rpx_mod(double **rbp, double **rsp) {
-  for (; *rbp + 1 < *rsp; *(*rbp + 1) = fmod(*(*rbp + 1), POP))
+void rpx_mod() {
+  for (; rbp + 1 < rsp; rbp[1] = fmod(rbp[1], POP))
     ;
 }
 
-void rpx_pow(double **rbp, double **rsp) {
-  for (; *rbp + 1 < *rsp; *(*rbp + 1) = pow(*(*rbp + 1), POP))
+void rpx_pow() {
+  for (; rbp + 1 < rsp; rbp[1] = pow(rbp[1], POP))
     ;
 }
 
-void rpx_eql(double **rbp, double **rsp) {
-  for (; *rbp + 1 < *rsp && eq(*(*rsp - 1), **rsp); POP)
+void rpx_eql() {
+  for (; rbp + 1 < rsp && eq(rsp[-1], *rsp); POP)
     ;
-  *(*rbp + 1) = *rbp + 1 == *rsp;
-  *rsp = *rbp + 1;
+  rbp[1] = rbp + 1 == rsp;
+  rsp = rbp + 1;
 }
 
 #define DEF_LTGT(tok, op)                                                      \
-  void rpx_##tok(double **rbp, double **rsp) {                                 \
-    for (; *rbp + 1 < *rsp && *(*rsp - 1) op * *rsp; POP)                      \
+  void rpx_##tok() {                                                           \
+    for (; rbp + 1 < rsp && rsp[-1] op * rsp; POP)                             \
       ;                                                                        \
-    *(*rbp + 1) = *rbp + 1 == *rsp;                                            \
-    *rsp = *rbp + 1;                                                           \
+    rbp[1] = rbp + 1 == rsp;                                                   \
+    rsp = rbp + 1;                                                             \
   }
 APPLY_LTGT(DEF_LTGT)
 
 #define DEF_ONEARGFN(f)                                                        \
-  void rpx_##f(double **rbp [[maybe_unused]], double **rsp) {                  \
-    **rsp = f(**rsp);                                                          \
-  }
+  void rpx_##f() { *rsp = f(*rsp); }
 DEF_ONEARGFN(sin)
 DEF_ONEARGFN(cos)
 DEF_ONEARGFN(tan)
@@ -65,24 +64,22 @@ DEF_ONEARGFN(floor)
 DEF_ONEARGFN(round)
 
 #define DEF_MULTI(name, factor)                                                \
-  void rpx_##name(double **rbp [[maybe_unused]], double **rsp) {               \
-    **rsp *= factor;                                                           \
-  }
+  void rpx_##name() { *rsp *= factor; }
 DEF_MULTI(nagate, -1)
 DEF_MULTI(torad, M_PI / 180)
 DEF_MULTI(todeg, 180 / M_PI)
 
 #define DEF_TWOCHARFN(name, c1, f1, c2, f2, c3, f3)                            \
-  void rpx_##name(double **rbp [[maybe_unused]], double **rsp) {               \
+  void rpx_##name() {                                                          \
     switch (*++expr) {                                                         \
     case c1:                                                                   \
-      **rsp = f1(**rsp);                                                       \
+      *rsp = f1(*rsp);                                                         \
       break;                                                                   \
     case c2:                                                                   \
-      **rsp = f2(**rsp);                                                       \
+      *rsp = f2(*rsp);                                                         \
       break;                                                                   \
     case c3:                                                                   \
-      **rsp = f3(**rsp);                                                       \
+      *rsp = f3(*rsp);                                                         \
       break;                                                                   \
     }                                                                          \
   }
@@ -90,31 +87,29 @@ DEF_TWOCHARFN(hyp, 's', sinh, 'c', cosh, 't', tanh)
 DEF_TWOCHARFN(arc, 's', asin, 'c', acos, 't', atan)
 DEF_TWOCHARFN(log, '2', log2, 'c', log10, 'e', log)
 
-void rpx_logbase(double **rbp [[maybe_unused]], double **rsp) {
+void rpx_logbase() {
   double x = POP;
-  **rsp = log(**rsp) / log(x);
+  *rsp = log(*rsp) / log(x);
 }
 
-void rpx_const(double **rbp [[maybe_unused]], double **rsp) {
-  PUSH = get_const(*++expr);
-}
+void rpx_const() { PUSH = get_const(*++expr); }
 
-void rpx_parse(double **rbp [[maybe_unused]], double **rsp) {
+void rpx_parse() {
   PUSH = strtod(expr, (char **)&expr);
   expr--;
 }
 
-void rpx_space(double **rbp [[maybe_unused]], double **rsp [[maybe_unused]]) {
+void rpx_space() {
   skipspcs((char const **)&expr);
   expr--;
 }
 
 #define CASE_TWOARGFN(c, f)                                                    \
   case c: {                                                                    \
-    double x = **rsp;                                                          \
-    **rsp = f(**rsp, x);                                                       \
+    double x = *rsp;                                                           \
+    *rsp = f(*rsp, x);                                                         \
   } break;
-void rpx_intfn(double **rbp [[maybe_unused]], double **rsp) {
+void rpx_intfn() {
   switch (*++expr) {
     CASE_TWOARGFN('g', gcd)
     CASE_TWOARGFN('l', lcm)
@@ -123,38 +118,38 @@ void rpx_intfn(double **rbp [[maybe_unused]], double **rsp) {
   }
 }
 
-void rpx_sysfn(double **rbp [[maybe_unused]], double **rsp) {
+void rpx_sysfn() {
   switch (*++expr) {
   case 'a': // ANS
     PUSH = info.hist[info.histi - 1].elem.real;
     break;
   case 'h':
-    **rsp = info.hist[info.histi - (int)**rsp - 1].elem.real;
+    *rsp = info.hist[info.histi - (int)*rsp - 1].elem.real;
     break;
   case 'p':
-    PUSH = **rsp;
-    (*rsp)++;
+    rsp[1] = *rsp;
+    rsp++;
     break;
   case 's':
-    **rsp = *(*rsp - (int)**rsp - 1);
+    *rsp = *(rsp - (int)*rsp - 1);
     break;
   }
 }
 
-void rpx_callfn(double **rbp [[maybe_unused]], double **rsp) {
+void rpx_callfn() {
   int fname = *expr - 'a';
   *rsp -= info.usrfn.argc[fname] - 1;
-  memcpy(info.usrfn.argv, *rsp, info.usrfn.argc[fname] * sizeof(double));
+  memcpy(info.usrfn.argv, rsp, info.usrfn.argc[fname] * sizeof(double));
   set_rtinfo('r', info);
-  **rsp = eval_expr_real(info.usrfn.expr[fname]).elem.real;
+  *rsp = eval_expr_real(info.usrfn.expr[fname]).elem.real;
 }
 
-void rpx_vars(double **rbp [[maybe_unused]], double **rsp) {
+void rpx_vars() {
   if (islower(*++expr)) {
     char vname = *expr++;
     skipspcs((char const **)&expr);
     if (*expr == 'u') {
-      info.usrvar[vname - 'a'].elem.real = **rsp;
+      info.usrvar[vname - 'a'].elem.real = *rsp;
     } else {
       PUSH = info.usrvar[vname - 'a'].elem.real;
       expr--;
@@ -169,22 +164,20 @@ void rpx_vars(double **rbp [[maybe_unused]], double **rsp) {
     }
 }
 
-void rpx_end(double **rbp [[maybe_unused]], double **rsp [[maybe_unused]]) {
-  ((char *)expr)[1] = '\0';
+void rpx_end() { ((char *)expr)[1] = '\0'; }
+
+void rpx_grpbgn() {
+  *++*(long **)&rsp = (long)rbp;
+  rbp = rsp;
 }
 
-void rpx_grpbgn(double **rbp, double **rsp) {
-  *++*(long **)rsp = (long)*rbp;
-  *rbp = *rsp;
+void rpx_grpend() {
+  rbp = *(double **)rbp;
+  rsp--;
+  *rsp = rsp[1];
 }
 
-void rpx_grpend(double **rbp, double **rsp) {
-  *rbp = **(double ***)rbp;
-  (*rsp)--;
-  **rsp = *(*rsp + 1);
-}
-
-void (*eval_table['~' - ' ' + 1])(double **, double **) = {
+void (*eval_table['~' - ' ' + 1])() = {
     rpx_space,  // ' '
     rpx_callfn, // '!'
     nullptr,    // '"'
@@ -291,9 +284,10 @@ elem_t eval_expr_real(char const *a_expr) {
   expr = a_expr;
   info = get_rtinfo('r');
   double stack[100];
-  double *rbp = stack, *rsp = stack;
+  rbp = stack;
+  rsp = stack;
   for (; *expr; expr++)
-    eval_table[*expr - ' '](&rbp, &rsp);
+    eval_table[*expr - ' ']();
   if (info.histi < BUFSIZE)
     info.hist[info.histi++].elem.real = *rsp;
   set_rtinfo('r', info);
