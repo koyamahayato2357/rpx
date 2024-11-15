@@ -1,12 +1,19 @@
 #include "evalfn.h"
 #include "arthfn.h"
+#include "benchmarking.h"
+#include "chore.h"
 #include "gene.h"
 #include "phyconst.h"
-#include "testing.h"
+#include "string.h"
+#include "sysconf.h"
 #include <ctype.h>
 #include <math.h>
+#include <stdlib.h>
 
 char *expr;
+rtinfo_t info;
+
+double temp_eval(char *);
 
 #define PUSH(x) *++*rsp = x
 #define POP *(*rsp)--
@@ -92,39 +99,124 @@ void rpx_const(double **rbp [[maybe_unused]], double **rsp) {
   PUSH(get_const(*++expr));
 }
 
-void (*eval_table['~' - ' '])(double **, double **) = {
-    nullptr,    // '!'
+void rpx_parse(double **rbp [[maybe_unused]], double **rsp) {
+  PUSH(strtod(expr, &expr));
+  expr--;
+}
+
+void rpx_space(double **rbp [[maybe_unused]], double **rsp [[maybe_unused]]) {
+  skipspcs((char const **)&expr);
+}
+
+#define CASE_TWOARGFN(c, f)                                                    \
+  case c: {                                                                    \
+    double x = **rsp;                                                          \
+    **rsp = f(**rsp, x);                                                       \
+  } break;
+void rpx_intfn(double **rbp [[maybe_unused]], double **rsp) {
+  switch (*++expr) {
+    CASE_TWOARGFN('g', gcd)
+    CASE_TWOARGFN('l', lcm)
+    CASE_TWOARGFN('p', permutation)
+    CASE_TWOARGFN('c', combination)
+  }
+}
+
+void rpx_sysfn(double **rbp [[maybe_unused]], double **rsp) {
+  switch (*++expr) {
+  case 'a': // ANS
+    *++*rsp = info.hist[info.histi - 1].elem.real;
+    break;
+  case 'h':
+    **rsp = info.hist[info.histi - (int)**rsp - 1].elem.real;
+    break;
+  case 'p':
+    (*rsp)++;
+    **rsp = *(*rsp - 1);
+    break;
+  case 's':
+    **rsp = *(*rsp - (int)**rsp - 1);
+    break;
+  }
+}
+
+void rpx_callfn(double **rbp [[maybe_unused]], double **rsp) {
+  int fname = *expr - 'a';
+  *rsp -= info.usrfn.argc[fname] - 1;
+  memcpy(info.usrfn.argv, *rsp, info.usrfn.argc[fname] * sizeof(double));
+  set_rtinfo('r', info);
+  **rsp = temp_eval(info.usrfn.expr[fname]);
+}
+
+void rpx_vars(double **rbp [[maybe_unused]], double **rsp) {
+  if (islower(*++expr)) {
+    char vname = *expr++;
+    skipspcs((char const **)&expr);
+    if (*expr == 'u')
+      info.usrvar[vname - 'a'].elem.real = **rsp;
+    else {
+      *++*rsp = info.usrvar[vname - 'a'].elem.real;
+      expr--;
+    }
+  } else if (isdigit(*expr))
+    *++*rsp = info.usrfn.argv[*expr - '0' - 1];
+  else
+    switch (*expr) {
+    case 'R':
+      *++*rsp = rand() / (double)RAND_MAX;
+      break;
+    }
+}
+
+void rpx_end(double **rbp [[maybe_unused]], double **rsp [[maybe_unused]]) {
+  expr[1] = '\0';
+}
+
+void rpx_grpbgn(double **rbp, double **rsp) {
+  *++*rsp = (double)(long)*rbp;
+  *rbp = *rsp;
+}
+
+void rpx_grpend(double **rbp, double **rsp) {
+  *rbp = (double *)(long)**rbp;
+  (*rsp)--;
+  **rsp = *(*rsp + 1);
+}
+
+void (*eval_table['~' - ' ' + 1])(double **, double **) = {
+    rpx_space,  // ' '
+    rpx_callfn, // '!'
     nullptr,    // '"'
     nullptr,    // '#'
-    nullptr,    // '$'
+    rpx_vars,   // '$'
     rpx_mod,    // '%'
     nullptr,    // '&'
     nullptr,    // '''
-    nullptr,    // '('
-    nullptr,    // ')'
+    rpx_grpbgn, // '('
+    rpx_grpend, // ')'
     rpx_mul,    // '*'
     rpx_add,    // '+'
-    nullptr,    // ','
+    rpx_end,    // ','
     rpx_sub,    // '-'
     nullptr,    // '.'
     rpx_div,    // '/'
-    nullptr,    // '0'
-    nullptr,    // '1'
-    nullptr,    // '2'
-    nullptr,    // '3'
-    nullptr,    // '4'
-    nullptr,    // '5'
-    nullptr,    // '6'
-    nullptr,    // '7'
-    nullptr,    // '8'
-    nullptr,    // '9'
+    rpx_parse,  // '0'
+    rpx_parse,  // '1'
+    rpx_parse,  // '2'
+    rpx_parse,  // '3'
+    rpx_parse,  // '4'
+    rpx_parse,  // '5'
+    rpx_parse,  // '6'
+    rpx_parse,  // '7'
+    rpx_parse,  // '8'
+    rpx_parse,  // '9'
     nullptr,    // ':'
-    nullptr,    // ';'
+    rpx_end,    // ';'
     rpx_lt,     // '<'
     rpx_eql,    // '='
     rpx_gt,     // '>'
     nullptr,    // '?'
-    nullptr,    // '@'
+    rpx_sysfn,  // '@'
     rpx_fabs,   // 'A'
     nullptr,    // 'B'
     rpx_ceil,   // 'C'
@@ -165,7 +257,7 @@ void (*eval_table['~' - ' '])(double **, double **) = {
     nullptr,    // 'f'
     rpx_tgamma, // 'g'
     rpx_hyp,    // 'h'
-    nullptr,    // 'i'
+    rpx_intfn,  // 'i'
     nullptr,    // 'j'
     nullptr,    // 'k'
     rpx_log,    // 'l'
@@ -191,23 +283,42 @@ void (*eval_table['~' - ' '])(double **, double **) = {
 
 double temp_eval(char *a_expr) {
   expr = a_expr;
+  info = get_rtinfo('r');
   double stack[100];
   double *rbp = stack, *rsp = stack;
-  for (; *expr; expr++) {
-    if (isdigit(*expr))
-      *++rsp = strtod(expr, &expr);
-    else if (isspace(*expr))
-      continue;
-    else
-      eval_table[*expr - ' ' - 1](&rbp, &rsp);
-  }
+  for (; *expr; expr++)
+    eval_table[*expr - ' '](&rbp, &rsp);
+  if (info.histi < BUFSIZE)
+    info.hist[info.histi++].elem.real = *rsp;
+  set_rtinfo('r', info);
   return *rsp;
 }
 
-test_table(temp, temp_eval, (double, char *),
-           {{2, "1 1 +"},
-            {5, "10 2 /"},
-            {15.0, "1 2 3 4 5 +"},
-            {1024.0, "4 5 ^"},
-            {1.0, "\\P 2 / s"},
-            {2.0, "100 lc"}})
+bench(temp_eval) {
+  temp_eval("1 2 3 4 5 +");
+  temp_eval("4 5 ^");
+  temp_eval("1s2^(1c2^)+");
+  temp_eval("  5    6    10    - 5  /");
+
+  // Test ANS functionality
+  temp_eval("5");
+  temp_eval("@a");
+
+  // Test variable operations
+  temp_eval("10 $x u");
+  temp_eval("$x 2 *");
+
+  // Test more complex expressions
+  temp_eval("2 3 ^ (4 5 *) + (6 7 /) -");
+
+  // Test trigonometric functions
+  temp_eval("\\P 2 / s");
+  temp_eval("\\P 4 / c");
+
+  // Test logarithmic functions
+  temp_eval("2 l2");
+  temp_eval("100 lc");
+
+  // Test error handling
+  temp_eval("1 0 /");
+}
