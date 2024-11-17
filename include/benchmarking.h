@@ -3,7 +3,7 @@
 #include <time.h>
 
 #ifdef BENCHMARK_MODE
-#define REPEAT 100
+#define REPEAT 10000
 #define bench(name)                                                            \
   void BENCHMARKING_H_bench##name();                                           \
   __attribute__((constructor)) void BENCHMARKING_H_benchrunner##name() {       \

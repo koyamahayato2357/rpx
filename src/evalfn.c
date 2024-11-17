@@ -3,6 +3,7 @@
 #include "benchmarking.h"
 #include "chore.h"
 #include "gene.h"
+#include "main.h"
 #include "phyconst.h"
 #include "string.h"
 #include "sysconf.h"
@@ -72,15 +73,9 @@ DEF_MULTI(todeg, 180 / M_PI)
 #define DEF_TWOCHARFN(name, c1, f1, c2, f2, c3, f3)                            \
   void rpx_##name() {                                                          \
     switch (*++expr) {                                                         \
-    case c1:                                                                   \
-      *rsp = f1(*rsp);                                                         \
-      break;                                                                   \
-    case c2:                                                                   \
-      *rsp = f2(*rsp);                                                         \
-      break;                                                                   \
-    case c3:                                                                   \
-      *rsp = f3(*rsp);                                                         \
-      break;                                                                   \
+      OVERWRITE_REAL(c1, f1)                                                   \
+      OVERWRITE_REAL(c2, f2)                                                   \
+      OVERWRITE_REAL(c3, f3)                                                   \
     }                                                                          \
   }
 DEF_TWOCHARFN(hyp, 's', sinh, 'c', cosh, 't', tanh)
@@ -145,7 +140,9 @@ void rpx_callfn() {
 }
 
 void rpx_vars() {
-  if (islower(*++expr)) {
+  if (isdigit(*expr))
+    PUSH = info.usrfn.argv[*expr - '0' - 1];
+  else if (islower(*++expr)) {
     char vname = *expr++;
     skipspcs((char const **)&expr);
     if (*expr == 'u') {
@@ -154,9 +151,7 @@ void rpx_vars() {
       PUSH = info.usrvar[vname - 'a'].elem.real;
       expr--;
     }
-  } else if (isdigit(*expr))
-    PUSH = info.usrfn.argv[*expr - '0' - 1];
-  else
+  } else
     switch (*expr) {
     case 'R':
       PUSH = rand() / (double)RAND_MAX;
