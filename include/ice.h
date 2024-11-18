@@ -13,19 +13,17 @@ extern ic_t ic_conf;
 
 #define ic(...)                                                                \
   ({                                                                           \
-    FILE *out_fp = ic_conf.fp ?: stderr;                                       \
-    auto x = __VA_ARGS__;                                                      \
-    if (!ic_conf.enable)                                                       \
-      goto end;                                                                \
-    fputs(ic_conf.prefix ?: "ic| ", out_fp);                                   \
-    if (ic_conf.context) {                                                     \
-      fputs(HERE " in ", out_fp);                                              \
-      fputs(__FUNCTION__, out_fp);                                             \
-      fputs("()- ", out_fp);                                                   \
-    }                                                                          \
-    __VA_OPT__(fputs(#__VA_ARGS__ ": ", out_fp); printany(x);)                 \
-    putchar('\n');                                                             \
-  end:                                                                         \
-    x;                                                                         \
+    __VA_OPT__(auto x = __VA_ARGS__;)                                          \
+    do {                                                                       \
+      FILE *out_fp = ic_conf.fp ?: stderr;                                     \
+      if (!ic_conf.enable)                                                     \
+        break;                                                                 \
+      fputs(ic_conf.prefix ?: "ic| ", out_fp);                                 \
+      if (ic_conf.context)                                                     \
+        fprintf(out_fp, HERE " in %s()" __VA_OPT__("- "), __FUNCTION__);       \
+      __VA_OPT__(fputs(#__VA_ARGS__ ": ", out_fp); printany(x);)               \
+      putchar('\n');                                                           \
+    } while (0);                                                               \
+    __VA_OPT__(x;)                                                             \
   })
 #endif

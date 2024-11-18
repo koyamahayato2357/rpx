@@ -25,11 +25,15 @@ build:
 	$(CC) $(SRCDIR)/*.c $(CFLAGS) $(OPTFLAGS) $(LDFLAGS) -o $(OUTFILE)
 
 debug:
-	clang-18 -std=c23 $(SRCDIR)/*.c -I$(INCDIR) $(DEBUGFLAGS) $(LDFLAGS) -o $(OUTFILE)
+	$(CC) $(SRCDIR)/*.c -I$(INCDIR) $(DEBUGFLAGS) $(LDFLAGS) -o $(OUTFILE)
 	$(DB) $(OUTFILE)
 
 test:
-	clang-18 -std=c23 $(SRCDIR)/*.c $(CFLAGS) $(TSTFLAGS) $(LDFLAGS) -I$(INCDIR) -o $(OUTFILE)
+	$(CC) $(SRCDIR)/*.c $(CFLAGS) $(TSTFLAGS) $(LDFLAGS) -I$(INCDIR) -o $(OUTFILE)
+	./$(OUTFILE)
+
+all-test:
+	$(CC) $(SRCDIR)/*.c $(CFLAGS) $(TSTFLAGS) -DTEST_MODE_ALL $(ICFLAGS) $(LDFLAGS) -I$(INCDIR) -o $(OUTFILE)
 	./$(OUTFILE)
 
 bench:
