@@ -82,8 +82,8 @@ RPX offers four modes of operation:
 - `\P`: Pi
 
 ### Variable Operations
-- `$` followed by a letter (a-z) for variable operations
-- `u` to update variables (e.g., `3 5 + $x u` for $x=3+5)
+- `$[a-z]` followed by a letter (a-z) for variable reference
+- `&[a-z]` to update variables (e.g., `3 5 + &x` for x=3+5)
 
 ### Random Number
 - `$R`: Random number (0 to 1)
