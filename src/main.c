@@ -15,7 +15,6 @@
 
 #include "main.h"
 #include "arthfn.h"
-#include "benchmarking.h"
 #include "chore.h"
 #include "editline.h"
 #include "elemop.h"

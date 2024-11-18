@@ -1,4 +1,4 @@
-CC = clang -std=c23
+CC = clang-18 -std=c23
 DB = lldb
 CFLAGS = -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall -Wextra -flto=full -fwhole-program-vtables -fforce-emit-vtables -fvirtual-function-elimination -ffunction-sections -fdata-sections -faddrsig -march=native -mtune=native
 LDFLAGS = -lm -fuse-ld=lld
@@ -6,6 +6,7 @@ OPTFLAGS = -O3 -ffast-math -fno-finite-math-only -DNDEBUG -Wl,--gc-sections -Wl,
 TSTFLAGS = -DTEST_MODE -fsanitize=address -g
 BNCHFLAGS = -DBENCHMARK_MODE
 DEBUGFLAGS = -g3
+ICFLAGS = -DICECREAM
 SRCDIR = src
 INCDIR = include
 TSTDIR = test
@@ -33,6 +34,10 @@ test:
 
 bench:
 	$(CC) $(SRCDIR)/*.c $(CFLAGS) $(BNCHFLAGS) $(OPTFLAGS) $(LDFLAGS) -o $(OUTFILE)
+	./$(OUTFILE)
+
+ice:
+	$(CC) $(SRCDIR)/*.c $(CFLAGS) $(OPTFLAGS) $(ICFLAGS) $(LDFLAGS) -o $(OUTFILE)
 	./$(OUTFILE)
 
 asm: $(SRCS)
