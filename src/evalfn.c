@@ -2,11 +2,14 @@
 #include "arthfn.h"
 #include "benchmarking.h"
 #include "chore.h"
+#include "errcode.h"
+#include "exproriented.h"
 #include "gene.h"
 #include "main.h"
 #include "phyconst.h"
 #include "string.h"
 #include "sysconf.h"
+#include "testing.h"
 #include <ctype.h>
 #include <math.h>
 #include <stdlib.h>
@@ -128,6 +131,9 @@ void rpx_sysfn() {
   case 's':
     *rsp = *(rsp - (int)*rsp - 1);
     break;
+  case 'r':
+    *rsp = rand() / (double)RAND_MAX;
+    break;
   }
 }
 
@@ -139,25 +145,13 @@ void rpx_callfn() {
   *rsp = eval_expr_real(info.usrfn.expr[fname]).elem.real;
 }
 
-void rpx_vars() {
-  if (isdigit(*expr))
-    PUSH = info.usrfn.argv[*expr - '0' - 1];
-  else if (islower(*++expr)) {
-    char vname = *expr++;
-    skipspcs((char const **)&expr);
-    if (*expr == 'u') {
-      info.usrvar[vname - 'a'].elem.real = *rsp;
-    } else {
-      PUSH = info.usrvar[vname - 'a'].elem.real;
-      expr--;
-    }
-  } else
-    switch (*expr) {
-    case 'R':
-      PUSH = rand() / (double)RAND_MAX;
-      break;
-    }
+void rpx_lvars() {
+  PUSH = (isdigit(*++expr)) ? info.usrfn.argv[*expr - '0' - 1]
+         : (islower(*expr)) ? info.usrvar[*expr - 'a'].elem.real
+                            : $panic(ERR_CHAR_NOT_FOUND);
 }
+
+void rpx_wvars() { info.usrvar[*++expr - 'a'].elem.real = *rsp; }
 
 void rpx_end() { ((char *)expr)[1] = '\0'; }
 
@@ -177,9 +171,9 @@ void (*eval_table['~' - ' ' + 1])() = {
     rpx_callfn, // '!'
     nullptr,    // '"'
     nullptr,    // '#'
-    rpx_vars,   // '$'
+    rpx_lvars,  // '$'
     rpx_mod,    // '%'
-    nullptr,    // '&'
+    rpx_wvars,  // '&'
     nullptr,    // '''
     rpx_grpbgn, // '('
     rpx_grpend, // ')'
@@ -289,6 +283,11 @@ elem_t eval_expr_real(char const *a_expr) {
   return (elem_t){.rtype = RTYPE_REAL, .elem = {.real = *rsp}};
 }
 
+test(eval_expr_real) {
+  expecteq(11.0, eval_expr_real("5 6 + &x").elem.real);
+  expecteq(22.0, eval_expr_real("$x 2 *").elem.real);
+}
+
 bench(eval_expr_real) {
   eval_expr_real("1 2 3 4 5 +");
   eval_expr_real("4 5 ^");
@@ -300,7 +299,7 @@ bench(eval_expr_real) {
   eval_expr_real("@a");
 
   // Test variable operations
-  eval_expr_real("10 $x u");
+  eval_expr_real("10 &x");
   eval_expr_real("$x 2 *");
 
   // Test more complex expressions

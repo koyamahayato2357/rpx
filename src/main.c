@@ -272,6 +272,9 @@ elem_t eval_expr_complex(char const *expr) {
       case 's': // stack value operation
         elem_set(rsp, rsp - (int)rsp->elem.real - 1);
         break;
+      case 'r':
+        (++rsp)->elem.comp = rand() / (double)RAND_MAX;
+        break;
       }
       break;
 
@@ -279,26 +282,16 @@ elem_t eval_expr_complex(char const *expr) {
       (++rsp)->elem.comp = get_const(*++expr);
       break;
 
-    case '$': { // variable oparation
+    case '$': // variable oparation
       if (islower(*++expr)) {
-        char vname = *expr++;
-        skipspcs(&expr);
-        if (*expr == 'u') // update variable
-          elem_set(&info_c.usrvar[vname - 'a'], rsp);
-        else {
-          elem_t *rhs = &info_c.usrvar[vname - 'a'];
-          elem_set(++rsp, rhs);
-          expr--;
-        }
-      } else {
-        switch (*expr) {
-        case 'R':
-          (++rsp)->elem.comp = rand() / (double)RAND_MAX;
-          break;
-        }
+        elem_t *rhs = &info_c.usrvar[*expr - 'a'];
+        elem_set(++rsp, rhs);
       }
       break;
-    }
+
+    case '&':
+      elem_set(&info_c.usrvar[*++expr - 'a'], rsp);
+      break;
 
       // TODO differential
       // TODO integral
