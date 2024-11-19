@@ -13,6 +13,8 @@
 #define drop ondrop(free_cl)
 #define dropfile ondrop(fclose_cl)
 #define dropdir ondrop(closedir_cl)
+#define likely(cond) __builtin_expect(!!(cond), 1)
+#define unlikely(cond) __builtin_expect(!!(cond), 0)
 
 struct winsize get_winsz();
 bool isint(double) __attribute__((const));

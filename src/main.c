@@ -132,14 +132,14 @@ void proc_alist(int argc, char **argv) {
  */
 void reader_loop(FILE *fp) {
   char input_buf[BUFSIZE];
-  while (fgets(input_buf, BUFSIZE, fp) != nullptr)
+  while (likely(fgets(input_buf, BUFSIZE, fp) != nullptr))
     proc_input(input_buf);
 }
 
 //! @brief Interactive input loop
 void reader_loop_stdin() {
   char input_buf[BUFSIZE] = {};
-  while (editline(BUFSIZE, input_buf))
+  while (likely(editline(BUFSIZE, input_buf)))
     proc_input(input_buf);
 }
 
@@ -282,7 +282,7 @@ elem_t eval_expr_complex(char const *expr) {
       break;
 
     case '$': // variable oparation
-      if (islower(*++expr)) {
+      if (likely(islower(*++expr))) {
         elem_t *rhs = &info_c.usrvar[*expr - 'a'];
         elem_set(++rsp, rhs);
       }

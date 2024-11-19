@@ -24,7 +24,7 @@ typedef enum {
   do {                                                                         \
     printf("Panicked at " HERE " " __VA_ARGS__);                               \
     puts(codetomsg(e));                                                        \
-    exit(e);                                                                   \
+    abort();                                                                   \
   } while (0)
 
 char const *codetomsg(int);

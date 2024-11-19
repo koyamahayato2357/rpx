@@ -57,7 +57,7 @@ MOPS(sub, -)
  * @throws ERR_DIMENTION_MISMATCH
  */
 matrix_t mmul(matrix_t *lhs, matrix_t *rhs) {
-  if (lhs->rows != rhs->cols && lhs->cols != rhs->rows)
+  if (unlikely(lhs->rows != rhs->cols && lhs->cols != rhs->rows))
     throw(ERR_DIMENTION_MISMATCH);
 
   matrix_t result = new_matrix(lhs->rows, rhs->cols);
@@ -76,7 +76,7 @@ matrix_t mmul(matrix_t *lhs, matrix_t *rhs) {
  * @throws ERR_NON_SQUARE_MATRIX
  */
 double det(matrix_t *A) {
-  if (A->rows != A->cols)
+  if (unlikely(A->rows != A->cols))
     throw(ERR_NON_SQUARE_MATRIX);
 
   double result = 1;
@@ -85,7 +85,7 @@ double det(matrix_t *A) {
     for (int j = 0; j < dim - 1; j++) {
       for (int k = 1; !A->matrix[dim * i + i]; k++) {
         for (int l = i; l < dim; l++) {
-          if (k >= dim) // case of singular matrix
+          if (unlikely(k >= dim)) // case of singular matrix
             return 0;
 
           double temp = A->matrix[dim * i + l];
@@ -112,7 +112,7 @@ double det(matrix_t *A) {
 matrix_t inverse_matrix(matrix_t *A) {
   int dim = A->rows;
 
-  if (A->rows != A->cols)
+  if (unlikely(A->rows != A->cols))
     throw(ERR_NON_SQUARE_MATRIX);
 
   matrix_t result = new_matrix(dim, dim);
@@ -125,7 +125,7 @@ matrix_t inverse_matrix(matrix_t *A) {
     if (A->matrix[i * dim + i] == 0) {
       int j;
       for (j = (i + 1) % dim; A->matrix[j * dim + i] == 0; j = (j + 1) % dim)
-        if (j == i) {
+        if (unlikely(j == i)) {
           free(result.matrix);
           throw(ERR_IRREGULAR_MATRIX);
         }
@@ -153,7 +153,7 @@ matrix_t inverse_matrix(matrix_t *A) {
   // A->matrix to unit matrix
   for (int i = 0; i < dim; i++)
     for (int j = 0; j < dim; j++) {
-      if (A->matrix[i * dim + i] == 0) {
+      if (unlikely(A->matrix[i * dim + i] == 0)) {
         free(result.matrix);
         throw(ERR_IRREGULAR_MATRIX);
       }
