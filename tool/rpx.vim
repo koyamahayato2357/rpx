@@ -3,18 +3,19 @@ syntax iskeyword a-z
 highlight link RpxCmdStart Keyword
 syntax match RpxCmdStart /^:/ contained
 
-highlight link RpxToggleCmd Special
-highlight link RpxToggleItem Identifier
-syntax match RpxToggleCmd /t/ contained
-syntax match RpxToggleItem /\l/ contained
-syntax match RpxToggle /^:t\l$/ contains=RpxCmdStart,RpxToggleCmd,RpxToggleItem
+highlight link RpxTglCmd Special
+highlight link RpxTglItem Identifier
+syntax match RpxTglCmd /t/ contained
+syntax match RpxTgl /^:t/ contained contains=RpxCmdStart,RpxTglCmd
+syntax match RpxTglItem /\l/ contained
+syntax match RpxToggle /^:t\l$/ contains=RpxTglCmd,RpxTglItem
 
 highlight link RpxStgCmd Special
 highlight link RpxStgItem Identifier
 syntax match RpxStgCmd /s/ contained
 syntax match RpxStg /^:s/ contained contains=RpxCmdStart,RpxStgCmd
 syntax match RpxStgItem /\l/ contained
-syntax match RpxSetting /^:s\l\l/ contains=RpxCmdStart,RpxStg,RpxStgItem,RpxStgItem
+syntax match RpxSetting /^:s\l\l/ contains=RpxStg,RpxStgItem,RpxStgItem
 
 highlight link RpxFormulaFollowsCmd Special
 syntax match RpxFormulaFollowsCmd /[op]/ contained
