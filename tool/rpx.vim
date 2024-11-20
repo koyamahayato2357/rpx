@@ -8,7 +8,7 @@ highlight link RpxTglItem Identifier
 syntax match RpxTglCmd /t/ contained
 syntax match RpxTgl /^:t/ contained contains=RpxCmdStart,RpxTglCmd
 syntax match RpxTglItem /\l/ contained
-syntax match RpxToggle /^:t\l$/ contains=RpxTglCmd,RpxTglItem
+syntax match RpxToggle /^:t\l/ contains=RpxTgl,RpxTglItem
 
 highlight link RpxStgCmd Special
 highlight link RpxStgItem Identifier
