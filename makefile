@@ -10,8 +10,7 @@ RUNNER :=
 
 SRCDIR := src
 INCDIR := include
-BUILDDIR := build
-OUTFILE := ./rpx
+BUILDDIR = build
 
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
           -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
@@ -20,9 +19,6 @@ LDFLAGS := -lm -flto=full -fwhole-program-vtables -fvirtual-function-elimination
 OPTFLAGS = -ffast-math -fno-finite-math-only -DNDEBUG
 DEBUGFLAGS := -g3
 ASMFLAGS := -S -masm=intel
-
-SRCS = $(wildcard $(SRCDIR)/*.c)
-OBJS = $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SRCS))
 
 # Alias
 ifdef OL
@@ -35,7 +31,7 @@ ifdef T
   TYPE ?= $(T)
 endif
 
-all: $(OUTFILE) run
+all: run
 
 ifdef LOGLEVEL
   CFLAGS += -DICECREAM
@@ -75,17 +71,23 @@ else
 endif
 
 # Build rules
-$(BUILDDIR):
-	mkdir -p $(BUILDDIR)
+TARGETDIR := $(BUILDDIR)/T$(TYPE)-O$(OPTLEVEL)-L$(LOGLEVEL)-SAN$(ASAN)
+OUTFILE := $(TARGETDIR)/rpx
+
+$(TARGETDIR):
+	mkdir -p $@
+
+SRCS = $(wildcard $(SRCDIR)/*.c)
+OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 
 $(OUTFILE): $(OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-$(BUILDDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
+$(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR)
 	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -c -o $@
 
-run:
-	$(RUNNER) $(OUTFILE)
+run: $(OUTFILE)
+	$(RUNNER) $<
 
 analyze:
 	clang-tidy $(SRCS) -- $(CFLAGS)
