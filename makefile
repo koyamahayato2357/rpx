@@ -5,6 +5,10 @@
 # LOGLEVEL = [1| ]                 Enables logging
 # ASAN = [0|address|alignment|...] Enables specified sanitizer
 
+.PHONY: all run analyze clean-all clean install doc test
+
+OPTLEVEL ?= g
+
 CC := clang-18
 RUNNER :=
 
@@ -14,7 +18,7 @@ BUILDDIR = build
 
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
           -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
-		  -faddrsig -march=native -mtune=native
+		  -faddrsig -march=native -mtune=native -O$(OPTLEVEL)
 LDFLAGS := -lm -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fuse-ld=lld
 OPTFLAGS = -ffast-math -fno-finite-math-only -DNDEBUG
 DEBUGFLAGS := -g3
@@ -38,9 +42,7 @@ ifdef LOGLEVEL
 endif
 
 ifeq ($(TYPE),test)
-  OPTLEVEL ?= g
   CFLAGS += -DTEST_MODE
-  RUNNER =
   ASAN ?= address
 endif
 
@@ -57,17 +59,12 @@ ifdef ASAN
   LDFLAGS += -fsanitize=$(ASAN)
 endif
 
-OPTLEVEL ?= 3
-
 ifeq ($(OPTLEVEL),g)
   CFLAGS += $(DEBUGFLAGS)
   RUNNER := lldb
-else
-  CFLAGS += -O$(OPTLEVEL)
-  ifneq ($(OPTLEVEL),0)
-    CFLAGS += $(OPTFLAGS)
-    LDFLAGS += -Wl,--gc-sections -Wl,--icf=all -s
-  endif
+else ifneq ($(OPTLEVEL),0)
+  CFLAGS += $(OPTFLAGS)
+  LDFLAGS += -Wl,--gc-sections -Wl,--icf=all -s
 endif
 
 # Build rules
@@ -92,14 +89,20 @@ run: $(OUTFILE)
 analyze:
 	clang-tidy $(SRCS) -- $(CFLAGS)
 
-clean:
-	rm -rf $(BUILDDIR) $(OUTFILE)
+clean-all:
+	rm -rf $(BUILDDIR)
 
-install: build
-	cp $(OUTFILE) /usr/local/bin/
+clean:
+	rm -rf $(TARGETDIR)
+
+install: $(OUTFILE)
+	cp $^ /usr/local/bin/
 
 doc:
 	doxygen doc/Doxyfile
+
+test:
+	$(MAKE) TYPE=test OPTLEVEL=g
 
 release:
 	$(MAKE) TYPE=test
