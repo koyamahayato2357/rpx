@@ -20,23 +20,23 @@ elem_t eval_expr_real(char const *);
 #define POP *ei->rsp--
 
 #define DEF_ARTHMS(tok, op)                                                    \
-  void rpx_##tok(evalinfo_t *ei) {                                             \
+  static void rpx_##tok(evalinfo_t *ei) {                                      \
     for (; ei->rbp + 1 < ei->rsp; ei->rbp[1] op## = POP)                       \
       ;                                                                        \
   }
 APPLY_ARTHM(DEF_ARTHMS)
 
-void rpx_mod(evalinfo_t *ei) {
+static void rpx_mod(evalinfo_t *ei) {
   for (; ei->rbp + 1 < ei->rsp; ei->rbp[1] = fmod(ei->rbp[1], POP))
     ;
 }
 
-void rpx_pow(evalinfo_t *ei) {
+static void rpx_pow(evalinfo_t *ei) {
   for (; ei->rbp + 1 < ei->rsp; ei->rbp[1] = pow(ei->rbp[1], POP))
     ;
 }
 
-void rpx_eql(evalinfo_t *ei) {
+static void rpx_eql(evalinfo_t *ei) {
   for (; ei->rbp + 1 < ei->rsp && eq(ei->rsp[-1], *ei->rsp); POP)
     ;
   ei->rbp[1] = ei->rbp + 1 == ei->rsp;
@@ -44,7 +44,7 @@ void rpx_eql(evalinfo_t *ei) {
 }
 
 #define DEF_LTGT(tok, op)                                                      \
-  void rpx_##tok(evalinfo_t *ei) {                                             \
+  static void rpx_##tok(evalinfo_t *ei) {                                      \
     for (; ei->rbp + 1 < ei->rsp && ei->rsp[-1] op * ei->rsp; POP)             \
       ;                                                                        \
     ei->rbp[1] = ei->rbp + 1 == ei->rsp;                                       \
@@ -53,7 +53,7 @@ void rpx_eql(evalinfo_t *ei) {
 APPLY_LTGT(DEF_LTGT)
 
 #define DEF_ONEARGFN(f)                                                        \
-  void rpx_##f(evalinfo_t *ei) { *ei->rsp = f(*ei->rsp); }
+  static void rpx_##f(evalinfo_t *ei) { *ei->rsp = f(*ei->rsp); }
 DEF_ONEARGFN(sin)
 DEF_ONEARGFN(cos)
 DEF_ONEARGFN(tan)
@@ -64,13 +64,13 @@ DEF_ONEARGFN(floor)
 DEF_ONEARGFN(round)
 
 #define DEF_MULTI(name, factor)                                                \
-  void rpx_##name(evalinfo_t *ei) { *ei->rsp *= factor; }
+  static void rpx_##name(evalinfo_t *ei) { *ei->rsp *= factor; }
 DEF_MULTI(nagate, -1)
 DEF_MULTI(torad, M_PI / 180)
 DEF_MULTI(todeg, 180 / M_PI)
 
 #define DEF_TWOCHARFN(name, c1, f1, c2, f2, c3, f3)                            \
-  void rpx_##name(evalinfo_t *ei) {                                            \
+  static void rpx_##name(evalinfo_t *ei) {                                     \
     switch (*++ei->expr) {                                                     \
       OVERWRITE_REAL(c1, f1)                                                   \
       OVERWRITE_REAL(c2, f2)                                                   \
@@ -81,20 +81,20 @@ DEF_TWOCHARFN(hyp, 's', sinh, 'c', cosh, 't', tanh)
 DEF_TWOCHARFN(arc, 's', asin, 'c', acos, 't', atan)
 DEF_TWOCHARFN(log, '2', log2, 'c', log10, 'e', log)
 
-void rpx_logbase(evalinfo_t *ei) {
+static void rpx_logbase(evalinfo_t *ei) {
   double x = POP;
   *ei->rsp = log(*ei->rsp) / log(x);
 }
 
-void rpx_const(evalinfo_t *ei) { PUSH = get_const(*++ei->expr); }
+static void rpx_const(evalinfo_t *ei) { PUSH = get_const(*++ei->expr); }
 
-void rpx_parse(evalinfo_t *ei) {
+static void rpx_parse(evalinfo_t *ei) {
   char *next = nullptr;
   PUSH = strtod(ei->expr, &next);
   ei->expr = next - 1;
 }
 
-void rpx_space(evalinfo_t *ei) {
+static void rpx_space(evalinfo_t *ei) {
   skipspcs(&ei->expr);
   ei->expr--;
 }
@@ -104,7 +104,7 @@ void rpx_space(evalinfo_t *ei) {
     double x = *ei->rsp;                                                       \
     *ei->rsp = f(*ei->rsp, x);                                                 \
   } break;
-void rpx_intfn(evalinfo_t *ei) {
+static void rpx_intfn(evalinfo_t *ei) {
   switch (*++ei->expr) {
     CASE_TWOARGFN('g', gcd)
     CASE_TWOARGFN('l', lcm)
@@ -113,7 +113,7 @@ void rpx_intfn(evalinfo_t *ei) {
   }
 }
 
-void rpx_sysfn(evalinfo_t *ei) {
+static void rpx_sysfn(evalinfo_t *ei) {
   switch (*++ei->expr) {
   case 'a': // ANS
     PUSH = ei->info.hist[ei->info.histi - 1].elem.real;
@@ -134,7 +134,7 @@ void rpx_sysfn(evalinfo_t *ei) {
   }
 }
 
-void rpx_callfn(evalinfo_t *ei) {
+static void rpx_callfn(evalinfo_t *ei) {
   int fname = *++ei->expr - 'a';
   int argc = ei->info.usrfn.argc[fname];
   *ei->rsp -= argc - 1;
@@ -143,126 +143,128 @@ void rpx_callfn(evalinfo_t *ei) {
   *ei->rsp = eval_expr_real(ei->info.usrfn.expr[fname]).elem.real;
 }
 
-void rpx_lvars(evalinfo_t *ei) {
+static void rpx_lvars(evalinfo_t *ei) {
   PUSH = (isdigit(*++ei->expr)) ? ei->info.usrfn.argv[*ei->expr - '0' - 1]
          : (islower(*ei->expr)) ? ei->info.usrvar[*ei->expr - 'a'].elem.real
                                 : $panic(ERR_CHAR_NOT_FOUND);
 }
 
-void rpx_wvars(evalinfo_t *ei) {
+static void rpx_wvars(evalinfo_t *ei) {
   ei->info.usrvar[*++ei->expr - 'a'].elem.real = *ei->rsp;
 }
 
-void rpx_end(evalinfo_t *ei) { ((char *)ei->expr)[1] = '\0'; }
+static void rpx_end(evalinfo_t *ei) { ((char *)ei->expr)[1] = '\0'; }
 
-void rpx_grpbgn(evalinfo_t *ei) {
+static void rpx_grpbgn(evalinfo_t *ei) {
   *++*(long **)&ei->rsp = (long)ei->rbp;
   ei->rbp = ei->rsp;
 }
 
-void rpx_grpend(evalinfo_t *ei) {
+static void rpx_grpend(evalinfo_t *ei) {
   ei->rbp = *(double **)ei->rbp;
   ei->rsp--;
   *ei->rsp = ei->rsp[1];
 }
 
 void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
-    rpx_space,  // ' '
-    rpx_callfn, // '!'
-    nullptr,    // '"'
-    nullptr,    // '#'
-    rpx_lvars,  // '$'
-    rpx_mod,    // '%'
-    rpx_wvars,  // '&'
-    nullptr,    // '''
-    rpx_grpbgn, // '('
-    rpx_grpend, // ')'
-    rpx_mul,    // '*'
-    rpx_add,    // '+'
-    rpx_end,    // ','
-    rpx_sub,    // '-'
-    nullptr,    // '.'
-    rpx_div,    // '/'
-    rpx_parse,  // '0'
-    rpx_parse,  // '1'
-    rpx_parse,  // '2'
-    rpx_parse,  // '3'
-    rpx_parse,  // '4'
-    rpx_parse,  // '5'
-    rpx_parse,  // '6'
-    rpx_parse,  // '7'
-    rpx_parse,  // '8'
-    rpx_parse,  // '9'
-    nullptr,    // ':'
-    rpx_end,    // ';'
-    rpx_lt,     // '<'
-    rpx_eql,    // '='
-    rpx_gt,     // '>'
-    nullptr,    // '?'
-    rpx_sysfn,  // '@'
-    rpx_fabs,   // 'A'
-    nullptr,    // 'B'
-    rpx_ceil,   // 'C'
-    nullptr,    // 'D'
-    nullptr,    // 'E'
-    rpx_floor,  // 'F'
-    nullptr,    // 'G'
-    nullptr,    // 'H'
-    nullptr,    // 'I'
-    nullptr,    // 'J'
-    nullptr,    // 'K'
-    nullptr,    // 'L'
-    nullptr,    // 'M'
-    nullptr,    // 'N'
-    nullptr,    // 'O'
-    nullptr,    // 'P'
-    nullptr,    // 'Q'
-    rpx_round,  // 'R'
-    nullptr,    // 'S'
-    nullptr,    // 'T'
-    nullptr,    // 'U'
-    nullptr,    // 'V'
-    nullptr,    // 'W'
-    nullptr,    // 'X'
-    nullptr,    // 'Y'
-    nullptr,    // 'Z'
-    nullptr,    // '['
-    rpx_const,  // '\'
-    nullptr,    // ']'
-    rpx_pow,    // '^'
-    nullptr,    // '_'
-    nullptr,    // '`'
-    rpx_arc,    // 'a'
-    nullptr,    // 'b'
-    rpx_cos,    // 'c'
-    rpx_todeg,  // 'd'
-    nullptr,    // 'e'
-    nullptr,    // 'f'
-    rpx_tgamma, // 'g'
-    rpx_hyp,    // 'h'
-    rpx_intfn,  // 'i'
-    nullptr,    // 'j'
-    nullptr,    // 'k'
-    rpx_log,    // 'l'
-    rpx_nagate, // 'm'
-    nullptr,    // 'n'
-    nullptr,    // 'o'
-    nullptr,    // 'p'
-    nullptr,    // 'q'
-    rpx_torad,  // 'r'
-    rpx_sin,    // 's'
-    rpx_tan,    // 't'
-    nullptr,    // 'u'
-    nullptr,    // 'v'
-    nullptr,    // 'w'
-    nullptr,    // 'x'
-    nullptr,    // 'y'
-    nullptr,    // 'z'
-    nullptr,    // '{'
-    nullptr,    // '|'
-    nullptr,    // '}'
-    nullptr,    // '~'
+    rpx_space,   // ' '
+    rpx_callfn,  // '!'
+    nullptr,     // '"'
+    nullptr,     // '#'
+    rpx_lvars,   // '$'
+    rpx_mod,     // '%'
+    rpx_wvars,   // '&'
+    nullptr,     // '''
+    rpx_grpbgn,  // '('
+    rpx_grpend,  // ')'
+    rpx_mul,     // '*'
+    rpx_add,     // '+'
+    rpx_end,     // ','
+    rpx_sub,     // '-'
+    nullptr,     // '.'
+    rpx_div,     // '/'
+    rpx_parse,   // '0'
+    rpx_parse,   // '1'
+    rpx_parse,   // '2'
+    rpx_parse,   // '3'
+    rpx_parse,   // '4'
+    rpx_parse,   // '5'
+    rpx_parse,   // '6'
+    rpx_parse,   // '7'
+    rpx_parse,   // '8'
+    rpx_parse,   // '9'
+    nullptr,     // ':'
+    rpx_end,     // ';'
+    rpx_lt,      // '<'
+    rpx_eql,     // '='
+    rpx_gt,      // '>'
+    nullptr,     // '?'
+    rpx_sysfn,   // '@'
+    rpx_fabs,    // 'A'
+    nullptr,     // 'B'
+    rpx_ceil,    // 'C'
+    nullptr,     // 'D'
+    nullptr,     // 'E'
+    rpx_floor,   // 'F'
+    nullptr,     // 'G'
+    nullptr,     // 'H'
+    nullptr,     // 'I'
+    nullptr,     // 'J'
+    nullptr,     // 'K'
+    rpx_logbase, // 'L'
+    nullptr,     // 'M'
+    nullptr,     // 'N'
+    nullptr,     // 'O'
+    nullptr,     // 'P'
+    nullptr,     // 'Q'
+    rpx_round,   // 'R'
+    nullptr,     // 'S'
+    nullptr,     // 'T'
+    nullptr,     // 'U'
+    nullptr,     // 'V'
+    nullptr,     // 'W'
+    nullptr,     // 'X'
+    nullptr,     // 'Y'
+    nullptr,     // 'Z'
+    nullptr,     // '['
+    rpx_const,   // '\'
+    nullptr,     // ']'
+    rpx_pow,     // '^'
+    nullptr,     // '_'
+    nullptr,     // '`'
+    rpx_arc,     // 'a'
+    nullptr,     // 'b'
+    rpx_cos,     // 'c'
+    rpx_todeg,   // 'd'
+    nullptr,     // 'e'
+    nullptr,     // 'f'
+    rpx_tgamma,  // 'g'
+    rpx_hyp,     // 'h'
+    rpx_intfn,   // 'i'
+    nullptr,     // 'j'
+    nullptr,     // 'k'
+    rpx_log,     // 'l'
+    rpx_nagate,  // 'm'
+    nullptr,     // 'n'
+    nullptr,     // 'o'
+    nullptr,     // 'p'
+    nullptr,     // 'q'
+    rpx_torad,   // 'r'
+    rpx_sin,     // 's'
+    rpx_tan,     // 't'
+    nullptr,     // 'u'
+    nullptr,     // 'v'
+    nullptr,     // 'w'
+    nullptr,     // 'x'
+    nullptr,     // 'y'
+    nullptr,     // 'z'
+    nullptr,     // '{'
+    nullptr,     // '|'
+    nullptr,     // '}'
+    nullptr,     // '~'
 };
+
+void (*get_eval_table(char c))(evalinfo_t *) { return eval_table[c - ' ']; }
 
 /**
  * @brief Evaluate real number expression
@@ -275,7 +277,7 @@ elem_t eval_expr_real(char const *a_expr) {
   ei.info = get_rtinfo('r');
   ei.expr = a_expr;
   for (; *ei.expr; ei.expr++)
-    eval_table[*ei.expr - ' '](&ei);
+    get_eval_table (*ei.expr)(&ei);
   if (ei.info.histi < BUFSIZE)
     ei.info.hist[ei.info.histi++].elem.real = *ei.rsp;
   set_rtinfo('r', ei.info);
