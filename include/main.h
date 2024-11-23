@@ -5,20 +5,20 @@
 #define BUFSIZE 256
 #define OP_CASE_ARTHM(op)                                                      \
   case *#op:                                                                   \
-    for (; rbp + 1 < rsp; rbp[1] op## = *rsp--)                                \
+    for (; ei.rbp + 1 < ei.rsp; ei.rbp[1] op## = *ei.rsp--)                    \
       ;                                                                        \
     break;
 #define OP_CASE_ADV(op, f)                                                     \
   case *#op:                                                                   \
-    for (; rbp + 1 < rsp; rbp[1] = f(rbp[1], *rsp--))                          \
+    for (; ei.rbp + 1 < ei.rsp; ei.rbp[1] = f(ei.rbp[1], *ei.rsp--))           \
       ;                                                                        \
     break;
 #define OP_CASE_EQA(op)                                                        \
   case *#op:                                                                   \
-    for (; rbp + 1 < rsp && *(rsp - 1) op## = *rsp; rsp--)                     \
+    for (; ei.rbp + 1 < ei.rsp && *(ei.rsp - 1) op## = *ei.rsp; ei.rsp--)      \
       ;                                                                        \
-    *(rbp + 1) = rbp + 1 == rsp;                                               \
-    rsp = rbp + 1;                                                             \
+    *(ei.rbp + 1) = ei.rbp + 1 == ei.rsp;                                      \
+    ei.rsp = ei.rbp + 1;                                                       \
     break;
 #define OP_CASE_ELEM(tok, op)                                                  \
   case *#op:                                                                   \
@@ -29,7 +29,7 @@
   case cas:                                                                    \
     var = fn(var);                                                             \
     break;
-#define OVERWRITE_REAL(cas, fn) OVERWRITE(cas, *rsp, fn)
+#define OVERWRITE_REAL(cas, fn) OVERWRITE(cas, *ei->rsp, fn)
 #define OVERWRITE_COMP(cas, fn) OVERWRITE(cas, rsp->elem.comp, fn)
 
 #include "matop.h"

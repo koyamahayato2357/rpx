@@ -468,17 +468,15 @@ void proc_cmds(char *cmd) {
   plotcfg_t pcfg = get_plotcfg();
 
   // TODO save variables
-  switch (*cmd) {
+  switch (*cmd++) {
   case 'd': // define user function
-    cmd++;
     int fname = *cmd++ - 'a';
     info_r.usrfn.argc[fname] = *cmd++ - '0';
-    optexpr(cmd);
     strncpy(info_r.usrfn.expr[fname], cmd, BUFSIZE);
     set_rtinfo('r', info_r);
     break;
   case 't': // toggle
-    switch (*++cmd) {
+    switch (*cmd) {
     case 'c': // complex mode
       eval_f = eval_f == eval_expr_real ? eval_expr_complex : eval_expr_real;
       break;
@@ -490,12 +488,11 @@ void proc_cmds(char *cmd) {
     break;
   case 'o': {
     char buf[BUFSIZE];
-    strncpy(buf, cmd + 1, BUFSIZE);
+    strncpy(buf, cmd, BUFSIZE);
     optexpr(buf);
     puts(buf);
   } break;
   case 'p':
-    cmd++;
     skipspcs((char const **)&cmd);
     if (*cmd == '\0') {
       plotexpr(pcfg.prevexpr);
@@ -507,7 +504,7 @@ void proc_cmds(char *cmd) {
     set_plotcfg(pcfg);
     break;
   case 's': // settings
-    switch (*++cmd) {
+    switch (*cmd) {
     case 'p': // plot
       change_plotconfig(cmd + 1);
       break;
