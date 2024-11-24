@@ -93,12 +93,12 @@ $(OUTFILE): $(OBJS)
 	@echo "Linking $@"
 	@$(CC) $(LDFLAGS) $^ -o $@
 
-$(TARGETDIR)/%.o: $(SRCDIR)/%.c
+$(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR) $(DEPDIR)
 	@echo "Compiling $<"
 	@$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -MMD -MF $(DEPDIR)/$*.d -c -o $@
 
-run: $(TARGETDIR) $(DEPDIR) $(OUTFILE)
-	$(RUNNER) $(OUTFILE)
+run: $(OUTFILE)
+	$(RUNNER) $<
 
 clean-all:
 	rm -rf $(BUILDDIR)
