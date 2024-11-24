@@ -8,3 +8,4 @@ compile_commands.json
 doc/*
 *.svg
 LICENSE
+build/*
