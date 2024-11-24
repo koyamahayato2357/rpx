@@ -5,24 +5,9 @@
 # LOGLEVEL = [1| ]                 Enables logging
 # ASAN = [0|address|alignment|...] Enables specified sanitizer
 
-.PHONY: all run analyze clean-all clean install doc test
-
-OPTLEVEL ?= g
-
-CC := clang-18
-RUNNER :=
-
-SRCDIR := src
-INCDIR := include
-BUILDDIR = build
-
-CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
-          -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
-		  -faddrsig -march=native -mtune=native -O$(OPTLEVEL)
-LDFLAGS := -lm -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fuse-ld=lld
-OPTFLAGS = -ffast-math -fno-finite-math-only -DNDEBUG
-DEBUGFLAGS := -g3
-ASMFLAGS := -S -masm=intel
+.PHONY: run analyze clean-all clean install doc test
+.DEFAULT_GOAL := run
+MAKEFLAGS += -j$(shell nproc)
 
 # Alias
 ifdef OL
@@ -35,7 +20,26 @@ ifdef T
   TYPE ?= $(T)
 endif
 
-all: run
+OPTLEVEL ?= g
+
+CC := ccache clang-18
+RUNNER :=
+
+SRCDIR := src
+INCDIR := include
+BUILDDIR := build
+
+CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
+          -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
+		  -faddrsig -march=native -mtune=native -O$(OPTLEVEL)
+LDFLAGS := -lm -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fuse-ld=lld
+OPTFLAGS = -ffast-math -fno-finite-math-only -DNDEBUG
+DEBUGFLAGS := -g3
+ASMFLAGS := -S -masm=intel
+
+# Enables macro in the source
+CFLAGS += -DVERSION=\"$(shell git describe --tags --always)\"
+CFLAGS += -DDATE=\"$(shell date -I)\"
 
 ifdef LOGLEVEL
   CFLAGS += -DICECREAM
@@ -68,32 +72,39 @@ else ifneq ($(OPTLEVEL),0)
 endif
 
 # Build rules
-TARGETDIR := $(BUILDDIR)/T$(TYPE)-O$(OPTLEVEL)-L$(LOGLEVEL)-SAN$(ASAN)
+OUTDIR := $(BUILDDIR)/T$(TYPE)-O$(OPTLEVEL)-L$(LOGLEVEL)-SAN$(ASAN)-B$(shell git branch --show-current)
+TARGETDIR := $(OUTDIR)/target
+DEPDIR := $(OUTDIR)/dep
 OUTFILE := $(TARGETDIR)/rpx
 
 $(TARGETDIR):
 	mkdir -p $@
 
+$(DEPDIR):
+	mkdir -p $@
+
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
+DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
+
+-include $(DEPS)
 
 $(OUTFILE): $(OBJS)
-	$(CC) $(LDFLAGS) $^ -o $@
+	@echo "Linking $@"
+	@$(CC) $(LDFLAGS) $^ -o $@
 
-$(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR)
-	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -c -o $@
+$(TARGETDIR)/%.o: $(SRCDIR)/%.c
+	@echo "Compiling $<"
+	@$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -MMD -MF $(DEPDIR)/$*.d -c -o $@
 
-run: $(OUTFILE)
-	$(RUNNER) $<
-
-analyze:
-	clang-tidy $(SRCS) -- $(CFLAGS)
+run: $(TARGETDIR) $(DEPDIR) $(OUTFILE)
+	$(RUNNER) $(OUTFILE)
 
 clean-all:
 	rm -rf $(BUILDDIR)
 
 clean:
-	rm -rf $(TARGETDIR)
+	rm -rf $(OUTDIR)
 
 install: $(OUTFILE)
 	cp $^ /usr/local/bin/
@@ -104,7 +115,19 @@ doc:
 test:
 	$(MAKE) TYPE=test OPTLEVEL=g
 
+fmt:
+	clang-format -i $(SRCS)
+
+lint:
+	clang-tidy $(SRCS) -- $(CFLAGS)
+
+FP ?= /dev/stdout
+log:
+	@echo "Compiler: $(CC)" > $(FP)
+	@echo "CFLAGS: $(CFLAGS)" >> $(FP)
+	@echo "LDFLAGS: $(LDFLAGS)" >> $(FP)
+
 release:
-	$(MAKE) TYPE=test
-	$(MAKE) analyze
+	$(MAKE) TYPE=test OPTLEVEL=3
+	$(MAKE) lint
 	$(MAKE)
