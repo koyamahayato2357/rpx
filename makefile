@@ -96,6 +96,9 @@ $(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR) $(DEPDIR)
 run: $(TARGET)
 	$(RUNNER) $<
 
+run-%: $(TARGET)
+	$* $<
+
 clean-all:
 	rm -rf $(BUILDDIR)
 
@@ -105,11 +108,8 @@ clean:
 install: $(TARGET)
 	cp $^ /usr/local/bin/
 
-doc:
-	doxygen doc/Doxyfile
-
-test:
-	$(MAKE) TYPE=test OPTLEVEL=g
+doc: doc/Doxyfile
+	doxygen $<
 
 fmt:
 	clang-format -i $(SRCS)
@@ -122,6 +122,7 @@ log:
 	@echo "Compiler: $(CC)" > $(FP)
 	@echo "CFLAGS: $(CFLAGS)" >> $(FP)
 	@echo "LDFLAGS: $(LDFLAGS)" >> $(FP)
+	@echo "TARGET: $(TARGET)" >> $(FP)
 
 release:
 	$(MAKE) TYPE=test OPTLEVEL=3
