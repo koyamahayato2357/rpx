@@ -1,6 +1,6 @@
 a.out
 .cache
-build
+.build
 compile_commands.json
 rpx
 doc/html

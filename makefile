@@ -6,19 +6,12 @@
 # ASAN = [0|address|alignment|...] Enables specified sanitizer
 
 .PHONY: run analyze clean-all clean install doc test
-.DEFAULT_GOAL := run
 MAKEFLAGS += -j$(shell nproc)
 
 # Alias
-ifdef OL
-  OPTLEVEL ?= $(OL)
-endif
-ifdef LL
-  LOGLEVEL ?= $(LL)
-endif
-ifdef T
-  TYPE ?= $(T)
-endif
+OPTLEVEL ?= $(OL)
+LOGLEVEL ?= $(LL)
+TYPE ?= $(T)
 
 OPTLEVEL ?= g
 
@@ -27,7 +20,7 @@ RUNNER :=
 
 SRCDIR := src
 INCDIR := include
-BUILDDIR := build
+BUILDDIR := .build
 
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
           -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
@@ -38,7 +31,7 @@ DEBUGFLAGS := -g3
 ASMFLAGS := -S -masm=intel
 
 # Enables macro in the source
-CFLAGS += -DVERSION=\"$(shell git describe --tags --always)\"
+CFLAGS += -DVERSION=\"$(shell git describe --tags --always 2>/dev/null || echo "unknown")\"
 CFLAGS += -DDATE=\"$(shell date -I)\"
 
 ifdef LOGLEVEL
@@ -72,10 +65,13 @@ else ifneq ($(OPTLEVEL),0)
 endif
 
 # Build rules
-OUTDIR := $(BUILDDIR)/T$(TYPE)-O$(OPTLEVEL)-L$(LOGLEVEL)-SAN$(ASAN)-B$(shell git branch --show-current)
+GITBRANCH := $(shell git branch --show-current 2>/dev/null)
+HASH := $(shell echo '$(TYPE)$(OPTLEVEL)$(LOGLEVEL)$(ASAN)$(GITBRANCH)' | md5sum | cut -d' ' -f1)
+OUTDIR := $(BUILDDIR)/$(HASH)
 TARGETDIR := $(OUTDIR)/target
 DEPDIR := $(OUTDIR)/dep
-OUTFILE := $(TARGETDIR)/rpx
+TARGET := $(TARGETDIR)/$(shell basename $(PWD))
+.DEFAULT_GOAL := $(TARGET)
 
 $(TARGETDIR):
 	mkdir -p $@
@@ -89,7 +85,7 @@ DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 
 -include $(DEPS)
 
-$(OUTFILE): $(OBJS)
+$(TARGET): $(OBJS)
 	@echo "Linking $@"
 	@$(CC) $(LDFLAGS) $^ -o $@
 
@@ -97,7 +93,7 @@ $(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR) $(DEPDIR)
 	@echo "Compiling $<"
 	@$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -MMD -MF $(DEPDIR)/$*.d -c -o $@
 
-run: $(OUTFILE)
+run: $(TARGET)
 	$(RUNNER) $<
 
 clean-all:
@@ -106,7 +102,7 @@ clean-all:
 clean:
 	rm -rf $(OUTDIR)
 
-install: $(OUTFILE)
+install: $(TARGET)
 	cp $^ /usr/local/bin/
 
 doc:
