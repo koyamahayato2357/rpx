@@ -71,6 +71,7 @@ OUTDIR := $(BUILDDIR)/$(HASH)
 TARGETDIR := $(OUTDIR)/target
 DEPDIR := $(OUTDIR)/dep
 TARGET := $(TARGETDIR)/$(notdir $(PWD))
+DEPFLAGS := -MMD -MF $(DEPDIR)/$*.d
 .DEFAULT_GOAL := $(TARGET)
 
 $(TARGETDIR):
@@ -91,7 +92,7 @@ $(TARGET): $(OBJS)
 
 $(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR) $(DEPDIR)
 	@echo "Compiling $<"
-	@$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -MMD -MF $(DEPDIR)/$*.d -c -o $@
+	@$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -c -o $@
 
 run: $(TARGET)
 	$(RUNNER) $<
@@ -112,7 +113,7 @@ doc: doc/Doxyfile
 	doxygen $<
 
 fmt:
-	clang-format -i $(SRCS)
+	clang-format -i $(SRCS) $(INCDIR)/*.h
 
 lint:
 	clang-tidy $(SRCS) -- $(CFLAGS)
@@ -123,6 +124,10 @@ log:
 	@echo "CFLAGS: $(CFLAGS)" >> $(FP)
 	@echo "LDFLAGS: $(LDFLAGS)" >> $(FP)
 	@echo "TARGET: $(TARGET)" >> $(FP)
+
+info: $(TARGET)
+	@echo "target file size:"
+	@size $(TARGET)
 
 release:
 	$(MAKE) TYPE=test OPTLEVEL=3
