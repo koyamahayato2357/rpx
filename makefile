@@ -70,7 +70,7 @@ HASH := $(shell echo '$(TYPE)$(OPTLEVEL)$(LOGLEVEL)$(ASAN)$(GITBRANCH)' | md5sum
 OUTDIR := $(BUILDDIR)/$(HASH)
 TARGETDIR := $(OUTDIR)/target
 DEPDIR := $(OUTDIR)/dep
-TARGET := $(TARGETDIR)/$(shell basename $(PWD))
+TARGET := $(TARGETDIR)/$(notdir $(PWD))
 .DEFAULT_GOAL := $(TARGET)
 
 $(TARGETDIR):
