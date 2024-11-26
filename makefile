@@ -5,7 +5,7 @@
 # LOGLEVEL = [1| ]                 Enables logging
 # ASAN = [0|address|alignment|...] Enables specified sanitizer
 
-.PHONY: run analyze clean-all clean install doc test
+.PHONY: run analyze clean-all clean install doc test lint fmt help release log
 MAKEFLAGS += -j$(shell nproc)
 
 # Alias
@@ -33,10 +33,7 @@ ASMFLAGS := -S -masm=intel
 # Enables macro in the source
 CFLAGS += -DVERSION=\"$(shell git describe --tags --always 2>/dev/null || echo "unknown")\"
 CFLAGS += -DDATE=\"$(shell date -I)\"
-
-ifdef LOGLEVEL
-  CFLAGS += -DICECREAM
-endif
+CFLAGS += -DLOGLEVEL=$(LOGLEVEL)
 
 ifeq ($(TYPE),test)
   CFLAGS += -DTEST_MODE
@@ -70,7 +67,7 @@ HASH := $(shell echo '$(TYPE)$(OPTLEVEL)$(LOGLEVEL)$(ASAN)$(GITBRANCH)' | md5sum
 OUTDIR := $(BUILDDIR)/$(HASH)
 TARGETDIR := $(OUTDIR)/target
 DEPDIR := $(OUTDIR)/dep
-TARGET := $(TARGETDIR)/$(notdir $(PWD))
+TARGET := $(TARGETDIR)/$(notdir $(shell pwd))
 DEPFLAGS := -MMD -MF $(DEPDIR)/$*.d
 .DEFAULT_GOAL := $(TARGET)
 
@@ -128,6 +125,12 @@ log:
 info: $(TARGET)
 	@echo "target file size:"
 	@size $(TARGET)
+
+help:
+	@echo "release build: make release"
+	@echo "debug build: make"
+	@echo ""
+	@echo 'build files: .build/HASH/{target,dep}/*'
 
 release:
 	$(MAKE) TYPE=test OPTLEVEL=3
