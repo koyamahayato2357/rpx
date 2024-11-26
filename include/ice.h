@@ -1,5 +1,5 @@
 #pragma once
-#ifdef ICECREAM
+#ifndef NDEBUG
 #include "gene.h"
 
 typedef struct {
@@ -26,4 +26,6 @@ extern ic_t ic_conf;
     } while (0);                                                               \
     __VA_OPT__(x;)                                                             \
   })
+#else
+#define ic(...) __VA_ARGS__
 #endif

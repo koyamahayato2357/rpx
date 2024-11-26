@@ -1,4 +1,4 @@
-#ifdef ICECREAM
+#ifndef NDEBUG
 #include "ice.h"
 #include "testing.h"
 
