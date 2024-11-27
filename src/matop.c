@@ -5,14 +5,14 @@
 #include "exception.h"
 #include "gene.h"
 
-matrix_t NAN_matrix(size_t rows, size_t cols) {
+[[nodiscard]] matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
   for (size_t i = 0; i < rows * cols; i++)
     result.matrix[i] = SNAN;
   return result;
 }
 
-matrix_t new_matrix(size_t rows, size_t cols) {
+[[nodiscard]] matrix_t new_matrix(size_t rows, size_t cols) {
   return (matrix_t){.rows = rows,
                     .cols = cols,
                     .matrix = palloc(rows * cols * sizeof(double complex))};
@@ -37,7 +37,7 @@ bool meq(matrix_t *lhs, matrix_t *rhs) {
  * @brief Add/Sub between matrices
  * @throws ERR_DIMENTION_MISMATCH
  */
-#define MOPS(name, op)                                                      \
+#define MOPS(name, op)                                                         \
   matrix_t m##name(matrix_t *lhs, matrix_t *rhs) {                             \
     if (!mcheckdim(lhs, rhs))                                                  \
       throw(ERR_DIMENTION_MISMATCH);                                           \
@@ -56,7 +56,7 @@ MOPS(sub, -)
  * @brief Mul between matrices
  * @throws ERR_DIMENTION_MISMATCH
  */
-matrix_t mmul(matrix_t *lhs, matrix_t *rhs) {
+[[nodiscard]] matrix_t mmul(matrix_t *lhs, matrix_t *rhs) {
   if (unlikely(lhs->rows != rhs->cols && lhs->cols != rhs->rows))
     throw(ERR_DIMENTION_MISMATCH);
 
@@ -109,7 +109,7 @@ double det(matrix_t *A) {
  * @param[in] A Matrix
  * @return Inverted A
  */
-matrix_t inverse_matrix(matrix_t *A) {
+[[nodiscard]] matrix_t inverse_matrix(matrix_t *A) {
   int dim = A->rows;
 
   if (unlikely(A->rows != A->cols))

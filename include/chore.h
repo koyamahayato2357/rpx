@@ -2,6 +2,7 @@
 #include <dirent.h>
 #include <stdio.h>
 
+#define CAT(a, b) a##b
 #define TOSTR(x) #x
 #define TO2STR(x) TOSTR(x)
 #define HERE __FILE__ ":" TO2STR(__LINE__)
@@ -15,6 +16,7 @@
 #define dropdir ondrop(closedir_cl)
 #define likely(cond) __builtin_expect(!!(cond), 1)
 #define unlikely(cond) __builtin_expect(!!(cond), 0)
+#define _ auto CAT(_DISCARD_, __COUNTER__) [[maybe_unused]]
 
 struct winsize get_winsz();
 bool isint(double) __attribute__((const));

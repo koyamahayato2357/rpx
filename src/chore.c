@@ -56,13 +56,17 @@ void nfree(void *p) {
  * @param[in] sz Memory size
  * @throws ERR_ALLOCATION_FAILURE
  */
-void *ealloc(int sz) { return malloc(sz) ?: p$throw(ERR_ALLOCATION_FAILURE); }
+[[nodiscard]] void *ealloc(int sz) {
+  return malloc(sz) ?: p$throw(ERR_ALLOCATION_FAILURE);
+}
 
 /**
  * @brief panic alloc
  * @param[in] sz Memory size
  */
-void *palloc(int sz) { return malloc(sz) ?: p$panic(ERR_ALLOCATION_FAILURE); }
+[[nodiscard]] void *palloc(int sz) {
+  return malloc(sz) ?: p$panic(ERR_ALLOCATION_FAILURE);
+}
 
 /**
  * @brief free for drop
