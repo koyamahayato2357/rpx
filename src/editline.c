@@ -47,15 +47,9 @@ test(movecur) {
   expecteq(buf + 4, cur);
   movecur(-4, buf, &cur, len);
   expecteq(buf, cur);
-  ignerr {
-    movecur(-1, buf, &cur, len);
-    unreachable;
-  }
+  movecur(-1, buf, &cur, len);
   expecteq(buf, cur);
-  ignerr {
-    movecur(999, buf, &cur, len);
-    unreachable;
-  }
+  movecur(999, buf, &cur, len);
   expecteq(len, cur);
 }
 

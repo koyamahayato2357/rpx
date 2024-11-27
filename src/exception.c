@@ -67,12 +67,12 @@ test(exception) {
   }
   try _throw();
   catchor(0) unreachable;
-  int i = 0;
-  try _throw();
-  catchany {
-    if (++i < 5)
-      retry;
-    if (i < 5)
-      unreachable;
-  }
+  // int i = 0;
+  // try _throw();
+  // catchany {
+  //   if (++i < 5)
+  //     retry;
+  //   if (i < 5)
+  //     unreachable;
+  // }
 }

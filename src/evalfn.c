@@ -129,7 +129,7 @@ static void rpx_sysfn(evalinfo_t *ei) {
     *ei->rsp = *(ei->rsp - (int)*ei->rsp - 1);
     break;
   case 'r':
-    *ei->rsp = rand() / (double)RAND_MAX;
+    PUSH = rand() / (double)RAND_MAX;
     break;
   }
 }

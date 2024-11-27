@@ -1,7 +1,7 @@
 # TYPE = test                      Enables tests
 # TYPE = bench                     Enables benchmarks
 # TYPE = asm                       Generates assembly
-# OPTLEVEL = [0-3g]                Sets optimization/debug
+# OPTLEVEL = [0-3|g]               Sets optimization/debug
 # LOGLEVEL = [1| ]                 Enables logging
 # ASAN = [0|address|alignment|...] Enables specified sanitizer
 
