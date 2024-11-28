@@ -6,3 +6,5 @@ rpx
 doc/html
 doc/latex
 default.profraw
+.zig-cache
+zig-out
