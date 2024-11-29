@@ -1,8 +1,10 @@
 # make
+Default parallel build and cache mechanism for high speed
 - release: `make run OL=3`
 - benchmark: `make run T=bench OL=<as you liking>`
 
 # zig
+Modern, maintainable and simple
 - release: `zig build run --release=fast`
 - benchmark: `zig build run -DT=bench --release=<as you liking>`
 
