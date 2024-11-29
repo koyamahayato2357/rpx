@@ -10,7 +10,13 @@ const cflags: []const []const u8 = &[_][]const u8{
 };
 
 pub fn build(b: *std.Build) void {
-    const exe = b.addExecutable(.{ .name = std.fs.path.basename(b.build_root.path.?), .target = b.host, .use_lld = true });
+    const opti = b.standardOptimizeOption(.{});
+    const exe = b.addExecutable(.{
+        .name = std.fs.path.basename(b.build_root.path.?),
+        .target = b.host,
+        .use_lld = true,
+        .optimize = opti,
+    });
     exe.addIncludePath(b.path(incdir));
     exe.linkLibC();
 
@@ -31,7 +37,7 @@ pub fn build(b: *std.Build) void {
 }
 
 fn addSourceFromDir(exe: *std.Build.Step.Compile, dir: []const u8) void {
-    var diren = std.fs.cwd().openDir(dir, .{ .iterate = true  }) catch unreachable;
+    var diren = std.fs.cwd().openDir(dir, .{ .iterate = true }) catch unreachable;
     defer diren.close();
     var srcs = diren.iterate();
     while (srcs.next() catch unreachable) |src| {
