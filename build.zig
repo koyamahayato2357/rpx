@@ -11,20 +11,25 @@ pub fn build(b: *std.Build) void {
     exe.addIncludePath(b.path(incdir));
     exe.linkLibC();
 
-    var srcs = std.fs.cwd().openDir(srcdir, .{ .iterate = true }) catch unreachable;
-    defer srcs.close();
-
-    var srciter = srcs.iterate();
-    while (srciter.next() catch unreachable) |src|
-        if (std.mem.eql(u8, std.fs.path.extension(src.name), ".c")) {
-            const paths: []const []const u8 = &[_][]const u8{ srcdir, src.name };
-            // .file = srcdir ++ src.name
-            exe.addCSourceFile(.{ .file = .{ .cwd_relative = std.fs.path.join(allocor, paths) catch unreachable }, .flags = cflags });
-        };
+    addSourceFromDir(exe, srcdir);
 
     b.installArtifact(exe);
 
     const run_exe = b.addRunArtifact(exe);
     const run_step = b.step("run", "Run the code");
     run_step.dependOn(&run_exe.step);
+}
+
+fn addSourceFromDir(exe: *std.Build.Step.Compile, dir: []const u8) void {
+    var diren = std.fs.cwd().openDir(dir, .{ .iterate = true  }) catch unreachable;
+    defer diren.close();
+    var srcs = diren.iterate();
+    while (srcs.next() catch unreachable) |src| {
+        if (!std.mem.eql(u8, std.fs.path.extension(src.name), ".c"))
+            break;
+
+        const path: []const []const u8 = &[_][]const u8{ srcdir, src.name };
+        // .file = srcdir ++ src.name
+        exe.addCSourceFile(.{ .file = .{ .cwd_relative = std.fs.path.join(allocor, path) catch unreachable }, .flags = cflags });
+    }
 }
