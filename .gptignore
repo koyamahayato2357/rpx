@@ -9,3 +9,7 @@ doc/*
 *.svg
 LICENSE
 build/*
+tool/*
+.zig-cache/*
+zig-out/*
+.build/*
