@@ -4,12 +4,22 @@ const srcdir: []const u8 = "src";
 const incdir: []const u8 = "include";
 const cflags: []const []const u8 = &[_][]const u8{
     "-std=c23",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
 };
 
 pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{ .name = std.fs.path.basename(b.build_root.path.?), .target = b.host, .use_lld = true });
     exe.addIncludePath(b.path(incdir));
     exe.linkLibC();
+
+    const build_type: []const u8 = b.option([]const u8, "T", "Build type") orelse "";
+    if (std.mem.eql(u8, build_type, "test")) {
+        exe.defineCMacro("TEST_MODE", null);
+    } else if (std.mem.eql(u8, build_type, "bench")) {
+        exe.defineCMacro("BENCHMARK_MODE", null);
+    }
 
     addSourceFromDir(exe, srcdir);
 
