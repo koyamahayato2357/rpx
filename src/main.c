@@ -407,7 +407,7 @@ void print_real(double result) {
   if (isnan(result))
     return;
 
-  if (isint(result) && result < (double)LLONG_MAX && result > (double)LLONG_MIN)
+  if (isint(result))
     printf("result: %lld\n", (long long)result);
   else
     printf("result: %lf\n", result);
