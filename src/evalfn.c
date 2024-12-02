@@ -141,8 +141,15 @@ static void rpx_callfn(evalinfo_t *ei) {
   *ei->rsp = eval_expr_real(ei->info.usrfn.expr[fname]).elem.real;
 }
 
+static double handle_function_args(evalinfo_t *ei) {
+  int argnum = *ei->expr - '0';
+  if (ei->max_argc[ei->max_argci] < argnum)
+    ei->max_argc[ei->max_argci] = argnum;
+  return ei->info.usrfn.argv[9 - argnum];
+}
+
 static void rpx_lvars(evalinfo_t *ei) {
-  PUSH = (isdigit(*++ei->expr)) ? ei->info.usrfn.argv[9 - *ei->expr + '0']
+  PUSH = (isdigit(*++ei->expr)) ? handle_function_args(ei)
          : (islower(*ei->expr)) ? ei->info.usrvar[*ei->expr - 'a'].elem.real
                                 : $panic(ERR_CHAR_NOT_FOUND);
 }
@@ -154,14 +161,19 @@ static void rpx_wvars(evalinfo_t *ei) {
 static void rpx_end(evalinfo_t *ei) { ((char *)ei->expr)[1] = '\0'; }
 
 static void rpx_grpbgn(evalinfo_t *ei) {
+  ei->max_argci++;
+  memcpy(ei->info.usrfn.argv, ei->rsp - 8, 9 * sizeof(double));
+  set_rtinfo('r', ei->info);
   *++*(long **)&ei->rsp = (long)ei->rbp;
   ei->rbp = ei->rsp;
 }
 
 static void rpx_grpend(evalinfo_t *ei) {
+  double ret = *ei->rsp;
+  ei->rsp = ei->rbp - ei->max_argc[ei->max_argci];
   ei->rbp = *(double **)ei->rbp;
-  ei->rsp--;
-  *ei->rsp = ei->rsp[1];
+  *ei->rsp = ret;
+  ei->max_argc[ei->max_argci--] = 0;
 }
 
 void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {

@@ -7,6 +7,8 @@ typedef struct {
   double *rbp;
   double *rsp;
   char const *expr;
+  char max_argc[8];
+  _BitInt(3) max_argci;
   rtinfo_t info;
 } evalinfo_t;
 
