@@ -102,7 +102,7 @@ RPX offers four modes of operation:
 - `;`: Start of a comment (ignored until end of line)
 
 ## Commands
-- `:d[a-z(name)][1-9(argc)]`: Define function
+- `:d[a-z(name)]`: Define function
 - `:tc`: Toggle between real and complex number mode
 - `:tp`: Toggle between explicit and implicit function in plot
 - `:o`: Optimize expression (e.g., remove unnecessary spaces)

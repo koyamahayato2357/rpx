@@ -136,15 +136,13 @@ static void rpx_sysfn(evalinfo_t *ei) {
 
 static void rpx_callfn(evalinfo_t *ei) {
   int fname = *++ei->expr - 'a';
-  int argc = ei->info.usrfn.argc[fname];
-  *ei->rsp -= argc - 1;
-  memcpy(ei->info.usrfn.argv, ei->rsp, argc * sizeof(double));
+  memcpy(ei->info.usrfn.argv, ei->rsp - 8, 9 * sizeof(double));
   set_rtinfo('r', ei->info);
   *ei->rsp = eval_expr_real(ei->info.usrfn.expr[fname]).elem.real;
 }
 
 static void rpx_lvars(evalinfo_t *ei) {
-  PUSH = (isdigit(*++ei->expr)) ? ei->info.usrfn.argv[*ei->expr - '0' - 1]
+  PUSH = (isdigit(*++ei->expr)) ? ei->info.usrfn.argv[9 - *ei->expr + '0']
          : (islower(*ei->expr)) ? ei->info.usrvar[*ei->expr - 'a'].elem.real
                                 : $panic(ERR_CHAR_NOT_FOUND);
 }

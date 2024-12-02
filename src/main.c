@@ -472,7 +472,6 @@ void proc_cmds(char *cmd) {
   switch (*cmd++) {
   case 'd': // define user function
     int fname = *cmd++ - 'a';
-    info_r.usrfn.argc[fname] = *cmd++ - '0';
     strncpy(info_r.usrfn.expr[fname], cmd, BUFSIZE);
     set_rtinfo('r', info_r);
     break;

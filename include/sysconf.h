@@ -20,7 +20,6 @@ typedef struct {
 
 typedef struct {
   char expr[ALPN][BUFSIZE];
-  size_t argc[ALPN];
   double argv[9];
 } uf_t /* user function */;
 
