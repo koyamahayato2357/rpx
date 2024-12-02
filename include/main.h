@@ -2,7 +2,7 @@
 
 #pragma once
 #include <stdio.h>
-#define BUFSIZE 256
+#define BUFSIZE 64
 #define OP_CASE_ARTHM(op)                                                      \
   case *#op:                                                                   \
     for (; ei.rbp + 1 < ei.rsp; ei.rbp[1] op## = *ei.rsp--)                    \
