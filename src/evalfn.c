@@ -134,13 +134,6 @@ static void rpx_sysfn(evalinfo_t *ei) {
   }
 }
 
-static void rpx_callfn(evalinfo_t *ei) {
-  int fname = *++ei->expr - 'a';
-  memcpy(ei->info.usrfn.argv, ei->rsp - 8, 9 * sizeof(double));
-  set_rtinfo('r', ei->info);
-  *ei->rsp = eval_expr_real(ei->info.usrfn.expr[fname]).elem.real;
-}
-
 static double handle_function_args(evalinfo_t *ei) {
   int argnum = *ei->expr - '0';
   if (ei->max_argc[ei->max_argci] < argnum)
@@ -174,6 +167,18 @@ static void rpx_grpend(evalinfo_t *ei) {
   ei->rbp = *(double **)ei->rbp;
   *ei->rsp = ret;
   ei->max_argc[ei->max_argci--] = 0;
+}
+
+static void rpx_callfn(evalinfo_t *ei) {
+  int fname = *++ei->expr - 'a';
+  memcpy(ei->info.usrfn.argv, ei->rsp - 8, 9 * sizeof(double));
+  set_rtinfo('r', ei->info);
+  char const *temp = ei->expr;
+  ei->expr = ei->info.usrfn.expr[fname];
+  rpx_grpbgn(ei);
+  *ei->rsp = eval_expr_real_with_info(ei).elem.real;
+  rpx_grpend(ei);
+  ei->expr = temp;
 }
 
 void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
@@ -276,6 +281,15 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
 
 void (*get_eval_table(char c))(evalinfo_t *) { return eval_table[c - ' ']; }
 
+elem_t eval_expr_real_with_info(evalinfo_t *ei) {
+  for (; *ei->expr; ei->expr++)
+    get_eval_table (*ei->expr)(ei);
+  if (ei->info.histi < BUFSIZE)
+    ei->info.hist[ei->info.histi++].elem.real = *ei->rsp;
+  set_rtinfo('r', ei->info);
+  return (elem_t){.rtype = RTYPE_REAL, .elem = {.real = *ei->rsp}};
+}
+
 /**
  * @brief Evaluate real number expression
  * @param a_expr String of expression
@@ -286,12 +300,7 @@ elem_t eval_expr_real(char const *a_expr) {
   ei.rbp = ei.rsp = ei.stack;
   ei.info = get_rtinfo('r');
   ei.expr = a_expr;
-  for (; *ei.expr; ei.expr++)
-    get_eval_table (*ei.expr)(&ei);
-  if (ei.info.histi < BUFSIZE)
-    ei.info.hist[ei.info.histi++].elem.real = *ei.rsp;
-  set_rtinfo('r', ei.info);
-  return (elem_t){.rtype = RTYPE_REAL, .elem = {.real = *ei.rsp}};
+  return eval_expr_real_with_info(&ei);
 }
 
 test(eval_expr_real) {
@@ -299,7 +308,7 @@ test(eval_expr_real) {
   expecteq(22.0, eval_expr_real("$x 2 *").elem.real);
 
   // function
-  proc_cmds("df1$1$1+");
+  proc_cmds("df$1$1+");
   expecteq(10.0, eval_expr_real("5!f").elem.real);
 }
 
