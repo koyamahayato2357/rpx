@@ -24,7 +24,7 @@ BUILDDIR := .build
 
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
           -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
-		  -faddrsig -march=native -mtune=native -O$(OPTLEVEL)
+		  -faddrsig -march=native -mtune=native -funroll-loops -fomit-frame-pointer -O$(OPTLEVEL)
 LDFLAGS := -lm -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fuse-ld=lld
 OPTFLAGS = -ffast-math -fno-finite-math-only -DNDEBUG
 DEBUGFLAGS := -g3
@@ -42,10 +42,6 @@ endif
 
 ifeq ($(TYPE),bench)
   CFLAGS += -DBENCHMARK_MODE
-endif
-
-ifeq ($(TYPE),asm)
-  CFLAGS = $(ASMFLAGS)
 endif
 
 ifdef ASAN
@@ -112,6 +108,9 @@ fmt:
 
 lint:
 	clang-tidy $(SRCS) -- $(CFLAGS)
+
+%.s: %.c
+	$(CC) $< $(ASMFLAGS) $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -o $@
 
 FP ?= /dev/stdout
 log:
