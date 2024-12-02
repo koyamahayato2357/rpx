@@ -50,6 +50,7 @@ RPX offers four modes of operation:
 ### Basic Arithmetic Operators
 - `+` (addition), `-` (subtraction), `*` (multiplication), `/` (division)
 - `%` (modulo), `^` (exponentiation)
+- `=`, `<`, `>`, (comparison)
 
 ### Unary Functions
 - `A` (absolute value)
@@ -90,7 +91,15 @@ RPX offers four modes of operation:
 
 ### Function Operations
 - `!` followed by a letter (a-z) for function call
-format:  `... <$3> <$2> <$1> !<fn>`
+usage:  `... <$3> <$2> <$1> !<fn>`
+
+### Matrix Input Details
+- First element is the number of columns
+- Elements separated by commas
+- End matrix with `,]`
+- Example: `[2 1,2,3,4,]` creates a 2x2 matrix [1 2; 3 4]
+- Ignore the overhang
+- Example: `[2 5,3m,6i,1s,99]` creates a 2x2 matrix [5 -3; 6i sin(1)]
 
 ### Builtin Operations (can be dangerous)
 - `@a`: Reference to previous result (ANS)
@@ -107,7 +116,7 @@ format:  `... <$3> <$2> <$1> !<fn>`
 - `:tc`: Toggle between real and complex number mode
 - `:tp`: Toggle between explicit and implicit function in plot
 - `:o`: Optimize expression (e.g., remove unnecessary spaces)
-- `:p`: Plot graph (argument is $1)
+- `:p`: Plot graph (argument is $1, multidimensional is not supported)
 
 ## CommandLine Options
 - `-h`: Show help
@@ -125,19 +134,16 @@ Arguments whose first letter is not '-' are interpreted as file name.
 9. Matrix inverse: `[3 1,1,1m,2m,0,1,0,2,1,]~` -> [3 -0.5,-0.75,0.25,0.5,0.25,0.25,-1,-0.5,0.5,]
 10. Plot fn: `:p $1s` -> Graph of sin(x)
 11. Plot implicit fn: `:p $12^($22^)+1-` -> Circle of radius 1
-12. Display help and exit: `rpx -h -q`
-13. One-shot calculator: `rpx -r "1 1 +" -q`
-14. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
-15. Run script files: `rpx sample1.rpx sample2.rpx sample3.rpx`
+12. Define fn: `:df $1 2 ^` -> f(x) = x^2
+13. Define multi-arg fn: `:dg $1 $2 +` -> g(x, y) = x + y
+14. Call fn: `5 !f` -> f(5)
+15. Call multi-arg fn: `6 7 !g` -> g(7, 6)
+16. Display help and exit: `rpx -h -q`
+17. One-shot calculator: `rpx -r "1 1 +" -q`
+18. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
+19. Run script files: `rpx sample1.rpx sample2.rpx sample3.rpx`
 
 ## Error Handling
 - Unknown operators or functions result in an error message
 - Division by zero and other mathematical errors are not explicitly handled
 - NaN results are not displayed
-
-## Advanced Topics
-### Matrix Input Details
-- First element is the number of columns
-- Elements separated by commas
-- End matrix with `,]`
-- Example: `[2 1,2,3,4,]` creates a 2x2 matrix [1 2; 3 4]
