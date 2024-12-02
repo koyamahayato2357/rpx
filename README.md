@@ -90,6 +90,7 @@ RPX offers four modes of operation:
 
 ### Function Operations
 - `!` followed by a letter (a-z) for function call
+format:  `... <$3> <$2> <$1> !<fn>`
 
 ### Builtin Operations (can be dangerous)
 - `@a`: Reference to previous result (ANS)
