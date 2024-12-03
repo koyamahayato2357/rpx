@@ -311,7 +311,7 @@ end:
     if (rhs->rtype == RTYPE_MATR)
       nfree(rhs->elem.matr.matrix);
     *rhs = *rsp;
-  } else
+  } else if (info_c.histi < BUFSIZE)
     info_c.hist[info_c.histi++].elem.comp = rsp->elem.comp;
   set_rtinfo('c', info_c);
   return *rsp;
