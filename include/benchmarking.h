@@ -1,8 +1,8 @@
 #pragma once
+#ifdef BENCHMARK_MODE
 #include <stdio.h>
 #include <time.h>
 
-#ifdef BENCHMARK_MODE
 #define REPEAT 10000
 #define bench(name)                                                            \
   void BENCHMARKING_H_bench##name();                                           \
