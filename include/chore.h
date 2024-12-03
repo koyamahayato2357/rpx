@@ -2,7 +2,9 @@
 #include <dirent.h>
 #include <stdio.h>
 
-#define CAT(a, b) a##b
+#define EXPAND(a) a
+#define CAT(a, b) CAT2(a, b)
+#define CAT2(a, b) a##b
 #define TOSTR(x) #x
 #define TO2STR(x) TOSTR(x)
 #define HERE __FILE__ ":" TO2STR(__LINE__)
