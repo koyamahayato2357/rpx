@@ -9,13 +9,19 @@
 MAKEFLAGS += -j$(shell nproc)
 
 # Alias
+ifdef OL
 OPTLEVEL ?= $(OL)
+endif
+ifdef LL
 LOGLEVEL ?= $(LL)
+endif
+ifdef T
 TYPE ?= $(T)
+endif
 
 OPTLEVEL ?= g
 
-CC := ccache clang-18
+CC := ccache clang
 RUNNER :=
 
 SRCDIR := src
