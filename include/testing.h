@@ -36,20 +36,12 @@ extern int TESTING_H_fail;
 #define ARGS_2 ARGS_1, t->a2
 #define ARGS_3 ARGS_2, t->a3
 #define ARGS_4 ARGS_3, t->a4
-#define GET_ARG_1(_1, ...) _1
-#define GET_ARG_2(_1, _2, ...) _2
-#define GET_ARG_3(_1, _2, _3, ...) _3
-#define GET_ARG_4(_1, _2, _3, _4, ...) _4
-#define GET_ARG_5(_1, _2, _3, _4, _5, ...) _5
 #define MEM_DEF_1(_1) _1 a0;
 #define MEM_DEF_2(_1, _2) MEM_DEF_1(_1) _2 a1;
 #define MEM_DEF_3(_1, _2, _3) MEM_DEF_2(_1, _2) _3 a2;
 #define MEM_DEF_4(_1, _2, _3, _4) MEM_DEF_3(_1, _2, _3) _4 a3;
 #define MEM_DEF_5(_1, _2, _3, _4, _5) MEM_DEF_4(_1, _2, _3, _4) _5 a4;
 #define GET_M(_1, _2, _3, _4, _5, NAME, ...) NAME
-#define _VA_ARGC(_1, _2, _3, _4, _5, c, ...) c
-#define VA_ARGC(...) _VA_ARGC(__VA_ARGS__, 5, 4, 3, 2, 1, 0)
-#define EXPAND(...) __VA_ARGS__
 #define DO_FN(fn, ...)                                                         \
   fn(GET_M(__VA_ARGS__, ARGS_4, ARGS_3, ARGS_2, ARGS_1, ARGS_0))
 #define SIGNATURE(...)                                                         \

@@ -2,7 +2,7 @@
 #include <dirent.h>
 #include <stdio.h>
 
-#define EXPAND(a) a
+#define EXPAND(...) __VA_ARGS__
 #define CAT(a, b) CAT2(a, b)
 #define CAT2(a, b) a##b
 #define TOSTR(x) #x
