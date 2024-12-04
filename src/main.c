@@ -200,7 +200,7 @@ elem_t eval_expr_complex(char const *expr) {
       OVERWRITE_COMP('t', tan)
 
     case '~': {
-      matrix temp drop = rsp->elem.matr.matrix;
+      _ drop = rsp->elem.matr.matrix;
       ignerr rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
     } break;
     case '=':
