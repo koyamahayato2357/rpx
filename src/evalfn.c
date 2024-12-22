@@ -311,6 +311,9 @@ test(eval_expr_real) {
   // function
   proc_cmds("df$1$1+");
   expecteq(10.0, eval_expr_real("5!f").elem.real);
+
+  // nest group
+  expecteq(33.0, eval_expr_real("4 5 (5 6 (6 7 +) +) +").elem.real);
 }
 
 bench(eval_expr_real) {
@@ -318,26 +321,14 @@ bench(eval_expr_real) {
   eval_expr_real("4 5 ^");
   eval_expr_real("1s2^(1c2^)+");
   eval_expr_real("  5    6    10    - 5  /");
-
-  // Test ANS functionality
   eval_expr_real("5");
   eval_expr_real("@a");
-
-  // Test variable operations
   eval_expr_real("10 &x");
   eval_expr_real("$x 2 *");
-
-  // Test more complex expressions
   eval_expr_real("2 3 ^ (4 5 *) + (6 7 /) -");
-
-  // Test trigonometric functions
   eval_expr_real("\\P 2 / s");
   eval_expr_real("\\P 4 / c");
-
-  // Test logarithmic functions
   eval_expr_real("2 l2");
   eval_expr_real("100 lc");
-
-  // Test error handling
   eval_expr_real("1 0 /");
 }
