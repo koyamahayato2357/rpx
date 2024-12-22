@@ -31,8 +31,9 @@ BUILDDIR := .build
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
           -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
 		  -faddrsig -march=native -mtune=native -funroll-loops -fomit-frame-pointer -O$(OPTLEVEL)
-LDFLAGS := -lm -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fuse-ld=lld
+LDFLAGS := -lm
 OPTFLAGS = -ffast-math -fno-finite-math-only -DNDEBUG
+OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fuse-ld=lld -Wl,--gc-sections -Wl,--icf=all -s
 DEBUGFLAGS := -g3
 ASMFLAGS := -S -masm=intel
 
@@ -43,7 +44,6 @@ CFLAGS += -DLOGLEVEL=$(LOGLEVEL)
 
 ifeq ($(TYPE),test)
   CFLAGS += -DTEST_MODE
-  ASAN ?= address
 endif
 
 ifeq ($(TYPE),bench)
@@ -60,7 +60,7 @@ ifeq ($(OPTLEVEL),g)
   RUNNER := lldb
 else ifneq ($(OPTLEVEL),0)
   CFLAGS += $(OPTFLAGS)
-  LDFLAGS += -Wl,--gc-sections -Wl,--icf=all -s
+  LDFLAGS += $(OPTLDFLAGS)
 endif
 
 # Build rules
