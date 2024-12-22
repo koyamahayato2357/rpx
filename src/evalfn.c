@@ -151,7 +151,7 @@ static void rpx_wvars(evalinfo_t *ei) {
   ei->info.usrvar[*++ei->expr - 'a'].elem.real = *ei->rsp;
 }
 
-static void rpx_end(evalinfo_t *ei) { ((char *)ei->expr)[1] = '\0'; }
+static void rpx_end(evalinfo_t *ei) { ei->iscontinue = false; }
 
 static void rpx_grpbgn(evalinfo_t *ei) {
   ei->max_argci++;
@@ -282,7 +282,7 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
 void (*get_eval_table(char c))(evalinfo_t *) { return eval_table[c - ' ']; }
 
 elem_t eval_expr_real_with_info(evalinfo_t *ei) {
-  for (; *ei->expr; ei->expr++)
+  for (; *ei->expr && ei->iscontinue; ei->expr++)
     get_eval_table (*ei->expr)(ei);
   if (ei->info.histi < BUFSIZE)
     ei->info.hist[ei->info.histi++].elem.real = *ei->rsp;
@@ -300,6 +300,7 @@ elem_t eval_expr_real(char const *a_expr) {
   ei.rbp = ei.rsp = ei.stack;
   ei.info = get_rtinfo('r');
   ei.expr = a_expr;
+  ei.iscontinue = true;
   return eval_expr_real_with_info(&ei);
 }
 
