@@ -110,6 +110,7 @@ usage:  `... <$3> <$2> <$1> !<fn>`
 ### Other
 - `( )`: Specify the valid range of the operator
 - `;`: Start of a comment (ignored until end of line)
+- ` `: Required at the number breaks, but ignored elsewhere
 
 ## Commands
 - `:d[a-z(name)]`: Define function
@@ -138,10 +139,12 @@ Arguments whose first letter is not '-' are interpreted as file name.
 13. Define multi-arg fn: `:dg $1 $2 +` -> g(x, y) = x + y
 14. Call fn: `5 !f` -> f(5)
 15. Call multi-arg fn: `6 7 !g` -> g(7, 6)
-16. Display help and exit: `rpx -h -q`
-17. One-shot calculator: `rpx -r "1 1 +" -q`
-18. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
-19. Run script files: `rpx sample1.rpx sample2.rpx sample3.rpx`
+16. Lambda fn: `4 ($1 2 *)` -> 8
+17. Lambda multi-arg fn: `5 6 ($1 $2 +)` -> 11
+18. Display help and exit: `rpx -h -q`
+19. One-shot calculator: `rpx -r "1 1 +" -q`
+20. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
+21. Run script files: `rpx sample1.rpx sample2.rpx sample3.rpx`
 
 ## Error Handling
 - Unknown operators or functions result in an error message
