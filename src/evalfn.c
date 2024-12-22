@@ -138,7 +138,7 @@ static double handle_function_args(evalinfo_t *ei) {
   int argnum = *ei->expr - '0';
   if (ei->max_argc[ei->max_argci] < argnum)
     ei->max_argc[ei->max_argci] = argnum;
-  return ei->info.usrfn.argv[9 - argnum];
+  return ei->info.usrfn.argv[8 - argnum];
 }
 
 static void rpx_lvars(evalinfo_t *ei) {
@@ -154,30 +154,43 @@ static void rpx_wvars(evalinfo_t *ei) {
 static void rpx_end(evalinfo_t *ei) { ei->iscontinue = false; }
 
 static void rpx_grpbgn(evalinfo_t *ei) {
-  ei->max_argci++;
-  memcpy(ei->info.usrfn.argv, ei->rsp - 8, 9 * sizeof(double));
-  set_rtinfo('r', ei->info);
-  *++*(long **)&ei->rsp = (long)ei->rbp;
+  *++*(double ***)&ei->rsp = ei->rbp;
   ei->rbp = ei->rsp;
 }
 
 static void rpx_grpend(evalinfo_t *ei) {
   double ret = *ei->rsp;
-  ei->rsp = ei->rbp - ei->max_argc[ei->max_argci];
+  ei->rsp = ei->rbp;
   ei->rbp = *(double **)ei->rbp;
   *ei->rsp = ret;
-  ei->max_argc[ei->max_argci--] = 0;
+}
+
+static void rpx_lmdbgn(evalinfo_t *ei) {
+  rpx_grpbgn(ei);
+  memcpy(ei->callstack[++ei->callstacki], ei->info.usrfn.argv,
+         8 * sizeof(double));
+  memcpy(ei->info.usrfn.argv, ei->rsp - 8, 8 * sizeof(double));
+  set_rtinfo('r', ei->info);
+  ei->max_argc[++ei->max_argci] = 0;
+}
+
+static void rpx_lmdend(evalinfo_t *ei) {
+  rpx_grpend(ei);
+  memcpy(ei->info.usrfn.argv, ei->callstack[ei->callstacki--],
+         8 * sizeof(double));
+  set_rtinfo('r', ei->info);
+  double ret = *ei->rsp;
+  ei->rsp -= ei->max_argc[ei->max_argci];
+  *ei->rsp = ret;
 }
 
 static void rpx_callfn(evalinfo_t *ei) {
   int fname = *++ei->expr - 'a';
-  memcpy(ei->info.usrfn.argv, ei->rsp - 8, 9 * sizeof(double));
-  set_rtinfo('r', ei->info);
   char const *temp = ei->expr;
   ei->expr = ei->info.usrfn.expr[fname];
-  rpx_grpbgn(ei);
+  rpx_lmdbgn(ei);
   *ei->rsp = eval_expr_real_with_info(ei).elem.real;
-  rpx_grpend(ei);
+  rpx_lmdend(ei);
   ei->expr = temp;
 }
 
@@ -273,9 +286,9 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
     nullptr,     // 'x'
     nullptr,     // 'y'
     nullptr,     // 'z'
-    nullptr,     // '{'
+    rpx_lmdbgn,  // '{'
     nullptr,     // '|'
-    nullptr,     // '}'
+    rpx_lmdend,  // '}'
     nullptr,     // '~'
 };
 
@@ -301,6 +314,7 @@ elem_t eval_expr_real(char const *a_expr) {
   ei.info = get_rtinfo('r');
   ei.expr = a_expr;
   ei.iscontinue = true;
+  ei.callstacki = ~0;
   return eval_expr_real_with_info(&ei);
 }
 
@@ -314,6 +328,9 @@ test(eval_expr_real) {
 
   // nest group
   expecteq(33.0, eval_expr_real("4 5 (5 6 (6 7 +) +) +").elem.real);
+
+  // lambda
+  expecteq(8.0, eval_expr_real("4 {$1 2 *}").elem.real);
 }
 
 bench(eval_expr_real) {

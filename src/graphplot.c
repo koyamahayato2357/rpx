@@ -51,12 +51,12 @@ void plotexpr(char const *expr) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
-    info.usrfn.argv[8] = x0;
+    info.usrfn.argv[7] = x0;
     set_rtinfo('r', info);
     double y0 = eval_expr_real(expr).elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * j + pcfg.dx;
-      info.usrfn.argv[8] = x1;
+      info.usrfn.argv[7] = x1;
       set_rtinfo('r', info);
       double y1 = eval_expr_real(expr).elem.real;
       putchar(ispointgraph(y0, y1, y) ? '*' : ' ');
@@ -73,20 +73,20 @@ void plotexpr_implicit(char const *expr) {
   plotcfg_t pcfg = get_plotcfg();
   rtinfo_t info = get_rtinfo('r');
 
-  double y0 = pcfg.yn - pcfg.dy;
+  double y0 = pcfg.yx + pcfg.dy;
   for (int i = 0; i < pcfg.dispy; i++) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
-    double y1 = pcfg.yx - pcfg.dy * i - pcfg.dy;
-    info.usrfn.argv[8] = x0;
-    info.usrfn.argv[7] = y0;
+    double y1 = pcfg.yx - pcfg.dy * (i - 1);
+    info.usrfn.argv[7] = x0;
+    info.usrfn.argv[6] = y0;
     set_rtinfo('r', info);
     double res0 = eval_expr_real(expr).elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
-      double x1 = pcfg.xn + pcfg.dx * j + pcfg.dx;
-      info.usrfn.argv[8] = x1;
-      info.usrfn.argv[7] = y1;
+      double x1 = pcfg.xn + pcfg.dx * (j + 1);
+      info.usrfn.argv[7] = x1;
+      info.usrfn.argv[6] = y1;
       set_rtinfo('r', info);
       double res1 = eval_expr_real(expr).elem.real;
       putchar(ispointgraph(res0, res1, 0) ? '*' : ' ');
