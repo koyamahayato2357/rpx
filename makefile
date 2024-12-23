@@ -30,12 +30,14 @@ INCDIR := include/
 BUILDDIR := .build/
 INSTALLDIR ?= /usr/local/
 
-CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
-          -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
-		  -faddrsig -march=native -mtune=native -funroll-loops -fomit-frame-pointer -O$(OPTLEVEL)
+CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wextra   \
+          -Wall -O$(OPTLEVEL)
+OPTFLAGS := -ffast-math -fno-finite-math-only -DNDEBUG -faddrsig -march=native \
+           -mtune=native -funroll-loops -fomit-frame-pointer -fdata-sections   \
+           -fforce-emit-vtables -ffunction-sections
 LDFLAGS := -lm
-OPTFLAGS = -ffast-math -fno-finite-math-only -DNDEBUG
-OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination -fuse-ld=lld -Wl,--gc-sections -Wl,--icf=all -s
+OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination \
+              -fuse-ld=lld -Wl,--gc-sections -Wl,--icf=all -s
 DEBUGFLAGS := -g3
 ASMFLAGS := -S -masm=intel
 
