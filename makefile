@@ -68,24 +68,27 @@ endif
 # Build rules
 GITBRANCH := $(shell git branch --show-current 2>/dev/null)
 HASH := $(shell echo '$(TYPE)$(OPTLEVEL)$(LOGLEVEL)$(ASAN)$(GITBRANCH)' | md5sum | cut -d' ' -f1)
-OUTDIR := $(BUILDDIR)/$(HASH)/
-TARGETDIR := $(OUTDIR)/target/
-DEPDIR := $(OUTDIR)/dep/
-TARGET := $(TARGETDIR)/$(notdir $(shell pwd))
-DEPFLAGS := -MMD -MF $(DEPDIR)/$*.d
+OUTDIR := $(BUILDDIR)$(HASH)/
+TARGETDIR := $(OUTDIR)target/
+DEPDIR := $(OUTDIR)dep/
+TARGET := $(TARGETDIR)$(notdir $(shell pwd))
+DEPFLAGS = -MM -MP -MF $(DEPDIR)$*.d
 .DEFAULT_GOAL := $(TARGET)
 
-SRCS = $(wildcard $(SRCDIR)/*.c)
-OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
-DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
+SRCS = $(wildcard $(SRCDIR)*.c)
+OBJS = $(patsubst $(SRCDIR)%.c,$(TARGETDIR)%.o,$(SRCS))
+DEPS = $(patsubst $(SRCDIR)%.c,$(DEPDIR)%.d,$(SRCS))
 
 -include $(DEPS)
 
 $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-$(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR) $(DEPDIR)
-	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -c -o $@
+$(TARGETDIR)%.o: $(SRCDIR)%.c $(DEPDIR)%.d | $(TARGETDIR)
+	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -c -o $@
+
+$(DEPDIR)%.d: $(SRCDIR)%.c | $(DEPDIR)
+	$(CC) $< -I$(INCDIR) $(DEPFLAGS)
 
 %/:
 	mkdir -p $@
@@ -109,7 +112,7 @@ doc: doc/Doxyfile
 	doxygen $<
 
 fmt:
-	clang-format -i $(SRCS) $(INCDIR)/*.h
+	clang-format -i $(SRCS) $(INCDIR)*.h
 
 lint:
 	clang-tidy $(SRCS) -- $(CFLAGS)
