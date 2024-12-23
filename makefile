@@ -21,12 +21,13 @@ endif
 
 OPTLEVEL ?= g
 
-CC := ccache clang
+CCACHE := $(shell which ccache 2>/dev/null)
+CC := $(CCACHE) clang
 RUNNER :=
 
-SRCDIR := src
-INCDIR := include
-BUILDDIR := .build
+SRCDIR := src/
+INCDIR := include/
+BUILDDIR := .build/
 
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
           -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
@@ -66,18 +67,12 @@ endif
 # Build rules
 GITBRANCH := $(shell git branch --show-current 2>/dev/null)
 HASH := $(shell echo '$(TYPE)$(OPTLEVEL)$(LOGLEVEL)$(ASAN)$(GITBRANCH)' | md5sum | cut -d' ' -f1)
-OUTDIR := $(BUILDDIR)/$(HASH)
-TARGETDIR := $(OUTDIR)/target
-DEPDIR := $(OUTDIR)/dep
+OUTDIR := $(BUILDDIR)/$(HASH)/
+TARGETDIR := $(OUTDIR)/target/
+DEPDIR := $(OUTDIR)/dep/
 TARGET := $(TARGETDIR)/$(notdir $(shell pwd))
 DEPFLAGS := -MMD -MF $(DEPDIR)/$*.d
 .DEFAULT_GOAL := $(TARGET)
-
-$(TARGETDIR):
-	mkdir -p $@
-
-$(DEPDIR):
-	mkdir -p $@
 
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
@@ -90,6 +85,9 @@ $(TARGET): $(OBJS)
 
 $(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR) $(DEPDIR)
 	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -c -o $@
+
+%/:
+	mkdir -p $@
 
 run: $(TARGET)
 	$(RUNNER) $<
