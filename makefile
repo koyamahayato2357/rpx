@@ -28,6 +28,7 @@ RUNNER :=
 SRCDIR := src/
 INCDIR := include/
 BUILDDIR := .build/
+INSTALLDIR ?= /usr/local/
 
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wall    \
           -Wextra -fforce-emit-vtables -ffunction-sections -fdata-sections    \
@@ -101,8 +102,8 @@ clean-all:
 clean:
 	rm -rf $(OUTDIR)
 
-install: $(TARGET)
-	cp $^ /usr/local/bin/
+install: $(TARGET) | $(INSTALLDIR)
+	cp $^ $(INSTALLDIR)bin/
 
 doc: doc/Doxyfile
 	doxygen $<
