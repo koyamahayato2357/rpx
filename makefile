@@ -96,7 +96,7 @@ $(DEPDIR)%.d: $(SRCDIR)%.c | $(DEPDIR)
 	mkdir -p $@
 
 run: $(TARGET)
-	$(RUNNER) $<
+	-$(RUNNER) $<
 
 run-%: $(TARGET)
 	$* $<
