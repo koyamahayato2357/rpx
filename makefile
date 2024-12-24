@@ -22,8 +22,7 @@ endif
 OPTLEVEL ?= g
 
 CCACHE := $(shell which ccache 2>/dev/null)
-CC := $(CCACHE) clang
-RUNNER :=
+CC := $(CCACHE) $(if $(shell which clang),clang,gcc)
 
 SRCDIR := src/
 INCDIR := include/
@@ -73,7 +72,8 @@ HASH := $(shell echo '$(TYPE)$(OPTLEVEL)$(LOGLEVEL)$(ASAN)$(GITBRANCH)' | md5sum
 OUTDIR := $(BUILDDIR)$(HASH)/
 TARGETDIR := $(OUTDIR)target/
 DEPDIR := $(OUTDIR)dep/
-TARGET := $(TARGETDIR)$(notdir $(shell pwd))
+TARGETNAME := $(notdir $(shell pwd))
+TARGET := $(TARGETDIR)$(TARGETNAME)
 DEPFLAGS = -MM -MP -MF $(DEPDIR)$*.d
 .DEFAULT_GOAL := $(TARGET)
 
@@ -84,7 +84,7 @@ DEPS = $(patsubst $(SRCDIR)%.c,$(DEPDIR)%.d,$(SRCS))
 -include $(DEPS)
 
 $(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) $^ -o $@
+	$(CC) $(LDFLAGS) $(EXTRALDFLAGS) $^ -o $@
 
 $(TARGETDIR)%.o: $(SRCDIR)%.c $(DEPDIR)%.d | $(TARGETDIR)
 	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -c -o $@
@@ -92,23 +92,34 @@ $(TARGETDIR)%.o: $(SRCDIR)%.c $(DEPDIR)%.d | $(TARGETDIR)
 $(DEPDIR)%.d: $(SRCDIR)%.c | $(DEPDIR)
 	$(CC) $< -I$(INCDIR) $(DEPFLAGS)
 
+# Generic directory creator
 %/:
 	mkdir -p $@
 
+# e.g.) run with valgrind
+# make run RUNNER=valgrind
+# e.g.) don't use lldb (default debug RUNNER) in debug run
+# make run RUNNER=
 run: $(TARGET)
-	-$(RUNNER) $<
+	$(RUNNER) $<
 
+# `make run-foo` is same as `make run RUNNER=foo`
 run-%: $(TARGET)
 	$* $<
 
 clean-all:
 	rm -rf $(BUILDDIR)
 
+# e.g.) remove test build for opt level 3
+# make clean OPTLEVEL=3 TYPE=test
 clean:
 	rm -rf $(OUTDIR)
 
 install: $(TARGET) | $(INSTALLDIR)
 	cp $^ $(INSTALLDIR)bin/
+
+uninstall:
+	rm $(INSTALLDIR)bin/$(TARGETNAME)
 
 doc: doc/Doxyfile
 	doxygen $<
@@ -128,6 +139,9 @@ log:
 	@echo "CFLAGS: $(CFLAGS)" >> $(FP)
 	@echo "LDFLAGS: $(LDFLAGS)" >> $(FP)
 	@echo "TARGET: $(TARGET)" >> $(FP)
+	@echo "SRCS: $(SRCS)" >> $(FP)
+	@echo "OBJS: $(OBJS)" >> $(FP)
+	@echo "DEPS: $(DEPS)" >> $(FP)
 
 info: $(TARGET)
 	@echo "target file size:"
@@ -142,4 +156,4 @@ help:
 release:
 	$(MAKE) TYPE=test OPTLEVEL=3
 	$(MAKE) lint
-	$(MAKE)
+	$(MAKE) OPTLEVEL=3
