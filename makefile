@@ -68,7 +68,8 @@ endif
 
 # Build rules
 GITBRANCH := $(shell git branch --show-current 2>/dev/null)
-HASH := $(shell echo '$(TYPE)$(OPTLEVEL)$(LOGLEVEL)$(ASAN)$(GITBRANCH)' | md5sum | cut -d' ' -f1)
+SEED = $(CC)$(EXTRAFLAGS)$(CFLAGS)$(LDFLAGS)$(GITBRANCH)
+HASH := $(shell echo '$(SEED)' | md5sum | cut -d' ' -f1)
 OUTDIR := $(BUILDDIR)$(HASH)/
 TARGETDIR := $(OUTDIR)target/
 DEPDIR := $(OUTDIR)dep/
