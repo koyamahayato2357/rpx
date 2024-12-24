@@ -39,6 +39,7 @@ typedef enum {
   RTYPE_REAL = 0x01,
   RTYPE_COMP = 0x02,
   RTYPE_MATR = 0x04,
+  RTYPE_LAMB = 0x08,
 } rtype_t /* result type */;
 
 //! @brief Wrapper of types to handle
@@ -46,6 +47,7 @@ typedef union {
   double real;
   double complex comp;
   matrix_t matr;
+  char *lamb;
 } result_t;
 
 //! @brief Tagged union of types to handle
