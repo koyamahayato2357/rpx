@@ -386,6 +386,23 @@ test(eval_expr_complex) {
   free(resultm.matrix);
 }
 
+bench(eval_expr_complex) {
+  eval_expr_complex("1 2 3 4 5 +");
+  eval_expr_complex("4 5 ^");
+  eval_expr_complex("1s2^(1c2^)+");
+  eval_expr_complex("  5    6    10    - 5  /");
+  eval_expr_complex("5");
+  eval_expr_complex("@a");
+  eval_expr_complex("10 &x");
+  eval_expr_complex("$x 2 *");
+  eval_expr_complex("2 3 ^ (4 5 *) + (6 7 /) -");
+  eval_expr_complex("\\P 2 / s");
+  eval_expr_complex("\\P 4 / c");
+  eval_expr_complex("2 l2");
+  eval_expr_complex("100 lc");
+  eval_expr_complex("1 0 /");
+}
+
 /**
  * @brief Output elem_t in appropriate format
  * @param[in] elem Output comtent
