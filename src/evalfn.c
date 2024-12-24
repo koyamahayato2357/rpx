@@ -201,22 +201,27 @@ static void rpx_callfn(evalinfo_t *ei) {
   ei->expr = temp;
 }
 
+static void rpx_undfned(evalinfo_t *ei) {
+  _ = ei;
+  throw(ERR_UNKNOWN_CHAR);
+}
+
 void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
     rpx_space,   // ' '
     rpx_callfn,  // '!'
-    nullptr,     // '"'
-    nullptr,     // '#'
+    rpx_undfned, // '"'
+    rpx_undfned, // '#'
     rpx_lvars,   // '$'
     rpx_mod,     // '%'
     rpx_wvars,   // '&'
-    nullptr,     // '''
+    rpx_undfned, // '''
     rpx_grpbgn,  // '('
     rpx_grpend,  // ')'
     rpx_mul,     // '*'
     rpx_add,     // '+'
     rpx_end,     // ','
     rpx_sub,     // '-'
-    nullptr,     // '.'
+    rpx_undfned, // '.'
     rpx_div,     // '/'
     rpx_parse,   // '0'
     rpx_parse,   // '1'
@@ -228,81 +233,81 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
     rpx_parse,   // '7'
     rpx_parse,   // '8'
     rpx_parse,   // '9'
-    nullptr,     // ':'
+    rpx_undfned, // ':'
     rpx_end,     // ';'
     rpx_lt,      // '<'
     rpx_eql,     // '='
     rpx_gt,      // '>'
-    nullptr,     // '?'
+    rpx_undfned, // '?'
     rpx_sysfn,   // '@'
     rpx_fabs,    // 'A'
-    nullptr,     // 'B'
+    rpx_undfned, // 'B'
     rpx_ceil,    // 'C'
-    nullptr,     // 'D'
-    nullptr,     // 'E'
+    rpx_undfned, // 'D'
+    rpx_undfned, // 'E'
     rpx_floor,   // 'F'
-    nullptr,     // 'G'
-    nullptr,     // 'H'
-    nullptr,     // 'I'
-    nullptr,     // 'J'
-    nullptr,     // 'K'
+    rpx_undfned, // 'G'
+    rpx_undfned, // 'H'
+    rpx_undfned, // 'I'
+    rpx_undfned, // 'J'
+    rpx_undfned, // 'K'
     rpx_logbase, // 'L'
-    nullptr,     // 'M'
-    nullptr,     // 'N'
-    nullptr,     // 'O'
-    nullptr,     // 'P'
-    nullptr,     // 'Q'
+    rpx_undfned, // 'M'
+    rpx_undfned, // 'N'
+    rpx_undfned, // 'O'
+    rpx_undfned, // 'P'
+    rpx_undfned, // 'Q'
     rpx_round,   // 'R'
-    nullptr,     // 'S'
-    nullptr,     // 'T'
-    nullptr,     // 'U'
-    nullptr,     // 'V'
-    nullptr,     // 'W'
-    nullptr,     // 'X'
-    nullptr,     // 'Y'
-    nullptr,     // 'Z'
-    nullptr,     // '['
+    rpx_undfned, // 'S'
+    rpx_undfned, // 'T'
+    rpx_undfned, // 'U'
+    rpx_undfned, // 'V'
+    rpx_undfned, // 'W'
+    rpx_undfned, // 'X'
+    rpx_undfned, // 'Y'
+    rpx_undfned, // 'Z'
+    rpx_undfned, // '['
     rpx_const,   // '\'
-    nullptr,     // ']'
+    rpx_undfned, // ']'
     rpx_pow,     // '^'
-    nullptr,     // '_'
-    nullptr,     // '`'
+    rpx_undfned, // '_'
+    rpx_undfned, // '`'
     rpx_arc,     // 'a'
-    nullptr,     // 'b'
+    rpx_undfned, // 'b'
     rpx_cos,     // 'c'
     rpx_todeg,   // 'd'
-    nullptr,     // 'e'
-    nullptr,     // 'f'
+    rpx_undfned, // 'e'
+    rpx_undfned, // 'f'
     rpx_tgamma,  // 'g'
     rpx_hyp,     // 'h'
     rpx_intfn,   // 'i'
-    nullptr,     // 'j'
-    nullptr,     // 'k'
+    rpx_undfned, // 'j'
+    rpx_undfned, // 'k'
     rpx_log,     // 'l'
     rpx_nagate,  // 'm'
-    nullptr,     // 'n'
-    nullptr,     // 'o'
-    nullptr,     // 'p'
-    nullptr,     // 'q'
+    rpx_undfned, // 'n'
+    rpx_undfned, // 'o'
+    rpx_undfned, // 'p'
+    rpx_undfned, // 'q'
     rpx_torad,   // 'r'
     rpx_sin,     // 's'
     rpx_tan,     // 't'
-    nullptr,     // 'u'
-    nullptr,     // 'v'
-    nullptr,     // 'w'
-    nullptr,     // 'x'
-    nullptr,     // 'y'
-    nullptr,     // 'z'
+    rpx_undfned, // 'u'
+    rpx_undfned, // 'v'
+    rpx_undfned, // 'w'
+    rpx_undfned, // 'x'
+    rpx_undfned, // 'y'
+    rpx_undfned, // 'z'
     rpx_lmdbgn,  // '{'
-    nullptr,     // '|'
+    rpx_undfned, // '|'
     rpx_lmdend,  // '}'
-    nullptr,     // '~'
+    rpx_undfned, // '~'
 };
 
 void (*get_eval_table(char c))(evalinfo_t *) { return eval_table[c - ' ']; }
 
 elem_t eval_expr_real_with_info(evalinfo_t *ei) {
-  for (; *ei->expr && ei->iscontinue; ei->expr++)
+  for (; likely(*ei->expr && ei->iscontinue); ei->expr++)
     get_eval_table (*ei->expr)(ei);
   if (ei->info.histi < BUFSIZE)
     ei->info.hist[ei->info.histi++].elem.real = *ei->rsp;
@@ -317,7 +322,7 @@ elem_t eval_expr_real_with_info(evalinfo_t *ei) {
  */
 elem_t eval_expr_real(char const *a_expr) {
   evalinfo_t ei;
-  ei.rbp = ei.rsp = ei.stack;
+  ei.rbp = ei.rsp = ei.stack - 1;
   ei.info = get_rtinfo('r');
   ei.expr = a_expr;
   ei.iscontinue = true;
@@ -338,6 +343,9 @@ test(eval_expr_real) {
 
   // lambda
   expecteq(8.0, eval_expr_real("4 {$1 2 *}").elem.real);
+  expecteq(
+      19.0,
+      eval_expr_real("1 5 {$1 3 +} {5 $1 * {$1 4 -} {$1 2 /} $2 +}").elem.real);
 }
 
 bench(eval_expr_real) {
