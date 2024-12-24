@@ -86,9 +86,6 @@ RPX offers four modes of operation:
 - `$[a-z]` followed by a letter (a-z) for variable reference
 - `&[a-z]` to update variables (e.g., `3 5 + &x` for x=3+5)
 
-### Random Number
-- `$R`: Random number (0 to 1)
-
 ### Function Operations
 - `!` followed by a letter (a-z) for function call
 usage:  `... <$3> <$2> <$1> !<fn>`
@@ -103,8 +100,11 @@ usage:  `... <$3> <$2> <$1> !<fn>`
 
 ### Builtin Operations (can be dangerous)
 - `@a`: Reference to previous result (ANS)
+- `@d`: Display top value of stack
 - `@h`: Access to result history (e.g., `5 @h` for 5 previous history)
+- `@n`: Push nan
 - `@p`: Duplicate the top stack value
+- `@r`: Random number between 0 and 1
 - `@s`: Access specific stack value (e.g., `5 @h` for 5 previous stack value)
 
 ### Other
@@ -139,8 +139,8 @@ Arguments whose first letter is not '-' are interpreted as file name.
 13. Define multi-arg fn: `:dg $1 $2 +` -> g(x, y) = x + y
 14. Call fn: `5 !f` -> f(5)
 15. Call multi-arg fn: `6 7 !g` -> g(7, 6)
-16. Lambda fn: `4 ($1 2 *)` -> 8
-17. Lambda multi-arg fn: `5 6 ($1 $2 +)` -> 11
+16. Lambda fn: `4 {$1 2 *}` -> 8
+17. Lambda multi-arg fn: `5 6 {$1 $2 +}` -> 11
 18. Display help and exit: `rpx -h -q`
 19. One-shot calculator: `rpx -r "1 1 +" -q`
 20. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
