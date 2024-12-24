@@ -1,6 +1,5 @@
 #ifndef NDEBUG
 #include "ice.h"
-#include "testing.h"
 
 ic_t ic_conf = {
   .enable = true,
@@ -10,13 +9,15 @@ ic_t ic_conf = {
 };
 
 #ifdef TEST_MODE_ALL
+#include "chore.h"
+#include "testing.h"
 test(ice) {
   putchar('\n');
   ic(0);
   ic_conf.enable = false;
   ic();
   ic_conf.enable = true;
-  ic(42);
+  _ = ic(42);
   ic_conf.context = true;
   ic("hello world!");
   ic();
