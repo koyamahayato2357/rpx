@@ -533,7 +533,7 @@ bool editline(int sz, char *buf) {
   char *cur = buf;
   char *len = buf;
 
-  struct termios orig_termios;
+  struct termios orig_termios __attribute__((cleanup(disable_rawmode)));
   // getchar() becomes like getch() in MSVC
   enable_rawmode(&orig_termios);
 
@@ -562,7 +562,6 @@ bool editline(int sz, char *buf) {
     printf(ESEL(2) "\r%s\033[%ldG", buf, cur - buf + 1);
   }
   putchar('\n');
-  disable_rawmode(&orig_termios);
 
   return c != CTRL_D;
 }
