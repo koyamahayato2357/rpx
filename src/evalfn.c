@@ -118,18 +118,25 @@ static void rpx_sysfn(evalinfo_t *ei) {
   case 'a': // ANS
     PUSH = ei->info.hist[ei->info.histi - 1].elem.real;
     break;
+  case 'd': // display
+    printany(*ei->rsp);
+    putchar('\n');
+    break;
   case 'h':
     *ei->rsp = ei->info.hist[ei->info.histi - (int)*ei->rsp - 1].elem.real;
+    break;
+  case 'n':
+    PUSH = SNAN;
     break;
   case 'p':
     ei->rsp[1] = *ei->rsp;
     ei->rsp++;
     break;
-  case 's':
-    *ei->rsp = *(ei->rsp - (int)*ei->rsp - 1);
-    break;
   case 'r':
     PUSH = rand() / (double)RAND_MAX;
+    break;
+  case 's':
+    *ei->rsp = *(ei->rsp - (int)*ei->rsp - 1);
     break;
   }
 }

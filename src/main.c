@@ -262,18 +262,24 @@ elem_t eval_expr_complex(char const *expr) {
       case 'a': // ANS
         elem_set(++rsp, &info_c.hist[info_c.histi - 1]);
         break;
+      case 'd':
+        print_complex(rsp->elem.comp);
+        break;
       case 'h': // history operation
         elem_set(rsp, &info_c.hist[info_c.histi - (int)rsp->elem.real - 1]);
+        break;
+      case 'n':
+        elem_set(++rsp, &(elem_t){.rtype = RTYPE_COMP, .elem = {.comp = SNAN}});
         break;
       case 'p': // prev stack value
         rsp++;
         elem_set(rsp, rsp - 1);
         break;
-      case 's': // stack value operation
-        elem_set(rsp, rsp - (int)rsp->elem.real - 1);
-        break;
       case 'r':
         (++rsp)->elem.comp = rand() / (double)RAND_MAX;
+        break;
+      case 's': // stack value operation
+        elem_set(rsp, rsp - (int)rsp->elem.real - 1);
         break;
       }
       break;
