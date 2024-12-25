@@ -20,7 +20,7 @@ typedef struct {
 
   // to restore argv
   // register the list of args
-  double callstack[8][ARGN];
+  double *callstack[8];
   _BitInt(3) unsigned callstacki;
 } evalinfo_t;
 
