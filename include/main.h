@@ -29,7 +29,7 @@
   case cas:                                                                    \
     var = fn(var);                                                             \
     break;
-#define OVERWRITE_REAL(cas, fn) OVERWRITE(cas, *ei->rsp, fn)
+#define OVERWRITE_REAL(cas, fn) OVERWRITE(cas, ei->rsp->elem.real, fn)
 #define OVERWRITE_COMP(cas, fn) OVERWRITE(cas, rsp->elem.comp, fn)
 
 #include "matop.h"
@@ -64,4 +64,5 @@ void print_elem(elem_t);
 void print_real(double);
 void print_complex(double complex);
 void print_matrix(matrix_t);
+void print_lambda(char *);
 void proc_cmds(char *);

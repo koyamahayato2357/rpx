@@ -16,44 +16,56 @@
 
 elem_t eval_expr_real(char const *);
 
-#define PUSH *++ei->rsp
-#define POP *ei->rsp--
+#define PUSH (*++ei->rsp)
+#define POP (*ei->rsp--)
+
+#define SET_REAL(v)                                                            \
+  (elem_t) { .elem = {.real = v}, .rtype = RTYPE_REAL }
+#define SET_LAMB(v)                                                            \
+  (elem_t) { .elem = {.lamb = v}, .rtype = RTYPE_LAMB }
 
 #define DEF_ARTHMS(tok, op)                                                    \
   static void rpx_##tok(evalinfo_t *ei) {                                      \
-    for (; ei->rbp + 1 < ei->rsp; ei->rbp[1] op## = POP)                       \
+    for (; ei->rbp + 1 < ei->rsp; ei->rbp[1].elem.real op## = POP.elem.real)   \
       ;                                                                        \
   }
 APPLY_ARTHM(DEF_ARTHMS)
 
 static void rpx_mod(evalinfo_t *ei) {
-  for (; ei->rbp + 1 < ei->rsp; ei->rbp[1] = fmod(ei->rbp[1], POP))
+  for (; ei->rbp + 1 < ei->rsp;
+       ei->rbp[1].elem.real = fmod(ei->rbp[1].elem.real, POP.elem.real))
     ;
 }
 
 static void rpx_pow(evalinfo_t *ei) {
-  for (; ei->rbp + 1 < ei->rsp; ei->rbp[1] = pow(ei->rbp[1], POP))
+  for (; ei->rbp + 1 < ei->rsp;
+       ei->rbp[1].elem.real = pow(ei->rbp[1].elem.real, POP.elem.real))
     ;
 }
 
 static void rpx_eql(evalinfo_t *ei) {
-  for (; ei->rbp + 1 < ei->rsp && eq(ei->rsp[-1], *ei->rsp); POP)
+  for (; ei->rbp + 1 < ei->rsp && eq(ei->rsp[-1].elem.real, ei->rsp->elem.real);
+       POP)
     ;
-  ei->rbp[1] = ei->rbp + 1 == ei->rsp;
+  ei->rbp[1].elem.real = ei->rbp + 1 == ei->rsp;
   ei->rsp = ei->rbp + 1;
 }
 
 #define DEF_LTGT(tok, op)                                                      \
   static void rpx_##tok(evalinfo_t *ei) {                                      \
-    for (; ei->rbp + 1 < ei->rsp && ei->rsp[-1] op * ei->rsp; POP)             \
+    for (;                                                                     \
+         ei->rbp + 1 < ei->rsp && ei->rsp[-1].elem.real op ei->rsp->elem.real; \
+         POP)                                                                  \
       ;                                                                        \
-    ei->rbp[1] = ei->rbp + 1 == ei->rsp;                                       \
+    ei->rbp[1].elem.real = ei->rbp + 1 == ei->rsp;                             \
     ei->rsp = ei->rbp + 1;                                                     \
   }
 APPLY_LTGT(DEF_LTGT)
 
 #define DEF_ONEARGFN(f)                                                        \
-  static void rpx_##f(evalinfo_t *ei) { *ei->rsp = f(*ei->rsp); }
+  static void rpx_##f(evalinfo_t *ei) {                                        \
+    ei->rsp->elem.real = f(ei->rsp->elem.real);                                \
+  }
 DEF_ONEARGFN(sin)
 DEF_ONEARGFN(cos)
 DEF_ONEARGFN(tan)
@@ -64,7 +76,7 @@ DEF_ONEARGFN(floor)
 DEF_ONEARGFN(round)
 
 #define DEF_MULTI(name, factor)                                                \
-  static void rpx_##name(evalinfo_t *ei) { *ei->rsp *= factor; }
+  static void rpx_##name(evalinfo_t *ei) { ei->rsp->elem.real *= factor; }
 DEF_MULTI(nagate, -1)
 DEF_MULTI(torad, M_PI / 180)
 DEF_MULTI(todeg, 180 / M_PI)
@@ -82,15 +94,17 @@ DEF_TWOCHARFN(arc, 's', asin, 'c', acos, 't', atan)
 DEF_TWOCHARFN(log, '2', log2, 'c', log10, 'e', log)
 
 static void rpx_logbase(evalinfo_t *ei) {
-  double x = POP;
-  *ei->rsp = log(*ei->rsp) / log(x);
+  double x = POP.elem.real;
+  ei->rsp->elem.real = log(ei->rsp->elem.real) / log(x);
 }
 
-static void rpx_const(evalinfo_t *ei) { PUSH = get_const(*++ei->expr); }
+static void rpx_const(evalinfo_t *ei) {
+  PUSH = SET_REAL(get_const(*++ei->expr));
+}
 
 static void rpx_parse(evalinfo_t *ei) {
   char *next = nullptr;
-  PUSH = strtod(ei->expr, &next);
+  PUSH = SET_REAL(strtod(ei->expr, &next));
   ei->expr = next - 1;
 }
 
@@ -101,8 +115,8 @@ static void rpx_space(evalinfo_t *ei) {
 
 #define CASE_TWOARGFN(c, f)                                                    \
   case c: {                                                                    \
-    double x = *ei->rsp;                                                       \
-    *ei->rsp = f(*ei->rsp, x);                                                 \
+    double x = ei->rsp->elem.real;                                             \
+    ei->rsp->elem.real = f(ei->rsp->elem.real, x);                             \
   } break;
 static void rpx_intfn(evalinfo_t *ei) {
   switch (*++ei->expr) {
@@ -116,86 +130,101 @@ static void rpx_intfn(evalinfo_t *ei) {
 static void rpx_sysfn(evalinfo_t *ei) {
   switch (*++ei->expr) {
   case 'a': // ANS
-    PUSH = ei->info.hist[ei->info.histi - 1].elem.real;
+    PUSH = ei->info.hist[ei->info.histi - 1];
     break;
   case 'd': // display
-    printany(*ei->rsp);
+    printany(ei->rsp->elem.real);
     putchar('\n');
     break;
   case 'h':
-    *ei->rsp = ei->info.hist[ei->info.histi - (int)*ei->rsp - 1].elem.real;
+    ei->rsp->elem.real =
+        ei->info.hist[ei->info.histi - (int)ei->rsp->elem.real - 1].elem.real;
     break;
   case 'n':
-    PUSH = SNAN;
+    PUSH = SET_REAL(SNAN);
     break;
   case 'p':
     ei->rsp[1] = *ei->rsp;
     ei->rsp++;
     break;
   case 'r':
-    PUSH = rand() / (double)RAND_MAX;
+    PUSH = SET_REAL(rand() / (double)RAND_MAX);
     break;
   case 's':
-    *ei->rsp = *(ei->rsp - (int)*ei->rsp - 1);
+    *ei->rsp = *(ei->rsp - (int)ei->rsp->elem.real - 1);
     break;
   }
 }
 
-static double handle_function_args(evalinfo_t *ei) {
+static elem_t handle_function_args(evalinfo_t *ei) {
   int argnum = *ei->expr - '0';
   if (ei->max_argc[ei->max_argci] < argnum)
     ei->max_argc[ei->max_argci] = argnum;
-  return ei->info.usrfn.argv[8 - argnum];
+  return ei->argv[8 - argnum];
 }
 
 static void rpx_lvars(evalinfo_t *ei) {
-  PUSH = (isdigit(*++ei->expr)) ? handle_function_args(ei)
-         : (islower(*ei->expr)) ? ei->info.usrvar[*ei->expr - 'a'].elem.real
-                                : $panic(ERR_CHAR_NOT_FOUND);
+  *++ei->rsp = (isdigit(*++ei->expr)) ? handle_function_args(ei)
+               : (islower(*ei->expr)) ? ei->info.usrvar[*ei->expr - 'a']
+                                      : *(elem_t *)$panic(ERR_CHAR_NOT_FOUND);
 }
 
 static void rpx_wvars(evalinfo_t *ei) {
-  ei->info.usrvar[*++ei->expr - 'a'].elem.real = *ei->rsp;
+  ei->info.usrvar[*++ei->expr - 'a'] = *ei->rsp;
 }
 
 static void rpx_end(evalinfo_t *ei) { ei->iscontinue = false; }
 
 static void rpx_grpbgn(evalinfo_t *ei) {
-  *++*(double ***)&ei->rsp = ei->rbp;
+  *++*(elem_t ***)&ei->rsp = ei->rbp;
   ei->rbp = ei->rsp;
 }
 
 static void rpx_grpend(evalinfo_t *ei) {
-  double ret = *ei->rsp;
+  elem_t ret = *ei->rsp;
   ei->rsp = ei->rbp;
-  ei->rbp = *(double **)ei->rbp;
+  ei->rbp = *(elem_t **)ei->rbp;
   *ei->rsp = ret;
 }
 
 static void rpx_lmdbgn(evalinfo_t *ei) {
-  rpx_grpbgn(ei);
-  ei->callstack[++ei->callstacki] = ei->info.usrfn.argv;
-  ei->info.usrfn.argv = ei->rsp - 8;
-  set_rtinfo('r', ei->info);
-  ei->max_argc[++ei->max_argci] = 0;
+  ei->expr++;
+  int i = 0;
+  int nest = 1;
+  for (;; i++) {
+    if (ei->expr[i] == '{')
+      nest++;
+    else if (ei->expr[i] == '}' && --nest == 0)
+      break;
+  }
+  *++ei->rsp = SET_LAMB(malloc(i));
+  memcpy(ei->rsp->elem.lamb, ei->expr, i);
+  ei->expr += i;
 }
 
-static void rpx_lmdend(evalinfo_t *ei) {
+static void rpx_lmdend(evalinfo_t *ei) { _ = ei; }
+
+static void call_fn(evalinfo_t *ei) {
+  ei->callstack[++ei->callstacki] = ei->argv;
+  ei->argv = ei->rsp - 8;
+  ei->max_argc[++ei->max_argci] = 0;
+  rpx_grpbgn(ei);
+}
+
+static void ret_fn(evalinfo_t *ei) {
   rpx_grpend(ei);
-  ei->info.usrfn.argv = ei->callstack[ei->callstacki--];
-  set_rtinfo('r', ei->info);
-  double ret = *ei->rsp;
+  ei->argv = ei->callstack[ei->callstacki--];
+  elem_t ret = *ei->rsp;
   ei->rsp -= ei->max_argc[ei->max_argci];
   *ei->rsp = ret;
 }
 
-static void rpx_callfn(evalinfo_t *ei) {
-  int fname = *++ei->expr - 'a';
+static void rpx_runlmd(evalinfo_t *ei) {
   char const *temp = ei->expr;
-  ei->expr = ei->info.usrfn.expr[fname];
-  rpx_lmdbgn(ei);
-  *ei->rsp = eval_expr_real_with_info(ei).elem.real;
-  rpx_lmdend(ei);
+  _ drop = ei->expr = ei->rsp->elem.lamb;
+  call_fn(ei);
+  *ei->rsp = eval_expr_real_with_info(ei);
+  ret_fn(ei);
   ei->expr = temp;
 }
 
@@ -206,7 +235,7 @@ static void rpx_undfned(evalinfo_t *ei) {
 
 void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
     rpx_space,   // ' '
-    rpx_callfn,  // '!'
+    rpx_runlmd,  // '!'
     rpx_undfned, // '"'
     rpx_undfned, // '#'
     rpx_lvars,   // '$'
@@ -308,9 +337,9 @@ elem_t eval_expr_real_with_info(evalinfo_t *ei) {
   for (; likely(*ei->expr && ei->iscontinue); ei->expr++)
     get_eval_table (*ei->expr)(ei);
   if (ei->info.histi < BUFSIZE)
-    ei->info.hist[ei->info.histi++].elem.real = *ei->rsp;
+    ei->info.hist[ei->info.histi++] = *ei->rsp;
   set_rtinfo('r', ei->info);
-  return (elem_t){.rtype = RTYPE_REAL, .elem = {.real = *ei->rsp}};
+  return *ei->rsp;
 }
 
 /**
@@ -333,17 +362,17 @@ test(eval_expr_real) {
   expecteq(22.0, eval_expr_real("$x 2 *").elem.real);
 
   // function
-  proc_cmds("df$1$1+");
-  expecteq(10.0, eval_expr_real("5!f").elem.real);
+  expecteq("$1$1+", eval_expr_real("{$1$1+}&f").elem.lamb);
+  expecteq(10.0, eval_expr_real("5$f!").elem.real);
 
   // nest group
   expecteq(33.0, eval_expr_real("4 5 (5 6 (6 7 +) +) +").elem.real);
 
   // lambda
-  expecteq(8.0, eval_expr_real("4 {$1 2 *}").elem.real);
-  expecteq(
-      19.0,
-      eval_expr_real("1 5 {$1 3 +} {5 $1 * {$1 4 -} {$1 2 /} $2 +}").elem.real);
+  expecteq(8.0, eval_expr_real("4 {$1 2 *}!").elem.real);
+  expecteq(19.0,
+           eval_expr_real("1 5 {$1 3 +}! {5 $1 * {$1 4 -}! {$1 2 /}! $2 +}!")
+               .elem.real);
 }
 
 bench(eval_expr_real) {

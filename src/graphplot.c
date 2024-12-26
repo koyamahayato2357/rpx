@@ -45,20 +45,20 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
 
 void plotexpr(char const *expr) {
   plotcfg_t pcfg = get_plotcfg();
-  rtinfo_t info = get_rtinfo('r');
+  evalinfo_t ei;
 
   for (int i = 0; i < pcfg.dispy; i++) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
-    info.usrfn.argv[7] = x0;
-    set_rtinfo('r', info);
-    double y0 = eval_expr_real(expr).elem.real;
+    ei.argv[7].elem.real = x0;
+    ei.expr = expr;
+    double y0 = eval_expr_real_with_info(&ei).elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * j + pcfg.dx;
-      info.usrfn.argv[7] = x1;
-      set_rtinfo('r', info);
-      double y1 = eval_expr_real(expr).elem.real;
+      ei.argv[7].elem.real = x1;
+      ei.expr = expr;
+      double y1 = eval_expr_real_with_info(&ei).elem.real;
       putchar(ispointgraph(y0, y1, y) ? '*' : ' ');
       y0 = y1;
     }
@@ -71,7 +71,7 @@ void plotexpr(char const *expr) {
 
 void plotexpr_implicit(char const *expr) {
   plotcfg_t pcfg = get_plotcfg();
-  rtinfo_t info = get_rtinfo('r');
+  evalinfo_t ei;
 
   double y0 = pcfg.yx + pcfg.dy;
   for (int i = 0; i < pcfg.dispy; i++) {
@@ -79,16 +79,16 @@ void plotexpr_implicit(char const *expr) {
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
     double y1 = pcfg.yx - pcfg.dy * (i - 1);
-    info.usrfn.argv[7] = x0;
-    info.usrfn.argv[6] = y0;
-    set_rtinfo('r', info);
-    double res0 = eval_expr_real(expr).elem.real;
+    ei.argv[7].elem.real = x0;
+    ei.argv[6].elem.real = y0;
+    ei.expr = expr;
+    double res0 = eval_expr_real_with_info(&ei).elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * (j + 1);
-      info.usrfn.argv[7] = x1;
-      info.usrfn.argv[6] = y1;
-      set_rtinfo('r', info);
-      double res1 = eval_expr_real(expr).elem.real;
+      ei.argv[7].elem.real = x1;
+      ei.argv[6].elem.real = y1;
+      ei.expr = expr;
+      double res1 = eval_expr_real_with_info(&ei).elem.real;
       putchar(ispointgraph(res0, res1, 0) ? '*' : ' ');
       res0 = res1;
     }

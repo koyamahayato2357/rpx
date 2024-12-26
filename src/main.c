@@ -419,6 +419,10 @@ void print_elem(elem_t elem) {
     print_matrix(elem.elem.matr);
     free(elem.elem.matr.matrix);
     break;
+  case RTYPE_LAMB:
+    print_lambda(elem.elem.lamb);
+    free(elem.elem.lamb);
+    break;
   }
 }
 
@@ -483,21 +487,20 @@ void print_matrix(matrix_t result) {
   }
 }
 
+void print_lambda(char *result) {
+  printf("result: ");
+  puts(result);
+}
+
 /**
  * @brief Process command
  * @param[in] cmd Command input
  */
 void proc_cmds(char *cmd) {
-  rtinfo_t info_r = get_rtinfo('r');
   plotcfg_t pcfg = get_plotcfg();
 
   // TODO save variables
   switch (*cmd++) {
-  case 'd': // define user function
-    int fname = *cmd++ - 'a';
-    strncpy(info_r.usrfn.expr[fname], cmd, BUFSIZE);
-    set_rtinfo('r', info_r);
-    break;
   case 't': // toggle
     switch (*cmd) {
     case 'c': // complex mode

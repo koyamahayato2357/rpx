@@ -19,15 +19,9 @@ typedef struct {
 } plotcfg_t /* plot config */;
 
 typedef struct {
-  char expr[ALPN][BUFSIZE];
-  double *argv;
-} uf_t /* user function */;
-
-typedef struct {
   elem_t hist[BUFSIZE];
   size_t histi;
   elem_t usrvar[ALPN];
-  uf_t usrfn;
 } rtinfo_t /* runtime info */;
 
 plotcfg_t get_plotcfg();
