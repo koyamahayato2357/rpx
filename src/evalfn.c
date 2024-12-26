@@ -174,17 +174,15 @@ static void rpx_grpend(evalinfo_t *ei) {
 
 static void rpx_lmdbgn(evalinfo_t *ei) {
   rpx_grpbgn(ei);
-  memcpy(ei->callstack[++ei->callstacki], ei->info.usrfn.argv,
-         8 * sizeof(double));
-  memcpy(ei->info.usrfn.argv, ei->rsp - 8, 8 * sizeof(double));
+  ei->callstack[++ei->callstacki] = ei->info.usrfn.argv;
+  ei->info.usrfn.argv = ei->rsp - 8;
   set_rtinfo('r', ei->info);
   ei->max_argc[++ei->max_argci] = 0;
 }
 
 static void rpx_lmdend(evalinfo_t *ei) {
   rpx_grpend(ei);
-  memcpy(ei->info.usrfn.argv, ei->callstack[ei->callstacki--],
-         8 * sizeof(double));
+  ei->info.usrfn.argv = ei->callstack[ei->callstacki--];
   set_rtinfo('r', ei->info);
   double ret = *ei->rsp;
   ei->rsp -= ei->max_argc[ei->max_argci];
