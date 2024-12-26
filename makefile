@@ -24,10 +24,10 @@ OPTLEVEL ?= g
 CCACHE := $(shell which ccache 2>/dev/null)
 CC := $(CCACHE) $(if $(shell which clang),clang,gcc)
 
-SRCDIR := src/
-INCDIR := include/
-BUILDDIR := .build/
-INSTALLDIR ?= /usr/local/
+SRCDIR := src
+INCDIR := include
+BUILDDIR := .build
+INSTALLDIR ?= /usr/local
 
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wextra   \
           -Wall -O$(OPTLEVEL)
@@ -70,27 +70,27 @@ endif
 GITBRANCH := $(shell git branch --show-current 2>/dev/null)
 SEED = $(CC)$(EXTRAFLAGS)$(CFLAGS)$(LDFLAGS)$(GITBRANCH)
 HASH := $(shell echo '$(SEED)' | md5sum | cut -d' ' -f1)
-OUTDIR := $(BUILDDIR)$(HASH)/
-TARGETDIR := $(OUTDIR)target/
-DEPDIR := $(OUTDIR)dep/
+OUTDIR := $(BUILDDIR)/$(HASH)
+TARGETDIR := $(OUTDIR)/target
+DEPDIR := $(OUTDIR)/dep
 TARGETNAME := $(notdir $(shell pwd))
-TARGET := $(TARGETDIR)$(TARGETNAME)
-DEPFLAGS = -MM -MP -MF $(DEPDIR)$*.d
+TARGET := $(TARGETDIR)/$(TARGETNAME)
+DEPFLAGS = -MM -MP -MF $(DEPDIR)/$*.d
 .DEFAULT_GOAL := $(TARGET)
 
-SRCS = $(wildcard $(SRCDIR)*.c)
-OBJS = $(patsubst $(SRCDIR)%.c,$(TARGETDIR)%.o,$(SRCS))
-DEPS = $(patsubst $(SRCDIR)%.c,$(DEPDIR)%.d,$(SRCS))
+SRCS = $(wildcard $(SRCDIR)/*.c)
+OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
+DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 
 -include $(DEPS)
 
 $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) $(EXTRALDFLAGS) $^ -o $@
 
-$(TARGETDIR)%.o: $(SRCDIR)%.c $(DEPDIR)%.d | $(TARGETDIR)
+$(TARGETDIR)/%.o: $(SRCDIR)/%.c $(DEPDIR)/%.d | $(TARGETDIR)/
 	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -c -o $@
 
-$(DEPDIR)%.d: $(SRCDIR)%.c | $(DEPDIR)
+$(DEPDIR)/%.d: $(SRCDIR)/%.c | $(DEPDIR)/
 	$(CC) $< -I$(INCDIR) $(DEPFLAGS)
 
 # Generic directory creator
@@ -116,17 +116,17 @@ clean-all:
 clean:
 	rm -rf $(OUTDIR)
 
-install: $(TARGET) | $(INSTALLDIR)
-	cp $^ $(INSTALLDIR)bin/
+install: $(TARGET) | $(INSTALLDIR)/
+	cp $^ $(INSTALLDIR)/bin/
 
 uninstall:
-	rm $(INSTALLDIR)bin/$(TARGETNAME)
+	rm $(INSTALLDIR)/bin/$(TARGETNAME)
 
 doc: doc/Doxyfile
 	doxygen $<
 
 fmt:
-	clang-format -i $(SRCS) $(INCDIR)*.h
+	clang-format -i $(SRCS) $(INCDIR)/*.h
 
 lint:
 	clang-tidy $(SRCS) -- $(CFLAGS)
