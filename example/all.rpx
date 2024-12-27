@@ -1,6 +1,6 @@
 ; all example
 
-:df2 $1 $1 *
-5 6 !f &x @a -
+{$1 $1 *} &f
+5 6 $f! &x @a -
 \Psas4ig+(\Ele$x^)L
 0.433htl2

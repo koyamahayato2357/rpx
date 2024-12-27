@@ -87,8 +87,8 @@ RPX offers four modes of operation:
 - `&[a-z]` to update variables (e.g., `3 5 + &x` for x=3+5)
 
 ### Function Operations
-- `!` followed by a letter (a-z) for function call
-usage:  `... <$3> <$2> <$1> !<fn>`
+- `!` evaluate lambda expression at the top of the stack
+usage:  `... <$3> <$2> <$1> <lambda> !`
 
 ### Matrix Input Details
 - First element is the number of columns
@@ -113,7 +113,6 @@ usage:  `... <$3> <$2> <$1> !<fn>`
 - ` `: Required at the number breaks, but ignored elsewhere
 
 ## Commands
-- `:d[a-z(name)]`: Define function
 - `:tc`: Toggle between real and complex number mode
 - `:tp`: Toggle between explicit and implicit function in plot
 - `:o`: Optimize expression (e.g., remove unnecessary spaces)
@@ -135,12 +134,12 @@ Arguments whose first letter is not '-' are interpreted as file name.
 9. Matrix inverse: `[3 1,1,1m,2m,0,1,0,2,1,]~` -> [3 -0.5,-0.75,0.25,0.5,0.25,0.25,-1,-0.5,0.5,]
 10. Plot fn: `:p $1s` -> Graph of sin(x)
 11. Plot implicit fn: `:p $12^($22^)+1-` -> Circle of radius 1
-12. Define fn: `:df $1 2 ^` -> f(x) = x^2
-13. Define multi-arg fn: `:dg $1 $2 +` -> g(x, y) = x + y
-14. Call fn: `5 !f` -> f(5)
-15. Call multi-arg fn: `6 7 !g` -> g(7, 6)
-16. Lambda fn: `4 {$1 2 *}` -> 8
-17. Lambda multi-arg fn: `5 6 {$1 $2 +}` -> 11
+12. Define fn: `{$1 2 ^} &f` -> f(x) = x^2
+13. Define multi-arg fn: `{$1 $2 +} &g` -> g(x, y) = x + y
+14. Call fn: `5 $f !` -> f(5)
+15. Call multi-arg fn: `6 7 $g !` -> g(7, 6)
+16. Lambda fn: `4 {$1 2 *} !` -> 8
+17. Lambda multi-arg fn: `5 6 {$1 $2 -} !` -> 1
 18. Display help and exit: `rpx -h -q`
 19. One-shot calculator: `rpx -r "1 1 +" -q`
 20. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
