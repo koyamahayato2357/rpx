@@ -191,12 +191,12 @@ static void rpx_lmdbgn(evalinfo_t *ei) {
   ei->expr++;
   int i = 0;
   int nest = 1;
-  for (;; i++) {
+  for (;; i++)
     if (ei->expr[i] == '{')
       nest++;
     else if (ei->expr[i] == '}' && --nest == 0)
       break;
-  }
+
   *++ei->rsp = SET_LAMB(malloc(i));
   memcpy(ei->rsp->elem.lamb, ei->expr, i);
   ei->expr += i;
@@ -223,7 +223,7 @@ static void rpx_runlmd(evalinfo_t *ei) {
   char const *temp = ei->expr;
   _ drop = ei->expr = ei->rsp->elem.lamb;
   call_fn(ei);
-  *ei->rsp = eval_expr_real_with_info(ei);
+  rpx_eval(ei);
   ret_fn(ei);
   ei->expr = temp;
 }
@@ -333,13 +333,9 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
 
 void (*get_eval_table(char c))(evalinfo_t *) { return eval_table[c - ' ']; }
 
-elem_t eval_expr_real_with_info(evalinfo_t *ei) {
+void rpx_eval(evalinfo_t *ei) {
   for (; likely(*ei->expr && ei->iscontinue); ei->expr++)
     get_eval_table (*ei->expr)(ei);
-  if (ei->info.histi < BUFSIZE)
-    ei->info.hist[ei->info.histi++] = *ei->rsp;
-  set_rtinfo('r', ei->info);
-  return *ei->rsp;
 }
 
 /**
@@ -354,7 +350,11 @@ elem_t eval_expr_real(char const *a_expr) {
   ei.expr = a_expr;
   ei.iscontinue = true;
   ei.callstacki = ~0;
-  return eval_expr_real_with_info(&ei);
+  rpx_eval(&ei);
+  if (ei.info.histi < BUFSIZE)
+    ei.info.hist[ei.info.histi++] = *ei.rsp;
+  set_rtinfo('r', ei.info);
+  return *ei.rsp;
 }
 
 test(eval_expr_real) {

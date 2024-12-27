@@ -26,4 +26,4 @@ typedef struct {
 } evalinfo_t;
 
 elem_t eval_expr_real(char const *);
-elem_t eval_expr_real_with_info(evalinfo_t *);
+void rpx_eval(evalinfo_t *);

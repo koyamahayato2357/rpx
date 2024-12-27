@@ -1,6 +1,7 @@
 #include "graphplot.h"
 #include "chore.h"
 #include "evalfn.h"
+#include "main.h"
 #include "sysconf.h"
 #include <stdio.h>
 #include <sys/ioctl.h>
@@ -51,14 +52,18 @@ void plotexpr(char const *expr) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
+    elem_t stack[8];
+    ei.argv = stack;
     ei.argv[7].elem.real = x0;
     ei.expr = expr;
-    double y0 = eval_expr_real_with_info(&ei).elem.real;
+    rpx_eval(&ei);
+    double y0 = ei.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * j + pcfg.dx;
       ei.argv[7].elem.real = x1;
       ei.expr = expr;
-      double y1 = eval_expr_real_with_info(&ei).elem.real;
+      rpx_eval(&ei);
+      double y1 = ei.rsp->elem.real;
       putchar(ispointgraph(y0, y1, y) ? '*' : ' ');
       y0 = y1;
     }
@@ -79,16 +84,20 @@ void plotexpr_implicit(char const *expr) {
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
     double y1 = pcfg.yx - pcfg.dy * (i - 1);
+    elem_t stack[8];
+    ei.argv = stack;
     ei.argv[7].elem.real = x0;
     ei.argv[6].elem.real = y0;
     ei.expr = expr;
-    double res0 = eval_expr_real_with_info(&ei).elem.real;
+    rpx_eval(&ei);
+    double res0 = ei.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * (j + 1);
       ei.argv[7].elem.real = x1;
       ei.argv[6].elem.real = y1;
       ei.expr = expr;
-      double res1 = eval_expr_real_with_info(&ei).elem.real;
+      rpx_eval(&ei);
+      double res1 = ei.rsp->elem.real;
       putchar(ispointgraph(res0, res1, 0) ? '*' : ' ');
       res0 = res1;
     }
