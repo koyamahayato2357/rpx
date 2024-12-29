@@ -5,9 +5,9 @@
 #define ARGN 8
 
 typedef struct {
-  elem_t stack[100];
-  elem_t *rbp;
-  elem_t *rsp;
+  real_t stack[100];
+  real_t *rbp;
+  real_t *rsp;
   char const *expr;
 
   // to restore rsp
@@ -15,13 +15,13 @@ typedef struct {
   char max_argc[ARGN];
   _BitInt(3) unsigned max_argci;
 
-  rtinfo_t info;
-  elem_t *argv;
+  rrtinfo_t info;
+  real_t *argv;
   bool iscontinue;
 
   // to restore argv
   // register the list of args
-  elem_t *callstack[8];
+  real_t *callstack[8];
   _BitInt(3) unsigned callstacki;
 } evalinfo_t;
 

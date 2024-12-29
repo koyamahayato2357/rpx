@@ -152,7 +152,7 @@ void reader_loop_stdin() {
 elem_t eval_expr_complex(char const *expr) {
   elem_t operand_stack[BUFSIZE] = {0};
   elem_t *rsp = operand_stack, *rbp = operand_stack;
-  rtinfo_t info_c = get_rtinfo('c');
+  rtinfo_t info_c = get_rtinfo();
 
   for (;; expr++) {
     if (isdigit(*expr)) {
@@ -319,7 +319,7 @@ end:
     *rhs = *rsp;
   } else if (info_c.histi < BUFSIZE)
     info_c.hist[info_c.histi++].elem.comp = rsp->elem.comp;
-  set_rtinfo('c', info_c);
+  set_rtinfo(info_c);
   return *rsp;
 }
 

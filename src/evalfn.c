@@ -20,9 +20,9 @@ elem_t eval_expr_real(char const *);
 #define POP (*ei->rsp--)
 
 #define SET_REAL(v)                                                            \
-  (elem_t) { .elem = {.real = v}, .rtype = RTYPE_REAL }
+  (real_t) { .elem = {.real = v}, .isnum = true }
 #define SET_LAMB(v)                                                            \
-  (elem_t) { .elem = {.lamb = v}, .rtype = RTYPE_LAMB }
+  (real_t) { .elem = {.lamb = v}, .isnum = false }
 
 #define DEF_ARTHMS(tok, op)                                                    \
   static void rpx_##tok(evalinfo_t *ei) {                                      \
@@ -156,7 +156,7 @@ static void rpx_sysfn(evalinfo_t *ei) {
   }
 }
 
-static elem_t handle_function_args(evalinfo_t *ei) {
+static real_t handle_function_args(evalinfo_t *ei) {
   int argnum = *ei->expr - '0';
   if (ei->max_argc[ei->max_argci] < argnum)
     ei->max_argc[ei->max_argci] = argnum;
@@ -166,7 +166,7 @@ static elem_t handle_function_args(evalinfo_t *ei) {
 static void rpx_lvars(evalinfo_t *ei) {
   *++ei->rsp = (isdigit(*++ei->expr)) ? handle_function_args(ei)
                : (islower(*ei->expr)) ? ei->info.usrvar[*ei->expr - 'a']
-                                      : *(elem_t *)$panic(ERR_CHAR_NOT_FOUND);
+                                      : *(real_t *)$panic(ERR_CHAR_NOT_FOUND);
 }
 
 static void rpx_wvars(evalinfo_t *ei) {
@@ -176,14 +176,14 @@ static void rpx_wvars(evalinfo_t *ei) {
 static void rpx_end(evalinfo_t *ei) { ei->iscontinue = false; }
 
 static void rpx_grpbgn(evalinfo_t *ei) {
-  *++*(elem_t ***)&ei->rsp = ei->rbp;
+  *++*(real_t ***)&ei->rsp = ei->rbp;
   ei->rbp = ei->rsp;
 }
 
 static void rpx_grpend(evalinfo_t *ei) {
-  elem_t ret = *ei->rsp;
+  real_t ret = *ei->rsp;
   ei->rsp = ei->rbp;
-  ei->rbp = *(elem_t **)ei->rbp;
+  ei->rbp = *(real_t **)ei->rbp;
   *ei->rsp = ret;
 }
 
@@ -214,7 +214,7 @@ static void call_fn(evalinfo_t *ei) {
 static void ret_fn(evalinfo_t *ei) {
   rpx_grpend(ei);
   ei->argv = ei->callstack[ei->callstacki--];
-  elem_t ret = *ei->rsp;
+  real_t ret = *ei->rsp;
   ei->rsp -= ei->max_argc[ei->max_argci];
   *ei->rsp = ret;
 }
@@ -346,15 +346,15 @@ void rpx_eval(evalinfo_t *ei) {
 elem_t eval_expr_real(char const *a_expr) {
   evalinfo_t ei;
   ei.rbp = ei.rsp = ei.stack - 1;
-  ei.info = get_rtinfo('r');
+  ei.info = get_rrtinfo();
   ei.expr = a_expr;
   ei.iscontinue = true;
   ei.callstacki = ~0;
   rpx_eval(&ei);
   if (ei.info.histi < BUFSIZE)
     ei.info.hist[ei.info.histi++] = *ei.rsp;
-  set_rtinfo('r', ei.info);
-  return *ei.rsp;
+  set_rrtinfo(ei.info);
+  return (elem_t){{ei.rsp->elem.real}, ei.rsp->isnum ? RTYPE_REAL : RTYPE_LAMB};
 }
 
 test(eval_expr_real) {

@@ -56,6 +56,14 @@ typedef struct {
   rtype_t rtype;
 } elem_t;
 
+typedef struct {
+  union {
+    double real;
+    char *lamb;
+  } elem;
+  bool isnum;
+} real_t;
+
 void proc_alist(int, char **);
 void reader_loop(FILE *);
 void reader_loop_stdin();

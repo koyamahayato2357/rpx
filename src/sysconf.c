@@ -1,18 +1,15 @@
 #include "sysconf.h"
 
 plotcfg_t pcfg;
-rtinfo_t info_r;
+rrtinfo_t info_r;
 rtinfo_t info_c;
 
 plotcfg_t get_plotcfg() { return pcfg; }
 
 void set_plotcfg(plotcfg_t pc) { pcfg = pc; }
 
-rtinfo_t get_rtinfo(char T) { return T == 'r' ? info_r : info_c; }
+rtinfo_t get_rtinfo() { return info_c; }
+rrtinfo_t get_rrtinfo() { return info_r; }
 
-void set_rtinfo(char T, rtinfo_t info) {
-  if (T == 'r')
-    info_r = info;
-  else
-    info_c = info;
-}
+void set_rtinfo(rtinfo_t info) { info_c = info; }
+void set_rrtinfo(rrtinfo_t info) { info_r = info; }

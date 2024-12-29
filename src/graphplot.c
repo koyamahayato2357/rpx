@@ -52,7 +52,7 @@ void plotexpr(char const *expr) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
-    elem_t stack[8];
+    real_t stack[8];
     ei.argv = stack;
     ei.argv[7].elem.real = x0;
     ei.expr = expr;
@@ -84,7 +84,7 @@ void plotexpr_implicit(char const *expr) {
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
     double y1 = pcfg.yx - pcfg.dy * (i - 1);
-    elem_t stack[8];
+    real_t stack[8];
     ei.argv = stack;
     ei.argv[7].elem.real = x0;
     ei.argv[6].elem.real = y0;

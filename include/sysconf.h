@@ -19,6 +19,12 @@ typedef struct {
 } plotcfg_t /* plot config */;
 
 typedef struct {
+  real_t hist[BUFSIZE];
+  size_t histi;
+  real_t usrvar[ALPN];
+} rrtinfo_t /* runtime info */;
+
+typedef struct {
   elem_t hist[BUFSIZE];
   size_t histi;
   elem_t usrvar[ALPN];
@@ -26,5 +32,7 @@ typedef struct {
 
 plotcfg_t get_plotcfg();
 void set_plotcfg(plotcfg_t);
-rtinfo_t get_rtinfo(char);
-void set_rtinfo(char, rtinfo_t);
+rtinfo_t get_rtinfo();
+rrtinfo_t get_rrtinfo();
+void set_rtinfo(rtinfo_t);
+void set_rrtinfo(rrtinfo_t);
