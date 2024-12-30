@@ -230,7 +230,7 @@ static void rpx_runlmd(evalinfo_t *ei) {
 }
 
 static void rpx_cond(evalinfo_t *ei) {
-  ei->rsp -= 1 + !!isnan(ei->rsp->elem.real);
+  ei->rsp -= 2 - !isnan(ei->rsp->elem.real);
 }
 
 static void rpx_undfned(evalinfo_t *ei) {
