@@ -176,25 +176,25 @@ static void rpx_wvars(evalinfo_t *ei) {
 static void rpx_end(evalinfo_t *ei) { ei->iscontinue = false; }
 
 static void rpx_grpbgn(evalinfo_t *ei) {
-  *++*(real_t ***)&ei->rsp = ei->rbp;
+  (++ei->rsp)->elem.lamb = (char *)ei->rbp;
   ei->rbp = ei->rsp;
 }
 
 static void rpx_grpend(evalinfo_t *ei) {
-  real_t ret = *ei->rsp;
-  ei->rsp = ei->rbp;
+  real_t *rbp = ei->rbp;
   ei->rbp = *(real_t **)ei->rbp;
-  *ei->rsp = ret;
+  *rbp = *ei->rsp;
+  ei->rsp = rbp;
 }
 
 static void rpx_lmdbgn(evalinfo_t *ei) {
   ei->expr++;
   int i = 0;
   int nest = 1;
-  for (;; i++)
+  for (; *ei->expr; i++)
     if (ei->expr[i] == '{')
       nest++;
-    else if (ei->expr[i] == '}' && --nest == 0)
+    else if (ei->expr[i] == '}' && !--nest)
       break;
 
   *++ei->rsp = SET_LAMB(malloc(i));
@@ -213,10 +213,11 @@ static void call_fn(evalinfo_t *ei) {
 
 static void ret_fn(evalinfo_t *ei) {
   rpx_grpend(ei);
-  ei->argv = ei->callstack[ei->callstacki--];
   real_t ret = *ei->rsp;
+  ei->rsp = ei->argv + 8;
   ei->rsp -= ei->max_argc[ei->max_argci];
   *ei->rsp = ret;
+  ei->argv = ei->callstack[ei->callstacki--];
 }
 
 static void rpx_runlmd(evalinfo_t *ei) {
