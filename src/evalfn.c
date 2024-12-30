@@ -343,18 +343,23 @@ void rpx_eval(evalinfo_t *ei) {
     get_eval_table (*ei->expr)(ei);
 }
 
+evalinfo_t init_evalinfo() {
+  evalinfo_t ret;
+  ret.rbp = ret.rsp = ret.stack - 1;
+  ret.info = get_rrtinfo();
+  ret.iscontinue = true;
+  ret.callstacki = ~0;
+  return ret;
+}
+
 /**
  * @brief Evaluate real number expression
  * @param a_expr String of expression
  * @return Expression evaluation result
  */
 elem_t eval_expr_real(char const *a_expr) {
-  evalinfo_t ei;
-  ei.rbp = ei.rsp = ei.stack - 1;
-  ei.info = get_rrtinfo();
+  evalinfo_t ei = init_evalinfo();
   ei.expr = a_expr;
-  ei.iscontinue = true;
-  ei.callstacki = ~0;
   rpx_eval(&ei);
   if (ei.info.histi < BUFSIZE)
     ei.info.hist[ei.info.histi++] = *ei.rsp;

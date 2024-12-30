@@ -52,15 +52,15 @@ void plotexpr(char const *expr) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
-    real_t stack[8];
-    ei.argv = stack;
-    ei.argv[7].elem.real = x0;
+    real_t stack = (real_t){.elem = {.real = x0}, .isnum = true};
+    ei = init_evalinfo();
+    ei.argv = &stack - 7;
     ei.expr = expr;
     rpx_eval(&ei);
     double y0 = ei.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * j + pcfg.dx;
-      ei.argv[7].elem.real = x1;
+      stack = (real_t){.elem = {.real = x1}, .isnum = true};
       ei.expr = expr;
       rpx_eval(&ei);
       double y1 = ei.rsp->elem.real;
@@ -84,17 +84,19 @@ void plotexpr_implicit(char const *expr) {
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
     double y1 = pcfg.yx - pcfg.dy * (i - 1);
-    real_t stack[8];
-    ei.argv = stack;
-    ei.argv[7].elem.real = x0;
-    ei.argv[6].elem.real = y0;
+    real_t stack[2] = {
+        (real_t){.elem = {.real = y0}, .isnum = true},
+        (real_t){.elem = {.real = x0}, .isnum = true},
+    };
+    ei = init_evalinfo();
+    ei.argv = stack - 6;
     ei.expr = expr;
     rpx_eval(&ei);
     double res0 = ei.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * (j + 1);
-      ei.argv[7].elem.real = x1;
-      ei.argv[6].elem.real = y1;
+      stack[0] = (real_t){.elem = {.real = y1}, .isnum = true};
+      stack[1] = (real_t){.elem = {.real = x1}, .isnum = true};
       ei.expr = expr;
       rpx_eval(&ei);
       double res1 = ei.rsp->elem.real;
