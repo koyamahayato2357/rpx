@@ -47,7 +47,7 @@ static void rpx_eql(evalinfo_t *ei) {
   for (; ei->rbp + 1 < ei->rsp && eq(ei->rsp[-1].elem.real, ei->rsp->elem.real);
        POP)
     ;
-  ei->rbp[1].elem.real = ei->rbp + 1 == ei->rsp;
+  ei->rbp[1].elem.real = ei->rbp + 1 == ei->rsp ?: SNAN;
   ei->rsp = ei->rbp + 1;
 }
 
@@ -57,7 +57,7 @@ static void rpx_eql(evalinfo_t *ei) {
          ei->rbp + 1 < ei->rsp && ei->rsp[-1].elem.real op ei->rsp->elem.real; \
          POP)                                                                  \
       ;                                                                        \
-    ei->rbp[1].elem.real = ei->rbp + 1 == ei->rsp;                             \
+    ei->rbp[1].elem.real = ei->rbp + 1 == ei->rsp ?: SNAN;                     \
     ei->rsp = ei->rbp + 1;                                                     \
   }
 APPLY_LTGT(DEF_LTGT)
@@ -229,6 +229,10 @@ static void rpx_runlmd(evalinfo_t *ei) {
   ei->expr = temp;
 }
 
+static void rpx_cond(evalinfo_t *ei) {
+  ei->rsp -= 1 + !!isnan(ei->rsp->elem.real);
+}
+
 static void rpx_undfned(evalinfo_t *ei) {
   _ = ei;
   throw(ERR_UNKNOWN_CHAR);
@@ -266,7 +270,7 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
     rpx_lt,      // '<'
     rpx_eql,     // '='
     rpx_gt,      // '>'
-    rpx_undfned, // '?'
+    rpx_cond,    // '?'
     rpx_sysfn,   // '@'
     rpx_fabs,    // 'A'
     rpx_undfned, // 'B'
