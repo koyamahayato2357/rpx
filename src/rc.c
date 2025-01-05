@@ -1,4 +1,3 @@
-#include "rc.h"
 #include "chore.h"
 #include "exproriented.h"
 #include "main.h"

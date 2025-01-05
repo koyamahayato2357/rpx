@@ -1,9 +1,6 @@
 #include "chore.h"
-#include "errcode.h"
 #include "exproriented.h"
 #include <ctype.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>

@@ -2,13 +2,11 @@
 
 #define _GNU_SOURCE
 #include "editline.h"
-#include "chore.h"
 #include "error.h"
 #include "exproriented.h"
 #include "main.h"
 #include "testing.h"
 #include <ctype.h>
-#include <stdio.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>

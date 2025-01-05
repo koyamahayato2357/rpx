@@ -1,18 +1,13 @@
 #include "evalfn.h"
 #include "arthfn.h"
 #include "benchmarking.h"
-#include "chore.h"
 #include "error.h"
 #include "exproriented.h"
-#include "gene.h"
-#include "main.h"
 #include "phyconst.h"
-#include "string.h"
-#include "sysconf.h"
 #include "testing.h"
 #include <ctype.h>
 #include <math.h>
-#include <stdlib.h>
+#include <string.h>
 
 elem_t eval_expr_real(char const *);
 

@@ -1,9 +1,6 @@
 #include "graphplot.h"
-#include "chore.h"
 #include "evalfn.h"
-#include "main.h"
 #include "sysconf.h"
-#include <stdio.h>
 #include <sys/ioctl.h>
 
 #define FONTROW 2
