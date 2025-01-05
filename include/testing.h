@@ -30,7 +30,7 @@ extern int TESTING_H_fail;
     puts(ESCGRN "[OK]" ESCLR);                                                 \
     TESTING_H_success++;                                                       \
   }                                                                            \
-  void TESTING_H_tester##name(jmp_buf jb [[maybe_unused]])
+  void TESTING_H_tester##name(jmp_buf jb)
 #define ARGS_0
 #define ARGS_1 t->a1
 #define ARGS_2 ARGS_1, t->a2
