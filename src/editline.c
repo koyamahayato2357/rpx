@@ -240,7 +240,6 @@ test(bwdW) {
  * @param[in] buf Start of line
  * @param[in/out] cur Cursor pointer
  * @param[in/out] len End of line
- * @throws ERR_UNKNOWN_CHAR
  */
 void handle_es(char key, char *buf, char **cur, char **len) {
   switch (key) {
@@ -371,7 +370,6 @@ test(inserts) {
  * @param[in] buf Start of line
  * @param[in/out] cur Cursor pointer
  * @param[in/out] len End of line
- * @throws ERR_BUFFER_DEPLETION
  */
 void insbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
@@ -406,7 +404,6 @@ auto handle_printable = insbind;
  * @param[in] buf Start of line
  * @param[in/out] cur Cursor pointer
  * @param[in/out] len End of line
- * @throws ERR_CHAR_NOT_FOUND ERR_UNKNOWN_CHAR
  */
 void nrmbind(char c, char *buf, char **cur, char **len) {
   switch (c) {

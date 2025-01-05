@@ -55,7 +55,6 @@ MOPS(sub, -)
 
 /**
  * @brief Mul between matrices
- * @throws ERR_DIMENTION_MISMATCH
  */
 [[nodiscard]] matrix_t mmul(matrix_t *lhs, matrix_t *rhs) {
   if (unlikely(lhs->rows != rhs->cols && lhs->cols != rhs->rows))
@@ -76,7 +75,6 @@ MOPS(sub, -)
 
 /**
  * @brief Calculate determinant
- * @throws ERR_NON_SQUARE_MATRIX
  */
 double det(matrix_t *A) {
   if (unlikely(A->rows != A->cols))
