@@ -2,7 +2,7 @@
 #include "arthfn.h"
 #include "chore.h"
 #include "errcode.h"
-#include "exception.h"
+#include "error.h"
 #include "gene.h"
 
 [[nodiscard]] matrix_t NAN_matrix(size_t rows, size_t cols) {
@@ -35,12 +35,13 @@ bool meq(matrix_t *lhs, matrix_t *rhs) {
 
 /**
  * @brief Add/Sub between matrices
- * @throws ERR_DIMENTION_MISMATCH
  */
 #define MOPS(name, op)                                                         \
   matrix_t m##name(matrix_t *lhs, matrix_t *rhs) {                             \
     if (!mcheckdim(lhs, rhs))                                                  \
-      throw(ERR_DIMENTION_MISMATCH);                                           \
+      disperr(__FUNCTION__, "%s: %dx%d && %dx%d",                              \
+              codetomsg(ERR_DIMENTION_MISMATCH), lhs->rows, lhs->cols,         \
+              rhs->rows, rhs->cols);                                           \
                                                                                \
     matrix_t result = new_matrix(lhs->rows, lhs->cols);                        \
                                                                                \
@@ -58,7 +59,9 @@ MOPS(sub, -)
  */
 [[nodiscard]] matrix_t mmul(matrix_t *lhs, matrix_t *rhs) {
   if (unlikely(lhs->rows != rhs->cols && lhs->cols != rhs->rows))
-    throw(ERR_DIMENTION_MISMATCH);
+    disperr(__FUNCTION__, "%s: %dx%d && %dx%d",
+            codetomsg(ERR_DIMENTION_MISMATCH), lhs->rows, lhs->cols, rhs->rows,
+            rhs->cols);
 
   matrix_t result = new_matrix(lhs->rows, rhs->cols);
 
@@ -77,7 +80,7 @@ MOPS(sub, -)
  */
 double det(matrix_t *A) {
   if (unlikely(A->rows != A->cols))
-    throw(ERR_NON_SQUARE_MATRIX);
+    disperr(__FUNCTION__, "not a square matrix");
 
   double result = 1;
   int dim = A->rows;
@@ -112,8 +115,10 @@ double det(matrix_t *A) {
 [[nodiscard]] matrix_t inverse_matrix(matrix_t *A) {
   int dim = A->rows;
 
-  if (unlikely(A->rows != A->cols))
-    throw(ERR_NON_SQUARE_MATRIX);
+  if (unlikely(A->rows != A->cols)) {
+    disperr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
+    return *A;
+  }
 
   matrix_t result = new_matrix(dim, dim);
 
@@ -127,7 +132,8 @@ double det(matrix_t *A) {
       for (j = (i + 1) % dim; A->matrix[j * dim + i] == 0; j = (j + 1) % dim)
         if (unlikely(j == i)) {
           free(result.matrix);
-          throw(ERR_IRREGULAR_MATRIX);
+          disperr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
+          return *A;
         }
 
       for (int k = 0; k < dim; k++) {
@@ -155,7 +161,8 @@ double det(matrix_t *A) {
     for (int j = 0; j < dim; j++) {
       if (unlikely(A->matrix[i * dim + i] == 0)) {
         free(result.matrix);
-        throw(ERR_IRREGULAR_MATRIX);
+        disperr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
+        return *A;
       }
 
       result.matrix[i * dim + j] /= A->matrix[i * dim + i];

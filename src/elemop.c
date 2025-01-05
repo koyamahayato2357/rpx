@@ -1,7 +1,6 @@
 #include "elemop.h"
 #include "chore.h"
-#include "errcode.h"
-#include "exception.h"
+#include "error.h"
 #include "gene.h"
 #include "matop.h"
 #include <stdbit.h>
@@ -29,8 +28,10 @@ bool elem_eq(elem_t *lhs, elem_t *rhs) {
 }
 
 void elem_add(elem_t *lhs, elem_t *rhs) {
-  if (lhs->rtype != rhs->rtype)
-    throw(ERR_TYPE_MISMATCH);
+  if (lhs->rtype != rhs->rtype) {
+    disperr(__FUNCTION__, "type mismatch; abort");
+    return;
+  }
 
   if (rhs->rtype == RTYPE_MATR) {
     _ drop = lhs->elem.matr.matrix;
@@ -43,8 +44,10 @@ void elem_add(elem_t *lhs, elem_t *rhs) {
 }
 
 void elem_sub(elem_t *lhs, elem_t *rhs) {
-  if (lhs->rtype != rhs->rtype)
-    throw(ERR_TYPE_MISMATCH);
+  if (lhs->rtype != rhs->rtype) {
+    disperr(__FUNCTION__, "type mismatch; abort");
+    return;
+  }
 
   if (rhs->rtype == RTYPE_MATR) {
     _ drop = lhs->elem.matr.matrix;

@@ -22,7 +22,6 @@
 #include "errcode.h"
 #include "error.h"
 #include "evalfn.h"
-#include "exception.h"
 #include "exproriented.h"
 #include "graphplot.h"
 #include "matop.h"
@@ -90,12 +89,11 @@ void startup_message() {
  */
 void proc_input(char *input_buf) {
   if (*input_buf == ':') {
-    ignerr proc_cmds(input_buf + 1);
+    proc_cmds(input_buf + 1);
     return;
   }
   elem_t res;
-  try res = eval_f(input_buf);
-  catchany capture(e) disperr(__FUNCTION__, codetomsg(e));
+  res = eval_f(input_buf);
   print_elem(res);
 }
 
@@ -201,7 +199,7 @@ elem_t eval_expr_complex(char const *expr) {
 
     case '~': {
       _ drop = rsp->elem.matr.matrix;
-      ignerr rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
+      rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
     } break;
     case '=':
       for (; rbp + 1 < rsp && elem_eq(rsp - 1, rsp); rsp--)
@@ -217,7 +215,7 @@ elem_t eval_expr_complex(char const *expr) {
         OVERWRITE_COMP('c', acos)
         OVERWRITE_COMP('t', atan)
       default:
-        throw(ERR_UNKNOWN_FN);
+        disperr(__FUNCTION__, "unknown fn: %c", *expr);
       }
       break;
 
@@ -227,7 +225,7 @@ elem_t eval_expr_complex(char const *expr) {
         OVERWRITE_COMP('c', cosh)
         OVERWRITE_COMP('t', tanh)
       default:
-        throw(ERR_UNKNOWN_FN);
+        disperr(__FUNCTION__, "unknown fn: %c", *expr);
       }
       break;
 
@@ -307,7 +305,7 @@ elem_t eval_expr_complex(char const *expr) {
     case ',': // delimiter
       goto end;
     default:
-      throw(ERR_UNKNOWN_CHAR);
+        disperr(__FUNCTION__, "unknown char: %c", *expr);
     }
   }
 
@@ -537,6 +535,6 @@ void proc_cmds(char *cmd) {
     }
     break;
   default:
-    throw(ERR_UNKNOWN_COMMAND);
+    disperr(__FUNCTION__, "unknown command: %c", *(cmd - 1));
   }
 }

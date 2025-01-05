@@ -52,15 +52,6 @@ inline void nfree(void *p) {
 }
 
 /**
- * @brief Exception alloc
- * @param[in] sz Memory size
- * @throws ERR_ALLOCATION_FAILURE
- */
-[[nodiscard]] void *ealloc(int sz) {
-  return malloc(sz) ?: p$throw(ERR_ALLOCATION_FAILURE);
-}
-
-/**
  * @brief panic alloc
  * @param[in] sz Memory size
  */

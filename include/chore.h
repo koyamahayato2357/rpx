@@ -25,7 +25,6 @@ bool isint(double) __attribute__((const));
 void skipspcs(char const **);
 void skip_untilcomma(char const **);
 void nfree(void *);
-void *ealloc(int);
 void *palloc(int);
 void free_cl(void *);
 void fclose_cl(FILE **);

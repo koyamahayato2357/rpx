@@ -2,7 +2,7 @@
 #include "arthfn.h"
 #include "benchmarking.h"
 #include "chore.h"
-#include "errcode.h"
+#include "error.h"
 #include "exproriented.h"
 #include "gene.h"
 #include "main.h"
@@ -234,8 +234,7 @@ static void rpx_cond(evalinfo_t *ei) {
 }
 
 static void rpx_undfned(evalinfo_t *ei) {
-  _ = ei;
-  throw(ERR_UNKNOWN_CHAR);
+  disperr(__FUNCTION__, "%s: %c", codetomsg(ERR_UNKNOWN_CHAR), *ei->expr);
 }
 
 void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {

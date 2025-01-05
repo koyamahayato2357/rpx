@@ -1,9 +1,9 @@
 //! @file editline.c
 
+#define _GNU_SOURCE
 #include "editline.h"
 #include "chore.h"
-#include "errcode.h"
-#include "exception.h"
+#include "error.h"
 #include "exproriented.h"
 #include "main.h"
 #include "testing.h"
@@ -81,16 +81,8 @@ test(deletes) {
  * @param[in] cur Cursor pointer
  * @param[in] len End of line
  * @return Pointer to the location found
- * @throws ERR_CHAR_NOT_FOUND
  */
-char *findc(char c, char *cur) {
-  cur = strchr(cur, c);
-
-  if (cur == nullptr)
-    throw(ERR_CHAR_NOT_FOUND);
-
-  return cur;
-}
+inline char *findc(char *s, char c) { return strchr(s, c); }
 
 /**
  * @brief Find character from a string in opposite direction
@@ -98,15 +90,9 @@ char *findc(char c, char *cur) {
  * @param[in] buf Start of line
  * @param[in] cur Cursor pointer
  * @return Pointer to the location found
- * @throws ERR_CHAR_NOT_FOUND
  */
 char *findc_r(char c, char *buf, char *cur) {
-  buf = strrchr(buf, c);
-
-  if (buf == nullptr || cur < buf)
-    throw(ERR_CHAR_NOT_FOUND);
-
-  return buf;
+  return memrchr(buf, c, cur - buf);
 }
 
 /**
@@ -116,10 +102,15 @@ char *findc_r(char c, char *buf, char *cur) {
  * @param[in] buf Start of line
  * @param[in/out] cur Cursor pointer
  * @param[in] len End of line
- * @throws ERR_CHAR_NOT_FOUND
  */
-void findmove(char c, int dir, char *buf, char **cur) {
-  *cur = $if(dir > 0) findc(c, *cur) $else findc_r(c, buf, *cur);
+bool findmove(char c, int dir, char *buf, char **cur) {
+  char *old_cur = *cur;
+  *cur = $if(dir > 0) findc(*cur, c) $else findc_r(c, buf, *cur);
+  if (*cur == nullptr) {
+    *cur = old_cur;
+    return false;
+  }
+  return true;
 }
 
 test(findmove) {
@@ -132,10 +123,7 @@ test(findmove) {
   expecteq('e', *cur);
   findmove('s', -1, buf, &cur);
   expecteq('s', *cur);
-  ignerr {
-    findmove('z', 1, buf, &cur);
-    unreachable;
-  }
+  findmove('z', 1, buf, &cur);
   expecteq('s', *cur);
   findmove('.', 1, buf, &cur);
   expecteq('.', *cur);
@@ -204,13 +192,11 @@ test(bwdw) {
 
 /**
  * @brief Move the cursor forward one WORD
- * @param[in] buf Start of line
  * @param[in/out] cur Cursor pointer
  * @param[in] len End of line
  */
-void fwdW(char *buf, char **cur, char *len) {
-  try findmove(' ', 1, buf, cur);
-  catchany *cur = len;
+void fwdW(char **cur, char *len) {
+  *cur = findc(*cur, ' ') ?: len;
   skipspcs((char const **)cur);
 }
 
@@ -219,9 +205,9 @@ test(fwdW) {
   char *cur = buf;
   char *len = buf + strlen(buf);
 
-  fwdW(buf, &cur, len);
+  fwdW(&cur, len);
   expecteq('t', *cur);
-  fwdW(buf, &cur, len);
+  fwdW(&cur, len);
   expecteq('\0', *cur);
 }
 
@@ -232,13 +218,10 @@ test(fwdW) {
  * @param[in] len End of line
  */
 void bwdW(char *buf, char **cur) {
-  for ((*cur)--; isspace(**cur); (*cur)--)
+  for ((*cur)--; isspace(**cur) && buf < *cur; (*cur)--)
     ;
-  try {
-    findmove(' ', -1, buf, cur);
-    (*cur)++;
-  }
-  catchany *cur = buf;
+  *cur = memrchr(buf, ' ', *cur - buf) ?: buf - 1;
+  (*cur)++;
 }
 
 test(bwdW) {
@@ -281,7 +264,7 @@ void handle_es(char key, char *buf, char **cur, char **len) {
   case 'H':
     *cur = buf;
   default:
-    throw(ERR_UNKNOWN_CHAR);
+    disperr(__FUNCTION__, "unknown escape sequence: %c", key);
   }
 }
 
@@ -293,7 +276,6 @@ void handle_es(char key, char *buf, char **cur, char **len) {
  * @param[in] len End of line
  * @param[out] begin Beginning of selected range of text object
  * @param[out] end End of selected range of text object
- * @throws ERR_UNKNOWN_CHAR
  */
 void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
                    char **end) {
@@ -305,25 +287,25 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
     *begin = cur;
     break;
   case 'W':
-    fwdW(buf, &cur, len);
+    fwdW(&cur, len);
     *end = cur;
     bwdW(buf, &cur);
     *begin = cur;
     break;
   case 'b':
-    ignerr findmove(')', 1, buf, &cur);
+    findmove(')', 1, buf, &cur);
     *end = cur;
-    ignerr findmove('(', -1, buf, &cur);
+    findmove('(', -1, buf, &cur);
     *begin = cur + 1;
     break;
   case ']':
-    ignerr findmove(']', 1, buf, &cur);
+    findmove(']', 1, buf, &cur);
     *end = cur;
-    ignerr findmove('[', -1, buf, &cur);
+    findmove('[', -1, buf, &cur);
     *begin = cur + 1;
     break;
   default:
-    throw(ERR_UNKNOWN_CHAR);
+    disperr(__FUNCTION__, "unknown char: %c", txtobj);
     break;
   }
 }
@@ -350,12 +332,13 @@ void insertc(char c, char **cur, char **len) {
  * @param[in/out] cur Cursor pointer
  * @param[in/out] len End of line
  * @param[in] margin Number of characters can be added to the buffer
- * @throws ERR_BUFFER_DEPLETION
  */
 void inserts(int slen, char const *s, int curpos, char **cur, char **len,
              int margin) {
-  if (slen > margin)
-    throw(ERR_BUFFER_DEPLETION);
+  if (slen > margin) {
+    disperr(__FUNCTION__, "buffer depreletion");
+    abort();
+  }
   if (*cur != *len)
     memmove(*cur + slen, *cur, *len - *cur);
   memcpy(*cur, s, slen);
@@ -396,22 +379,16 @@ void insbind(char c, char *buf, char **cur, char **len) {
     inserts(2, "()", 1, cur, len, buf + BUFSIZE - *len);
     break;
 
-  case ')': {
-    char *newcur;
-    try newcur = findc(')', *cur);
-    catch (ERR_CHAR_NOT_FOUND) goto dflt;
-    *cur = newcur + 1;
-  } break;
+  case ')':
+    *cur = 1 + (findc(*cur, ')') ?: p$(goto dflt));
+    break;
 
   case '[':
     inserts(2, "[]", 1, cur, len, buf + BUFSIZE - *len);
     break;
 
   case ']': {
-    char *newcur;
-    try newcur = findc(']', *cur);
-    catch (ERR_CHAR_NOT_FOUND) goto dflt;
-    *cur = newcur + 1;
+    *cur = 1 + (findc(*cur, ']') ?: p$(goto dflt));
     break;
   }
 
@@ -446,25 +423,25 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     bwdw(buf, cur);
     break;
   case 'W':
-    fwdW(buf, cur, *len);
+    fwdW(cur, *len);
     break;
   case 'B':
     bwdW(buf, cur);
     break;
   case 'f':
-    ignerr findmove(getchar(), 1, buf, cur);
+    findmove(getchar(), 1, buf, cur);
     break;
   case 'F':
-    ignerr findmove(getchar(), -1, buf, cur);
+    findmove(getchar(), -1, buf, cur);
     break;
   case 't':
-    try findmove(getchar(), 1, buf, cur);
-    catch (ERR_CHAR_NOT_FOUND) break;
+    if (!findmove(getchar(), 1, buf, cur))
+      break;
     (*cur)--;
     break;
   case 'T':
-    try findmove(getchar(), -1, buf, cur);
-    catch (ERR_CHAR_NOT_FOUND) break;
+    if (!findmove(getchar(), -1, buf, cur))
+      break;
     (*cur)++;
     break;
   case 'A':
@@ -488,9 +465,9 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     char input = getchar();
     char *dst, *src;
     if (input == 'i' || input == 'a') {
-      ignerr handle_txtobj(getchar(), buf, *cur, *len, &dst, &src);
+      handle_txtobj(getchar(), buf, *cur, *len, &dst, &src);
     } else {
-      ignerr nrmbind(input, buf, &end, len);
+      nrmbind(input, buf, &end, len);
       dst = lesser(*cur, end);
       src = bigger(*cur, end);
     }
@@ -510,11 +487,11 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     **cur = getchar();
     break;
   case '[':
-    ignerr handle_es(getchar(), buf, cur, len);
+    handle_es(getchar(), buf, cur, len);
     handle_printable = insbind;
     break;
   default:
-    throw(ERR_UNKNOWN_CHAR);
+    disperr(__FUNCTION__, "unknown char: %c", c);
   }
 }
 
@@ -552,7 +529,7 @@ bool editline(int sz, char *buf) {
       break;
 
     default:
-      ignerr handle_printable(c, buf, &cur, &len);
+      handle_printable(c, buf, &cur, &len);
       break;
     }
     printf(ESEL(2) "\r%s\033[%ldG", buf, cur - buf + 1);
