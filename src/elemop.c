@@ -8,6 +8,9 @@
 #include <string.h>
 #include <tgmath.h>
 
+void free_matr(matrix_t *x) { free(x->matrix); }
+#define dropmatr __attribute__((cleanup(free_matr)))
+
 void elem_set(elem_t *lhs, elem_t *rhs) {
   if (lhs->rtype == RTYPE_MATR)
     free(lhs->elem.matr.matrix);
@@ -30,11 +33,8 @@ void elem_add(elem_t *lhs, elem_t *rhs) {
     throw(ERR_TYPE_MISMATCH);
 
   if (rhs->rtype == RTYPE_MATR) {
-    matrix temp = lhs->elem.matr.matrix;
-
+    _ drop = lhs->elem.matr.matrix;
     lhs->elem.matr = madd(&lhs->elem.matr, &rhs->elem.matr);
-
-    nfree(temp);
     nfree(rhs->elem.matr.matrix);
     return;
   }
@@ -49,7 +49,6 @@ void elem_sub(elem_t *lhs, elem_t *rhs) {
   if (rhs->rtype == RTYPE_MATR) {
     _ drop = lhs->elem.matr.matrix;
     lhs->elem.matr = msub(&lhs->elem.matr, &rhs->elem.matr);
-    free(rhs->elem.matr.matrix);
     return;
   }
 
@@ -60,7 +59,6 @@ rtype_t elem_mul(elem_t *lhs, elem_t *rhs) {
   if (lhs->rtype == RTYPE_MATR && rhs->rtype == RTYPE_MATR) {
     _ drop = lhs->elem.matr.matrix;
     lhs->elem.matr = mmul(&lhs->elem.matr, &rhs->elem.matr);
-    free(rhs->elem.matr.matrix);
     return RTYPE_MATR;
   } else if (lhs->rtype == RTYPE_MATR && rhs->rtype == RTYPE_COMP) {
     smul(&lhs->elem.matr, rhs->elem.comp);
@@ -89,20 +87,17 @@ void elem_pow(elem_t *lhs, elem_t *rhs) {
   }
 
   if (creal(rhs->elem.comp) < 0) {
-    matrix_t temp = inverse_matrix(&lhs->elem.matr);
-    free(lhs->elem.matr.matrix);
-    lhs->elem.matr = temp;
+    _ drop = lhs->elem.matr.matrix;
+    lhs->elem.matr = inverse_matrix(&lhs->elem.matr);
     rhs->elem.comp *= -1;
   }
 
   unsigned long long n = (unsigned long long)creal(rhs->elem.comp);
-  matrix_t A = new_matrix(lhs->elem.matr.rows, lhs->elem.matr.cols);
+  matrix_t A dropmatr = new_matrix(lhs->elem.matr.rows, lhs->elem.matr.cols);
   memcpy(A.matrix, lhs->elem.matr.matrix,
          A.rows * A.cols * sizeof(double complex));
   for (size_t i = 1; i < n; i++) {
-    matrix_t temp = mmul(&lhs->elem.matr, &A);
-    free(lhs->elem.matr.matrix);
-    lhs->elem.matr = temp;
+    _ drop = lhs->elem.matr.matrix;
+    lhs->elem.matr = mmul(&lhs->elem.matr, &A);
   }
-  free(A.matrix);
 }
