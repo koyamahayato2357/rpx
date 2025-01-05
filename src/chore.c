@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -22,7 +23,7 @@ struct winsize get_winsz() {
  * @param[in] arg Checked double number
  * @return Is decimal part 0
  */
-bool isint(double arg) { return arg == (long long)arg; }
+inline bool isint(double arg) { return arg == (long long)arg; }
 
 /**
  * @brief Skip pointer to first non-white-space char
@@ -37,16 +38,15 @@ void skipspcs(char const **str) {
  * @param[in/out] s String pointer
  */
 void skip_untilcomma(char const **s) {
-  for (; **s != ',' && **s != '\0'; (*s)++)
-    ;
-  *s += **s == ',';
+  *s = strchr(*s, ',') ?: *s + strlen(*s);
+  *s += !!**s;
 }
 
 /**
  * @brief Nullable free
  * @param[in] p Nullable pointer
  */
-void nfree(void *p) {
+inline void nfree(void *p) {
   if (p)
     free(p);
 }
