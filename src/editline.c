@@ -83,11 +83,10 @@ test(deletes) {
  * @return Pointer to the location found
  * @throws ERR_CHAR_NOT_FOUND
  */
-char *findc(char c, char *cur, char *len) {
-  for (; cur <= len && *cur != c; cur++)
-    ;
+char *findc(char c, char *cur) {
+  cur = strchr(cur, c);
 
-  if (cur > len)
+  if (cur == nullptr)
     throw(ERR_CHAR_NOT_FOUND);
 
   return cur;
@@ -102,13 +101,12 @@ char *findc(char c, char *cur, char *len) {
  * @throws ERR_CHAR_NOT_FOUND
  */
 char *findc_r(char c, char *buf, char *cur) {
-  for (; cur >= buf && *cur != c; cur--)
-    ;
+  buf = strrchr(buf, c);
 
-  if (cur < buf)
+  if (buf == nullptr || cur < buf)
     throw(ERR_CHAR_NOT_FOUND);
 
-  return cur;
+  return buf;
 }
 
 /**
@@ -120,27 +118,26 @@ char *findc_r(char c, char *buf, char *cur) {
  * @param[in] len End of line
  * @throws ERR_CHAR_NOT_FOUND
  */
-void findmove(char c, int dir, char *buf, char **cur, char *len) {
-  *cur = $if(dir > 0) findc(c, *cur, len) $else findc_r(c, buf, *cur);
+void findmove(char c, int dir, char *buf, char **cur) {
+  *cur = $if(dir > 0) findc(c, *cur) $else findc_r(c, buf, *cur);
 }
 
 test(findmove) {
   char buf[256] = "sample text.";
   char *cur = buf;
-  char *len = buf + strlen(buf);
 
-  findmove(' ', 1, buf, &cur, len);
+  findmove(' ', 1, buf, &cur);
   expecteq(' ', *cur);
-  findmove('e', 1, buf, &cur, len);
+  findmove('e', 1, buf, &cur);
   expecteq('e', *cur);
-  findmove('s', -1, buf, &cur, len);
+  findmove('s', -1, buf, &cur);
   expecteq('s', *cur);
   ignerr {
-    findmove('z', 1, buf, &cur, len);
+    findmove('z', 1, buf, &cur);
     unreachable;
   }
   expecteq('s', *cur);
-  findmove('.', 1, buf, &cur, len);
+  findmove('.', 1, buf, &cur);
   expecteq('.', *cur);
 }
 
@@ -212,7 +209,7 @@ test(bwdw) {
  * @param[in] len End of line
  */
 void fwdW(char *buf, char **cur, char *len) {
-  try findmove(' ', 1, buf, cur, len);
+  try findmove(' ', 1, buf, cur);
   catchany *cur = len;
   skipspcs((char const **)cur);
 }
@@ -234,11 +231,11 @@ test(fwdW) {
  * @param[in/out] cur Cursor pointer
  * @param[in] len End of line
  */
-void bwdW(char *buf, char **cur, char *len) {
+void bwdW(char *buf, char **cur) {
   for ((*cur)--; isspace(**cur); (*cur)--)
     ;
   try {
-    findmove(' ', -1, buf, cur, len);
+    findmove(' ', -1, buf, cur);
     (*cur)++;
   }
   catchany *cur = buf;
@@ -247,11 +244,10 @@ void bwdW(char *buf, char **cur, char *len) {
 test(bwdW) {
   char buf[] = "sample text.";
   char *cur = buf + strlen(buf);
-  char *len = buf + strlen(buf);
 
-  bwdW(buf, &cur, len);
+  bwdW(buf, &cur);
   expecteq('t', *cur);
-  bwdW(buf, &cur, len);
+  bwdW(buf, &cur);
   expecteq('s', *cur);
 }
 
@@ -311,19 +307,19 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
   case 'W':
     fwdW(buf, &cur, len);
     *end = cur;
-    bwdW(buf, &cur, len);
+    bwdW(buf, &cur);
     *begin = cur;
     break;
   case 'b':
-    ignerr findmove(')', 1, buf, &cur, len);
+    ignerr findmove(')', 1, buf, &cur);
     *end = cur;
-    ignerr findmove('(', -1, buf, &cur, len);
+    ignerr findmove('(', -1, buf, &cur);
     *begin = cur + 1;
     break;
   case ']':
-    ignerr findmove(']', 1, buf, &cur, len);
+    ignerr findmove(']', 1, buf, &cur);
     *end = cur;
-    ignerr findmove('[', -1, buf, &cur, len);
+    ignerr findmove('[', -1, buf, &cur);
     *begin = cur + 1;
     break;
   default:
@@ -402,7 +398,7 @@ void insbind(char c, char *buf, char **cur, char **len) {
 
   case ')': {
     char *newcur;
-    try newcur = findc(')', *cur, *len);
+    try newcur = findc(')', *cur);
     catch (ERR_CHAR_NOT_FOUND) goto dflt;
     *cur = newcur + 1;
   } break;
@@ -413,7 +409,7 @@ void insbind(char c, char *buf, char **cur, char **len) {
 
   case ']': {
     char *newcur;
-    try newcur = findc(']', *cur, *len);
+    try newcur = findc(']', *cur);
     catch (ERR_CHAR_NOT_FOUND) goto dflt;
     *cur = newcur + 1;
     break;
@@ -453,21 +449,21 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     fwdW(buf, cur, *len);
     break;
   case 'B':
-    bwdW(buf, cur, *len);
+    bwdW(buf, cur);
     break;
   case 'f':
-    ignerr findmove(getchar(), 1, buf, cur, *len);
+    ignerr findmove(getchar(), 1, buf, cur);
     break;
   case 'F':
-    ignerr findmove(getchar(), -1, buf, cur, *len);
+    ignerr findmove(getchar(), -1, buf, cur);
     break;
   case 't':
-    try findmove(getchar(), 1, buf, cur, *len);
+    try findmove(getchar(), 1, buf, cur);
     catch (ERR_CHAR_NOT_FOUND) break;
     (*cur)--;
     break;
   case 'T':
-    try findmove(getchar(), -1, buf, cur, *len);
+    try findmove(getchar(), -1, buf, cur);
     catch (ERR_CHAR_NOT_FOUND) break;
     (*cur)++;
     break;
