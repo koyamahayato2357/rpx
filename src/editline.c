@@ -303,6 +303,8 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
     break;
   default:
     disperr(__FUNCTION__, "unknown char: %c", txtobj);
+    *begin = nullptr;
+    *end = nullptr;
     break;
   }
 }
@@ -467,6 +469,8 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
       src = bigger(*cur, end);
     }
 
+    if (!dst || !src)
+      break;
     deletes(dst, src, len);
     *cur = dst;
     **len = '\0';
