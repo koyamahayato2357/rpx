@@ -35,7 +35,7 @@ endif
 SRCDIR := src
 INCDIR := include
 BUILDDIR := .build
-INSTALLDIR ?= /usr/local
+PREFIX ?= /usr/local
 
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wextra   \
           -Wall -O$(OPTLEVEL)
@@ -124,11 +124,11 @@ clean-all:
 clean:
 	rm -rf $(OUTDIR)
 
-install: $(TARGET) | $(INSTALLDIR)/
-	cp $^ $(INSTALLDIR)/bin/
+install: $(TARGET) | $(PREFIX)/
+	cp $^ $(PREFIX)/bin/
 
 uninstall:
-	rm $(INSTALLDIR)/bin/$(TARGETNAME)
+	rm $(PREFIX)/bin/$(TARGETNAME)
 
 doc: doc/Doxyfile
 	doxygen $<
