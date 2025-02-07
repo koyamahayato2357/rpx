@@ -21,8 +21,16 @@ endif
 
 OPTLEVEL ?= g
 
-CCACHE := $(shell which ccache 2>/dev/null)
-CC := $(CCACHE) $(if $(shell which clang),clang,gcc)
+# if CC is not defined
+ifeq ($(origin $(CC)),undefined)
+CC := $(if $(shell which clang-20),clang-20,gcc)
+endif
+# e.g.) disable ccache
+# $ make CCACHE=
+CCACHE ?= $(shell which ccache 2>/dev/null)
+ifneq ($(CCACHE),) # if CCACHE is enabled
+CC := $(CCACHE) $(CC)
+endif
 
 SRCDIR := src
 INCDIR := include
