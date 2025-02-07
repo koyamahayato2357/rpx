@@ -192,7 +192,7 @@ static void rpx_lmdbgn(evalinfo_t *ei) {
     else if (ei->expr[i] == '}' && !--nest)
       break;
 
-  *++ei->rsp = SET_LAMB(malloc(i));
+  *++ei->rsp = SET_LAMB(malloc(i + 1));
   memcpy(ei->rsp->elem.lamb, ei->expr, i);
   ei->expr += i;
 }
