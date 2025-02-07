@@ -107,7 +107,7 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.c | $(DEPDIR)/
 
 # e.g.) run with valgrind
 # make run RUNNER=valgrind
-# e.g.) don't use lldb (default debug RUNNER) in debug run
+# e.g.) don't use gdb (default debug RUNNER) in debug run
 # make run RUNNER=
 run: $(TARGET)
 	$(RUNNER) $<
