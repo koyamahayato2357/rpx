@@ -1,5 +1,4 @@
 #include "gene.h"
-#include "exproriented.h"
 #include <stdio.h>
 #include <string.h>
 #include <tgmath.h>
@@ -15,7 +14,7 @@ void printany(int x) overloadable { printf("%d", x); }
 void printany(size_t x) overloadable { printf("%zu", x); }
 void printany(double x) overloadable { printf("%lf", x); }
 void printany(char x) overloadable { printf("'%c'", x); }
-void printany(bool x) overloadable { printf($if(x) "true" $else "false"); }
+void printany(bool x) overloadable { printf(x ? "true" : "false"); }
 void printany(char *x) overloadable { printf("%s", x); }
 void printany(void *x) overloadable { printf("%p", x); }
 

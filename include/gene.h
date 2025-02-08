@@ -1,6 +1,7 @@
 #pragma once
-#include "chore.h"
 #include <stddef.h>
+
+#define overloadable __attribute__((overloadable))
 
 #define DEF_GEN(T)                                                             \
   void printany(T) overloadable;                                               \
