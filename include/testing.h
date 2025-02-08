@@ -77,10 +77,6 @@ extern int TESTING_H_fail;
   }
 
 #define main main_
-#else
-#define test(name) void TESTING_H_dummy##name(jmp_buf jb [[maybe_unused]])
-#define test_table(...)
-#endif
 
 #define expect(cond)                                                           \
   if (!(cond)) {                                                               \
@@ -118,3 +114,11 @@ extern int TESTING_H_fail;
     longjmp(jb, ERR_REACHED_UNREACHABLE);                                      \
     (size_t)0;                                                                 \
   })
+#else
+#define test(name) void TESTING_H_dummy##name(jmp_buf jb [[maybe_unused]])
+#define test_table(...)
+#define expect(cond)
+#define expecteq(lhs, rhs)
+#define expectneq(lhs, rhs)
+#define testing_unreachable
+#endif
