@@ -5,33 +5,33 @@
 # LOGLEVEL = [1| ]                 Enables logging
 # ASAN = [0|address|alignment|...] Enables specified sanitizer
 
-.PHONY: run analyze clean-all clean install doc test lint fmt help release log
 MAKEFLAGS += -j$(shell nproc)
 
 # Alias
 ifdef OL
-OPTLEVEL ?= $(OL)
+  OPTLEVEL ?= $(OL)
 endif
 ifdef LL
-LOGLEVEL ?= $(LL)
+  LOGLEVEL ?= $(LL)
 endif
 ifdef T
-TYPE ?= $(T)
+  TYPE ?= $(T)
 endif
 
 OPTLEVEL ?= g
 
 # if CC is not defined
 ifeq ($(origin $(CC)),undefined)
-CC := $(if $(shell which clang-20),clang-20,gcc)
+  CC := $(if $(shell command -v clang-20),clang-20,gcc)
 endif
 # e.g.) disable ccache
 # $ make CCACHE=
-CCACHE ?= $(shell which ccache 2>/dev/null)
+CCACHE ?= $(shell command -v ccache)
 ifneq ($(CCACHE),) # if CCACHE is enabled
-CC := $(CCACHE) $(CC)
+  CC := $(CCACHE) $(CC)
 endif
 
+PROJECT_NAME := $(notdir $(shell pwd))
 SRCDIR := src
 INCDIR := include
 BUILDDIR := .build
@@ -47,6 +47,7 @@ OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination 
               -fuse-ld=lld -Wl,--gc-sections -Wl,--icf=all -s
 DEBUGFLAGS := -g3
 ASMFLAGS := -S -masm=intel
+DEPFLAGS = -MM -MP -MF $(DEPDIR)/$*.d
 
 # Enables macro in the source
 CFLAGS += -DVERSION=\"$(shell git describe --tags --always 2>/dev/null || echo "unknown")\"
@@ -74,34 +75,39 @@ else ifneq ($(OPTLEVEL),0)
   LDFLAGS += $(OPTLDFLAGS)
 endif
 
-# Build rules
+# generate output path
 GITBRANCH := $(shell git branch --show-current 2>/dev/null)
 SEED = $(CC)$(EXTRAFLAGS)$(CFLAGS)$(LDFLAGS)$(GITBRANCH)
 HASH := $(shell echo '$(SEED)' | md5sum | cut -d' ' -f1)
 OUTDIR := $(BUILDDIR)/$(HASH)
 TARGETDIR := $(OUTDIR)/target
 DEPDIR := $(OUTDIR)/dep
-TARGETNAME := $(notdir $(shell pwd))
-TARGET := $(TARGETDIR)/$(TARGETNAME)
-DEPFLAGS = -MM -MP -MF $(DEPDIR)/$*.d
-.DEFAULT_GOAL := $(TARGET)
 
+TARGET := $(TARGETDIR)/$(PROJECT_NAME)
+
+# source files
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 
 -include $(DEPS)
 
+# rules
+.PHONY: run analyze clean-all clean install doc test lint fmt help release log
+
+build: $(TARGET)
+
+# link
 $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) $(EXTRALDFLAGS) $^ -o $@
 
+# compile
 $(TARGETDIR)/%.o: $(SRCDIR)/%.c $(DEPDIR)/%.d | $(TARGETDIR)/
 	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -c -o $@
 
 $(DEPDIR)/%.d: $(SRCDIR)/%.c | $(DEPDIR)/
 	$(CC) $< -I$(INCDIR) $(DEPFLAGS)
 
-# Generic directory creator
 %/:
 	mkdir -p $@
 
@@ -116,6 +122,9 @@ run: $(TARGET)
 run-%: $(TARGET)
 	$* $<
 
+test:
+	$(MAKE) run TYPE=TEST
+
 clean-all:
 	rm -rf $(BUILDDIR)
 
@@ -128,7 +137,7 @@ install: $(TARGET) | $(PREFIX)/
 	cp $^ $(PREFIX)/bin/
 
 uninstall:
-	rm $(PREFIX)/bin/$(TARGETNAME)
+	rm $(PREFIX)/bin/$(PROJECT_NAME)
 
 doc: doc/Doxyfile
 	doxygen $<
