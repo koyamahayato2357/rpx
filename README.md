@@ -113,6 +113,7 @@ usage:  `... <$3> <$2> <$1> <lambda> !`
 
 ### Other
 - `( )`: Specify the valid range of the operator
+The operators, like lisp, support variable-length arguments, so unlike pure RPNs, they need parentheses.
 - `;`: Start of a comment (ignored until end of line)
 - ` `: Required at the number breaks, but ignored elsewhere
 
