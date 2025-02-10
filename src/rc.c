@@ -19,14 +19,13 @@ void load_initscript(char const *path) {
 
   set_configpath(path, BUFSIZE, configpath);
 
-  struct dirent *entry;
   DIR *dp dropdir = opendir(configpath) ?: p$return();
 
   int const configpathlen = strlen(configpath);
   char fname[BUFSIZE];
   strncpy(fname, configpath, configpathlen);
 
-  while ((entry = readdir(dp)) != nullptr) {
+  for (struct dirent *entry; (entry = readdir(dp));) {
     if (entry->d_name[0] == '.')
       continue; // ignore hidden files
     strncpy(fname + configpathlen, entry->d_name, BUFSIZE - configpathlen);
