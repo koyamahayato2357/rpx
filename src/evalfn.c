@@ -335,7 +335,7 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
 void (*get_eval_table(char c))(evalinfo_t *) { return eval_table[c - ' ']; }
 
 void rpx_eval(evalinfo_t *_Nonnull restrict ei) {
-  for (; likely(*ei->expr && ei->iscontinue); ei->expr++)
+  for (; *ei->expr && ei->iscontinue; ei->expr++) [[clang::likely]]
     get_eval_table (*ei->expr)(ei);
 }
 

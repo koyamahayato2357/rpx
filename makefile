@@ -22,7 +22,7 @@ OPTLEVEL ?= g
 
 # if CC is not defined
 ifeq ($(origin $(CC)),undefined)
-  CC := $(if $(shell command -v clang-20),clang-20,gcc)
+  CC := $(if $(shell command -v clang-20),clang-20,clang)
 endif
 # e.g.) disable ccache
 # $ make CCACHE=

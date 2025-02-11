@@ -59,7 +59,7 @@ MOPS(sub, -)
  * @brief Mul between matrices
  */
 [[nodiscard]] matrix_t mmul(matrix_t const *lhs, matrix_t const *rhs) {
-  if (unlikely(lhs->rows != rhs->cols && lhs->cols != rhs->rows))
+  if (lhs->rows != rhs->cols && lhs->cols != rhs->rows) [[clang::unlikely]]
     disperr(__FUNCTION__, "%s: %dx%d && %dx%d",
             codetomsg(ERR_DIMENTION_MISMATCH), lhs->rows, lhs->cols, rhs->rows,
             rhs->cols);
@@ -79,7 +79,7 @@ MOPS(sub, -)
  * @brief Calculate determinant
  */
 double det(matrix_t const *_Nonnull restrict A) {
-  if (unlikely(A->rows != A->cols))
+  if (A->rows != A->cols) [[clang::unlikely]]
     disperr(__FUNCTION__, "not a square matrix");
 
   double result = 1;
@@ -88,7 +88,7 @@ double det(matrix_t const *_Nonnull restrict A) {
     for (int j = 0; j < dim - 1; j++) {
       for (int k = 1; !A->matrix[dim * i + i]; k++) {
         for (int l = i; l < dim; l++) {
-          if (unlikely(k >= dim)) // case of singular matrix
+          if (k >= dim) [[clang::unlikely]] // case of singular matrix
             return 0;
 
           double temp = A->matrix[dim * i + l];
@@ -115,7 +115,7 @@ double det(matrix_t const *_Nonnull restrict A) {
 [[nodiscard]] matrix_t inverse_matrix(matrix_t const *_Nonnull restrict A) {
   int dim = A->rows;
 
-  if (unlikely(A->rows != A->cols)) {
+  if (A->rows != A->cols) [[clang::unlikely]] {
     disperr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
     return *A;
   }
@@ -130,7 +130,7 @@ double det(matrix_t const *_Nonnull restrict A) {
     if (A->matrix[i * dim + i] == 0) {
       int j;
       for (j = (i + 1) % dim; A->matrix[j * dim + i] == 0; j = (j + 1) % dim)
-        if (unlikely(j == i)) {
+        if (j == i) [[clang::unlikely]] {
           free(result.matrix);
           disperr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
           return *A;
@@ -159,7 +159,7 @@ double det(matrix_t const *_Nonnull restrict A) {
   // A->matrix to unit matrix
   for (int i = 0; i < dim; i++)
     for (int j = 0; j < dim; j++) {
-      if (unlikely(A->matrix[i * dim + i] == 0)) {
+      if (A->matrix[i * dim + i] == 0) [[clang::unlikely]] {
         free(result.matrix);
         disperr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
         return *A;

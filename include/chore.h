@@ -16,8 +16,6 @@
 #define drop ondrop(free_cl)
 #define dropfile ondrop(fclose_cl)
 #define dropdir ondrop(closedir_cl)
-#define likely(cond) __builtin_expect(!!(cond), 1)
-#define unlikely(cond) __builtin_expect(!!(cond), 0)
 #define _ auto CAT(_DISCARD_, __COUNTER__) [[maybe_unused]]
 
 struct winsize get_winsz();
