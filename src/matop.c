@@ -1,5 +1,6 @@
 #include "matop.h"
 #include "arthfn.h"
+#include "chore.h"
 #include "errcode.h"
 #include "error.h"
 #include "gene.h"

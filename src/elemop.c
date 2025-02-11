@@ -1,4 +1,5 @@
 #include "elemop.h"
+#include "chore.h"
 #include "error.h"
 #include "gene.h"
 #include <string.h>

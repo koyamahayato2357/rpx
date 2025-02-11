@@ -2,6 +2,7 @@
 
 #define _GNU_SOURCE
 #include "editline.h"
+#include "chore.h"
 #include "error.h"
 #include "exproriented.h"
 #include "main.h"
