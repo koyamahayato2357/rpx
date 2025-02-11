@@ -316,7 +316,7 @@ end:
 }
 
 test(eval_expr_complex) {
-  double complex result;
+  [[maybe_unused]] double complex result;
 
   result = eval_expr_complex("1 2i +").elem.comp;
   expecteq(1.0 + 2.0 * I, result);
