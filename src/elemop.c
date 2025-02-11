@@ -5,17 +5,20 @@
 #include <string.h>
 #include <tgmath.h>
 
-void free_matr(matrix_t *x) { free(x->matrix); }
+void free_matr(matrix_t *_Nonnull restrict x) { free(x->matrix); }
 #define dropmatr __attribute__((cleanup(free_matr)))
 
-void elem_set(elem_t *lhs, elem_t *rhs) {
+void elem_set(elem_t *_Nonnull restrict lhs,
+              elem_t const *_Nonnull restrict rhs) {
   if (lhs->rtype == RTYPE_MATR)
     free(lhs->elem.matr.matrix);
 
   *lhs = *rhs;
 }
 
-bool elem_eq(elem_t *lhs, elem_t *rhs) {
+bool elem_eq(elem_t const *_Nonnull lhs, elem_t const *_Nonnull rhs) {
+  if (lhs == rhs)
+    return true;
   if (lhs->rtype != rhs->rtype)
     return false;
   if (lhs->rtype == RTYPE_COMP)
@@ -25,7 +28,7 @@ bool elem_eq(elem_t *lhs, elem_t *rhs) {
   return false;
 }
 
-void elem_add(elem_t *lhs, elem_t *rhs) {
+void elem_add(elem_t *lhs, elem_t const *rhs) {
   if (lhs->rtype != rhs->rtype) {
     disperr(__FUNCTION__, "type mismatch; abort");
     return;
@@ -41,7 +44,7 @@ void elem_add(elem_t *lhs, elem_t *rhs) {
   lhs->elem.comp += rhs->elem.comp;
 }
 
-void elem_sub(elem_t *lhs, elem_t *rhs) {
+void elem_sub(elem_t *lhs, elem_t const *rhs) {
   if (lhs->rtype != rhs->rtype) {
     disperr(__FUNCTION__, "type mismatch; abort");
     return;
@@ -74,7 +77,7 @@ rtype_t elem_mul(elem_t *lhs, elem_t *rhs) {
   return RTYPE_COMP;
 }
 
-void elem_div(elem_t *lhs, elem_t *rhs) {
+void elem_div(elem_t *lhs, elem_t const *rhs) {
   if (lhs->rtype == RTYPE_COMP)
     lhs->elem.comp /= rhs->elem.comp;
   else

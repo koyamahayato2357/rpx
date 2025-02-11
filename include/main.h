@@ -72,5 +72,5 @@ void print_elem(elem_t);
 void print_real(double);
 void print_complex(double complex);
 void print_matrix(matrix_t);
-void print_lambda(char *);
-void proc_cmds(char *);
+void print_lambda(char const *);
+void proc_cmds(char const *);

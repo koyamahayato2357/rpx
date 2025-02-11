@@ -81,7 +81,7 @@ void startup_message() {
  * @brief Process input
  * @param[in] input_buf input
  */
-void proc_input(char *input_buf) {
+void proc_input(char const *_Nonnull restrict input_buf) {
   if (*input_buf == ':') {
     proc_cmds(input_buf + 1);
     return;
@@ -123,7 +123,7 @@ void proc_alist(int argc, char **argv) {
  * @brief File reading loop
  * @param[in] fp File stream
  */
-void reader_loop(FILE *fp) {
+void reader_loop(FILE *_Nonnull restrict fp) {
   char input_buf[BUFSIZE];
   while (likely(fgets(input_buf, BUFSIZE, fp) != nullptr))
     proc_input(input_buf);
@@ -141,7 +141,7 @@ void reader_loop_stdin() {
  * @param expr String of expression
  * @return elem_t Expression evaluation result
  */
-elem_t eval_expr_complex(char const *expr) {
+elem_t eval_expr_complex(char const *_Nonnull expr) {
   elem_t operand_stack[BUFSIZE] = {0};
   elem_t *rsp = operand_stack, *rbp = operand_stack;
   rtinfo_t info_c = get_rtinfo();
@@ -479,7 +479,7 @@ void print_matrix(matrix_t result) {
   }
 }
 
-void print_lambda(char *result) {
+void print_lambda(char const *_Nonnull restrict result) {
   printf("result: ");
   puts(result);
 }
@@ -488,7 +488,7 @@ void print_lambda(char *result) {
  * @brief Process command
  * @param[in] cmd Command input
  */
-void proc_cmds(char *cmd) {
+void proc_cmds(char const *_Nonnull restrict cmd) {
   plotcfg_t pcfg = get_plotcfg();
 
   // TODO save variables

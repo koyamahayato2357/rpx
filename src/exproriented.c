@@ -11,6 +11,7 @@
  * ----------------------------------------------------------------------------
  */
 
+#ifdef TEST_MODE_ALL
 #include "exproriented.h"
 #include "testing.h"
 
@@ -60,6 +61,6 @@ test(dollar_sign) {
   // $ expression returns 0.
   // For now.
   // I want Unit type
-  int a = $(int i = 5; expecteq(5, i));
-  expecteq(0, a);
+  expecteq(0, $(int i = 5; expecteq(5, i)));
 }
+#endif

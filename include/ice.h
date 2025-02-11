@@ -1,6 +1,7 @@
 #pragma once
 #ifndef NDEBUG
 #include "gene.h"
+#include <stdio.h>
 
 typedef struct {
   bool enable;

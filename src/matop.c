@@ -18,11 +18,12 @@
                     .matrix = palloc(rows * cols * sizeof(double complex))};
 }
 
-inline bool mcheckdim(matrix_t *lhs, matrix_t *rhs) {
+inline bool mcheckdim(matrix_t const *_Nonnull lhs,
+                      matrix_t const *_Nonnull rhs) {
   return lhs->rows == rhs->rows && lhs->cols == rhs->cols;
 }
 
-bool meq(matrix_t *lhs, matrix_t *rhs) {
+bool meq(matrix_t const *_Nonnull lhs, matrix_t const *_Nonnull rhs) {
   if (!mcheckdim(lhs, rhs))
     return false;
 
@@ -37,7 +38,8 @@ bool meq(matrix_t *lhs, matrix_t *rhs) {
  * @brief Add/Sub between matrices
  */
 #define MOPS(name, op)                                                         \
-  matrix_t m##name(matrix_t *lhs, matrix_t *rhs) {                             \
+  [[nodiscard]] matrix_t m##name(matrix_t const *_Nonnull lhs,                 \
+                                 matrix_t const *_Nonnull rhs) {               \
     if (!mcheckdim(lhs, rhs))                                                  \
       disperr(__FUNCTION__, "%s: %dx%d && %dx%d",                              \
               codetomsg(ERR_DIMENTION_MISMATCH), lhs->rows, lhs->cols,         \
@@ -56,7 +58,7 @@ MOPS(sub, -)
 /**
  * @brief Mul between matrices
  */
-[[nodiscard]] matrix_t mmul(matrix_t *lhs, matrix_t *rhs) {
+[[nodiscard]] matrix_t mmul(matrix_t const *lhs, matrix_t const *rhs) {
   if (unlikely(lhs->rows != rhs->cols && lhs->cols != rhs->rows))
     disperr(__FUNCTION__, "%s: %dx%d && %dx%d",
             codetomsg(ERR_DIMENTION_MISMATCH), lhs->rows, lhs->cols, rhs->rows,
@@ -76,7 +78,7 @@ MOPS(sub, -)
 /**
  * @brief Calculate determinant
  */
-double det(matrix_t *A) {
+double det(matrix_t const *_Nonnull restrict A) {
   if (unlikely(A->rows != A->cols))
     disperr(__FUNCTION__, "not a square matrix");
 
@@ -110,7 +112,7 @@ double det(matrix_t *A) {
  * @param[in] A Matrix
  * @return Inverted A
  */
-[[nodiscard]] matrix_t inverse_matrix(matrix_t *A) {
+[[nodiscard]] matrix_t inverse_matrix(matrix_t const *_Nonnull restrict A) {
   int dim = A->rows;
 
   if (unlikely(A->rows != A->cols)) {
@@ -174,7 +176,7 @@ double det(matrix_t *A) {
  * @param[in/out] lhs Matrix
  * @param[in] rhs Scalar
  */
-void smul(matrix_t *lhs, double complex rhs) {
+void smul(matrix_t *_Nonnull restrict lhs, double complex rhs) {
   for (size_t i = 0; i < lhs->rows * lhs->cols; i++)
     lhs->matrix[i] *= rhs;
 }

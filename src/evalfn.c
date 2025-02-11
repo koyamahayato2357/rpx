@@ -334,12 +334,12 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
 
 void (*get_eval_table(char c))(evalinfo_t *) { return eval_table[c - ' ']; }
 
-void rpx_eval(evalinfo_t *ei) {
+void rpx_eval(evalinfo_t *_Nonnull restrict ei) {
   for (; likely(*ei->expr && ei->iscontinue); ei->expr++)
     get_eval_table (*ei->expr)(ei);
 }
 
-void init_evalinfo(evalinfo_t *ret) {
+void init_evalinfo(evalinfo_t *_Nonnull restrict ret) {
   ret->rbp = ret->rsp = ret->stack - 1;
   ret->info = get_rrtinfo();
   ret->iscontinue = true;
@@ -351,7 +351,7 @@ void init_evalinfo(evalinfo_t *ret) {
  * @param a_expr String of expression
  * @return Expression evaluation result
  */
-elem_t eval_expr_real(char const *a_expr) {
+elem_t eval_expr_real(char const *_Nonnull restrict a_expr) {
   evalinfo_t ei;
   init_evalinfo(&ei);
   ei.expr = a_expr;

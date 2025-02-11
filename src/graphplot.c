@@ -41,7 +41,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   putchar('\n');
 }
 
-void plotexpr(char const *expr) {
+void plotexpr(char const *_Nonnull restrict expr) {
   plotcfg_t pcfg = get_plotcfg();
   evalinfo_t ei;
 
@@ -71,7 +71,7 @@ void plotexpr(char const *expr) {
   drawaxisx(pcfg.xn, pcfg.dispx, pcfg.dx);
 }
 
-void plotexpr_implicit(char const *expr) {
+void plotexpr_implicit(char const *_Nonnull restrict expr) {
   plotcfg_t pcfg = get_plotcfg();
   evalinfo_t ei;
 
@@ -123,7 +123,7 @@ void set_pbounds(double const xx, double const xn, double const yx,
   set_plotcfg(pcfg);
 }
 
-void change_plotconfig(char const *cmd) {
+void change_plotconfig(char const *_Nonnull cmd) {
   switch (*cmd++) {
   case 'd': { // display size
     plotcfg_t pcfg = get_plotcfg();
