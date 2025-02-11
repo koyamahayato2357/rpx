@@ -185,8 +185,7 @@ static void rpx_grpend(evalinfo_t *ei) {
 static void rpx_lmdbgn(evalinfo_t *ei) {
   ei->expr++;
   int i = 0;
-  int nest = 1;
-  for (; *ei->expr; i++)
+  for (int nest = 1; *ei->expr; i++)
     if (ei->expr[i] == '{')
       nest++;
     else if (ei->expr[i] == '}' && !--nest)
