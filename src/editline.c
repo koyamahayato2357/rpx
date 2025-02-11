@@ -261,6 +261,7 @@ void handle_es(char key, char *buf, char **cur, char **len) {
     break;
   case 'H':
     *cur = buf;
+    break;
   default:
     disperr(__FUNCTION__, "unknown escape sequence: %c", key);
   }

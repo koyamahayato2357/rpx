@@ -247,7 +247,7 @@ elem_t eval_expr_complex(char const *_Nonnull expr) {
       double complex theta = (rsp--)->elem.comp;
       rsp->elem.comp =
           rsp->elem.comp * cos(theta) + I * rsp->elem.comp * sin(theta);
-    }
+    } break;
 
     case '@': // system functions
       switch (*++expr) {
@@ -299,7 +299,7 @@ elem_t eval_expr_complex(char const *_Nonnull expr) {
     case ',': // delimiter
       goto end;
     default:
-        disperr(__FUNCTION__, "unknown char: %c", *expr);
+      disperr(__FUNCTION__, "unknown char: %c", *expr);
     }
   }
 
