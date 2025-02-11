@@ -13,6 +13,9 @@
 10. [Error Handling](#error-handling)
 11. [Advanced Topics](#advanced-topics)
 
+## Dependencies
+- clang
+
 ## Installation
 ```
 $ sudo make install
