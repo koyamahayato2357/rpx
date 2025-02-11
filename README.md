@@ -79,7 +79,7 @@ RPX offers four modes of operation:
 
 ### Conditional Branch
 - `?` (Ternary operator)
-usage: `<false case> <true case> <cond> ?`
+usage: `<true case> <false case> <cond> ?`
 
 ## Special Features
 ### Constants
