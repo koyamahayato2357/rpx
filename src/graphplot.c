@@ -50,7 +50,7 @@ void plotexpr(char const *expr) {
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
     real_t stack = (real_t){.elem = {.real = x0}, .isnum = true};
-    ei = init_evalinfo();
+    init_evalinfo(&ei);
     ei.argv = &stack - 7;
     ei.expr = expr;
     rpx_eval(&ei);
@@ -85,7 +85,7 @@ void plotexpr_implicit(char const *expr) {
         (real_t){.elem = {.real = y0}, .isnum = true},
         (real_t){.elem = {.real = x0}, .isnum = true},
     };
-    ei = init_evalinfo();
+    init_evalinfo(&ei);
     ei.argv = stack - 6;
     ei.expr = expr;
     rpx_eval(&ei);

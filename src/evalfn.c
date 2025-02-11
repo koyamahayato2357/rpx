@@ -339,13 +339,11 @@ void rpx_eval(evalinfo_t *ei) {
     get_eval_table (*ei->expr)(ei);
 }
 
-evalinfo_t init_evalinfo() {
-  evalinfo_t ret;
-  ret.rbp = ret.rsp = ret.stack - 1;
-  ret.info = get_rrtinfo();
-  ret.iscontinue = true;
-  ret.callstacki = ~0;
-  return ret;
+void init_evalinfo(evalinfo_t *ret) {
+  ret->rbp = ret->rsp = ret->stack - 1;
+  ret->info = get_rrtinfo();
+  ret->iscontinue = true;
+  ret->callstacki = ~0;
 }
 
 /**
@@ -354,7 +352,8 @@ evalinfo_t init_evalinfo() {
  * @return Expression evaluation result
  */
 elem_t eval_expr_real(char const *a_expr) {
-  evalinfo_t ei = init_evalinfo();
+  evalinfo_t ei;
+  init_evalinfo(&ei);
   ei.expr = a_expr;
   rpx_eval(&ei);
   if (ei.info.histi < BUFSIZE)
