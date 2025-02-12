@@ -507,7 +507,7 @@ bool editline(int sz, char *buf) {
   char *cur = buf;
   char *len = buf;
 
-  struct termios orig_termios __attribute__((cleanup(disable_rawmode)));
+  struct termios orig_termios ondrop(disable_rawmode);
   // getchar() becomes like getch() in MSVC
   enable_rawmode(&orig_termios);
 
