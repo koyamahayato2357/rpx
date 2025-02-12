@@ -72,7 +72,7 @@ DEF_ONEARGFN(round)
 
 #define DEF_MULTI(name, factor)                                                \
   static void rpx_##name(evalinfo_t *ei) { ei->rsp->elem.real *= factor; }
-DEF_MULTI(nagate, -1)
+DEF_MULTI(negate, -1)
 DEF_MULTI(torad, M_PI / 180)
 DEF_MULTI(todeg, 180 / M_PI)
 
@@ -191,7 +191,7 @@ static void rpx_lmdbgn(evalinfo_t *ei) {
     else if (ei->expr[i] == '}' && !--nest)
       break;
 
-  *++ei->rsp = SET_LAMB(malloc(i + 1));
+  *++ei->rsp = SET_LAMB(palloc(i + 1));
   memcpy(ei->rsp->elem.lamb, ei->expr, i);
   ei->rsp->elem.lamb[i] = '\0';
   ei->expr += i;
@@ -210,7 +210,7 @@ static void ret_fn(evalinfo_t *ei) {
   rpx_grpend(ei);
   real_t ret = *ei->rsp;
   ei->rsp = ei->argv + 8;
-  ei->rsp -= ei->max_argc[ei->max_argci];
+  ei->rsp -= ei->max_argc[ei->max_argci--];
   *ei->rsp = ret;
   ei->argv = ei->callstack[ei->callstacki--];
 }
@@ -312,7 +312,7 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
     rpx_undfned, // 'j'
     rpx_undfned, // 'k'
     rpx_log,     // 'l'
-    rpx_nagate,  // 'm'
+    rpx_negate,  // 'm'
     rpx_undfned, // 'n'
     rpx_undfned, // 'o'
     rpx_undfned, // 'p'
