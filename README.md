@@ -158,8 +158,8 @@ Arguments whose first letter is not '-' are interpreted as file name.
 15. Call multi-arg fn: `6 7 $g !` -> g(7, 6)
 16. Lambda fn: `4 {$1 2 *} !` -> 8
 17. Lambda multi-arg fn: `5 6 {$1 $2 -} !` -> 1
-18. Conditional Branch: `3 4 (5 6 <) ?` -> 4
-19. Recursive fn: `5 {{$1 1 - $f! $1 *} {1} ($1 1 =) ?} &f!` -> 120
+18. Conditional Branch: `3 4 (5 6 <) ?` -> 3
+19. Recursive fn: `5 {{1} {$1 1 - $f! $1 *} ($1 1 =) ?!} &f!` -> 120
 20. Display help and exit: `rpx -h -q`
 21. One-shot calculator: `rpx -r "1 1 +" -q`
 22. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
