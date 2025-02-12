@@ -52,7 +52,7 @@ RPX offers four modes of operation:
    - Supports matrix operations
 
 ## Input Format
-- Use spaces to separate numbers and operators
+- Whitespace is required for number separators, but ignored elsewhere
 - Negative numbers: Use 'm' operator (e.g., `5 m` for -5)
 - Decimal numbers are supported
 - Complex numbers: Use 'i' operator (e.g., `3m 4 i +` for -3+4i)
@@ -106,7 +106,9 @@ usage: `<true case> <false case> <cond> ?`
 
 ### Function Operations
 - `!` evaluate lambda expression at the top of the stack
+Note: The order of function arguments is descending order.
 usage:  `... <$3> <$2> <$1> <lambda> !`
+e.g.) `4 5 {$1 $2 -}!` -> 5 - 4 = 1
 
 ### Matrix Input Details
 - First element is the number of columns
