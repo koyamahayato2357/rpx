@@ -25,6 +25,7 @@
 - clang-format
 - clang-tidy
 - doxygen
+- zig
 
 ## Installation
 ```
@@ -99,9 +100,9 @@ usage: `<true case> <false case> <cond> ?`
 - `\E`: Euler's number
 - `\P`: Pi
 
-### Variable Operations
-- `$[a-z]` followed by a letter (a-z) for variable reference
-- `&[a-z]` to update variables (e.g., `3 5 + &x` for x=3+5)
+### Register
+- `$[a-z]` followed by a letter (a-z) for register reference
+- `&[a-z]` to update register (e.g., `3 5 + &x` for x=3+5)
 
 ### Function Operations
 - `!` evaluate lambda expression at the top of the stack
@@ -127,6 +128,16 @@ usage:  `... <$3> <$2> <$1> <lambda> !`
 ### Other
 - `( )`: Specify the valid range of the operator
 The operators, like lisp, support variable-length arguments, so unlike pure RPNs, they need parentheses.
+tips: Parentheses do not specify priority. Operators are evaluated in definitive left-to-right order without exception and do not backtrack.
+```
+3 4 5 + 6 *   ; (3 + 4 + 5) * 6
+------|+  |
+----------|*
+
+3 (4 5 +) 6 * ; 3 * (4 + 5) * 6
+   ----|+   |
+------------|*
+```
 - `;`: Start of a comment (ignored until end of line)
 - ` `: Required at the number breaks, but ignored elsewhere
 
