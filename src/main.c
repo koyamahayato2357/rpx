@@ -57,7 +57,7 @@ void startup_message() {
   puts("  - Complex numbers   (:tc to toggle)");
   puts("");
   puts(" Features:");
-  puts("  - Variable storage ($a to $z)");
+  puts("  - Register ($a to $z)");
   puts("  - Result history (@a, @h)");
   puts("  - Special constants (\\P for pi, \\E for e)");
   puts("  - Advanced functions (sin, cos, log, etc.)");
@@ -280,15 +280,15 @@ elem_t eval_expr_complex(char const *_Nonnull expr) {
       (++rsp)->elem.comp = get_const(*++expr);
       break;
 
-    case '$': // variable oparation
+    case '$': // register
       if (islower(*++expr)) [[clang::likely]] {
-        elem_t *rhs = &info_c.usrvar[*expr - 'a'];
+        elem_t *rhs = &info_c.reg[*expr - 'a'];
         elem_set(++rsp, rhs);
       }
       break;
 
     case '&':
-      elem_set(&info_c.usrvar[*++expr - 'a'], rsp);
+      elem_set(&info_c.reg[*++expr - 'a'], rsp);
       break;
 
       // TODO differential
@@ -491,7 +491,7 @@ void print_lambda(char const *_Nonnull restrict result) {
 void proc_cmds(char const *_Nonnull restrict cmd) {
   plotcfg_t pcfg = get_plotcfg();
 
-  // TODO save variables
+  // TODO save registers
   switch (*cmd++) {
   case 't': // toggle
     switch (*cmd) {

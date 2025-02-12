@@ -21,13 +21,13 @@ typedef struct {
 typedef struct {
   real_t hist[BUFSIZE];
   size_t histi;
-  real_t usrvar[ALPN];
+  real_t reg[ALPN];
 } rrtinfo_t /* runtime info */;
 
 typedef struct {
   elem_t hist[BUFSIZE];
   size_t histi;
-  elem_t usrvar[ALPN];
+  elem_t reg[ALPN];
 } rtinfo_t /* runtime info */;
 
 plotcfg_t get_plotcfg();

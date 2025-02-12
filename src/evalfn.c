@@ -158,14 +158,14 @@ static real_t handle_function_args(evalinfo_t *ei) {
   return ei->argv[8 - argnum];
 }
 
-static void rpx_lvars(evalinfo_t *ei) {
+static void rpx_lregs(evalinfo_t *ei) {
   *++ei->rsp = (isdigit(*++ei->expr)) ? handle_function_args(ei)
-               : (islower(*ei->expr)) ? ei->info.usrvar[*ei->expr - 'a']
+               : (islower(*ei->expr)) ? ei->info.reg[*ei->expr - 'a']
                                       : *(real_t *)$panic(ERR_CHAR_NOT_FOUND);
 }
 
-static void rpx_wvars(evalinfo_t *ei) {
-  ei->info.usrvar[*++ei->expr - 'a'] = *ei->rsp;
+static void rpx_wregs(evalinfo_t *ei) {
+  ei->info.reg[*++ei->expr - 'a'] = *ei->rsp;
 }
 
 static void rpx_end(evalinfo_t *ei) { ei->iscontinue = false; }
@@ -239,9 +239,9 @@ void (*eval_table['~' - ' ' + 1])(evalinfo_t *) = {
     rpx_runlmd,  // '!'
     rpx_undfned, // '"'
     rpx_undfned, // '#'
-    rpx_lvars,   // '$'
+    rpx_lregs,   // '$'
     rpx_mod,     // '%'
-    rpx_wvars,   // '&'
+    rpx_wregs,   // '&'
     rpx_undfned, // '''
     rpx_grpbgn,  // '('
     rpx_grpend,  // ')'
