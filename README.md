@@ -14,7 +14,17 @@
 11. [Advanced Topics](#advanced-topics)
 
 ## Dependencies
+### Required
+- bash
+- git
+- make
 - clang
+- coreutils
+### Optional
+- ccache
+- clang-format
+- clang-tidy
+- doxygen
 
 ## Installation
 ```
