@@ -3,23 +3,6 @@
 #pragma once
 #include <stdio.h>
 #define BUFSIZE 64
-#define OP_CASE_ARTHM(op)                                                      \
-  case *#op:                                                                   \
-    for (; ei.rbp + 1 < ei.rsp; ei.rbp[1] op## = *ei.rsp--)                    \
-      ;                                                                        \
-    break;
-#define OP_CASE_ADV(op, f)                                                     \
-  case *#op:                                                                   \
-    for (; ei.rbp + 1 < ei.rsp; ei.rbp[1] = f(ei.rbp[1], *ei.rsp--))           \
-      ;                                                                        \
-    break;
-#define OP_CASE_EQA(op)                                                        \
-  case *#op:                                                                   \
-    for (; ei.rbp + 1 < ei.rsp && *(ei.rsp - 1) op## = *ei.rsp; ei.rsp--)      \
-      ;                                                                        \
-    *(ei.rbp + 1) = ei.rbp + 1 == ei.rsp;                                      \
-    ei.rsp = ei.rbp + 1;                                                       \
-    break;
 #define OP_CASE_ELEM(tok, op)                                                  \
   case *#op:                                                                   \
     while (rbp + 1 < rsp)                                                      \
