@@ -3,7 +3,7 @@
 
 double gcd(double n, double m) {
   while (m) {
-    long long temp = n;
+    double temp = n;
     n = m;
     m = fmod(temp, m);
   }
