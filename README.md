@@ -156,11 +156,11 @@ tips: Parentheses do not specify priority. Operators are evaluated in definitive
 Arguments whose first letter is not '-' are interpreted as file name.
 
 ## Examples
-1. Basic arithmetic: `3 4 + 2 *` -> 14.000000
-2. Using constants: `\P 2 / s` -> 1.000000 (sin(Pi/2))
+1. Basic arithmetic: `3 4 + 2 *` -> 14
+2. Using constants: `\P 2 / s` -> 1 (sin(Pi/2))
 3. Complex expression: `2 3 ^ (4 5 *) + (6 7 /) -` -> 27.142857
 4. Using previous result: `5 @a +` -> Adds 5 to previous result
-5. Complex mode: `3 4i +` -> 3.000000 + 4.000000i
+5. Complex mode: `3 4i +` -> 3 + 4i
 8. Matrix addition: `[2 1,2,3,4,][2,4,5,6,7,]+` -> [2 5,7,9,11,]
 9. Matrix inverse: `[3 1,1,1m,2m,0,1,0,2,1,]~` -> [3 -0.5,-0.75,0.25,0.5,0.25,0.25,-1,-0.5,0.5,]
 10. Plot fn: `:p $1s` -> Graph of sin(x)
