@@ -1,10 +1,10 @@
 #pragma once
+#include <setjmp.h>
 
 #ifdef TEST_MODE
 #include "ansiesc.h"
 #include "errcode.h"
 #include "gene.h"
-#include <setjmp.h>
 #include <stdio.h>
 #include <string.h>
 

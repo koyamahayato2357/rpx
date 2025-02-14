@@ -3,6 +3,7 @@
 #include "benchmarking.h"
 #include "error.h"
 #include "exproriented.h"
+#include "gene.h"
 #include "phyconst.h"
 #include "testing.h"
 #include <ctype.h>
