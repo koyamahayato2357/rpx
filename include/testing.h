@@ -1,11 +1,11 @@
 #pragma once
+
+#ifdef TEST_MODE
 #include "ansiesc.h"
+#include "errcode.h"
 #include "gene.h"
 #include <setjmp.h>
 #include <stdio.h>
-
-#ifdef TEST_MODE
-#include "errcode.h"
 #include <string.h>
 
 extern int TESTING_H_success;

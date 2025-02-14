@@ -12,7 +12,7 @@
   case cas:                                                                    \
     var = fn(var);                                                             \
     break;
-#define OVERWRITE_REAL(cas, fn) OVERWRITE(cas, ei->rsp->elem.real, fn)
+#define OVERWRITE_REAL(cas, fn) OVERWRITE(cas, ei->s.rsp->elem.real, fn)
 #define OVERWRITE_COMP(cas, fn) OVERWRITE(cas, rsp->elem.comp, fn)
 
 #include "matop.h"

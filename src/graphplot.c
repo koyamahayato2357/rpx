@@ -43,7 +43,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
 
 void plotexpr(char const *_Nonnull restrict expr) {
   plotcfg_t pcfg = get_plotcfg();
-  evalinfo_t ei;
+  machine_t ei;
 
   for (int i = 0; i < pcfg.dispy; i++) {
     double y = pcfg.yx - pcfg.dy * i;
@@ -51,16 +51,16 @@ void plotexpr(char const *_Nonnull restrict expr) {
     double x0 = pcfg.xn - pcfg.dx;
     real_t stack = (real_t){.elem = {.real = x0}, .isnum = true};
     init_evalinfo(&ei);
-    ei.argv = &stack - 7;
-    ei.expr = expr;
+    ei.e.argv = &stack - 7;
+    ei.c.expr = expr;
     rpx_eval(&ei);
-    double y0 = ei.rsp->elem.real;
+    double y0 = ei.s.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * j + pcfg.dx;
       stack = (real_t){.elem = {.real = x1}, .isnum = true};
-      ei.expr = expr;
+      ei.c.expr = expr;
       rpx_eval(&ei);
-      double y1 = ei.rsp->elem.real;
+      double y1 = ei.s.rsp->elem.real;
       putchar(ispointgraph(y0, y1, y) ? '*' : ' ');
       y0 = y1;
     }
@@ -73,7 +73,7 @@ void plotexpr(char const *_Nonnull restrict expr) {
 
 void plotexpr_implicit(char const *_Nonnull restrict expr) {
   plotcfg_t pcfg = get_plotcfg();
-  evalinfo_t ei;
+  machine_t ei;
 
   double y0 = pcfg.yx + pcfg.dy;
   for (int i = 0; i < pcfg.dispy; i++) {
@@ -86,17 +86,17 @@ void plotexpr_implicit(char const *_Nonnull restrict expr) {
         (real_t){.elem = {.real = x0}, .isnum = true},
     };
     init_evalinfo(&ei);
-    ei.argv = stack - 6;
-    ei.expr = expr;
+    ei.e.argv = stack - 6;
+    ei.c.expr = expr;
     rpx_eval(&ei);
-    double res0 = ei.rsp->elem.real;
+    double res0 = ei.s.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * (j + 1);
       stack[0] = (real_t){.elem = {.real = y1}, .isnum = true};
       stack[1] = (real_t){.elem = {.real = x1}, .isnum = true};
-      ei.expr = expr;
+      ei.c.expr = expr;
       rpx_eval(&ei);
-      double res1 = ei.rsp->elem.real;
+      double res1 = ei.s.rsp->elem.real;
       putchar(ispointgraph(res0, res1, 0) ? '*' : ' ');
       res0 = res1;
     }
