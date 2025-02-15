@@ -159,7 +159,7 @@ static real_t handle_function_args(machine_t *ei) {
   int argnum = *ei->c.expr - '0';
   if (ei->d.argc[ei->d.argci] < argnum)
     ei->d.argc[ei->d.argci] = argnum;
-  return ei->e.argv[8 - argnum];
+  return ei->e.args[8 - argnum];
 }
 
 static void rpx_lregs(machine_t *ei) {
@@ -205,8 +205,8 @@ static void rpx_lmdbgn(machine_t *ei) {
 static void rpx_lmdend(machine_t *ei) { _ = ei; }
 
 static void call_fn(machine_t *ei) {
-  ei->d.callstack[++ei->d.callstacki] = ei->e.argv;
-  ei->e.argv = ei->s.rsp - 8;
+  ei->d.callstack[++ei->d.callstacki] = ei->e.args;
+  ei->e.args = ei->s.rsp - 8;
   ei->d.argc[++ei->d.argci] = 0;
   rpx_grpbgn(ei);
 }
@@ -214,10 +214,10 @@ static void call_fn(machine_t *ei) {
 static void ret_fn(machine_t *ei) {
   rpx_grpend(ei);
   real_t ret = *ei->s.rsp;
-  ei->s.rsp = ei->e.argv + 8;
+  ei->s.rsp = ei->e.args + 8;
   ei->s.rsp -= ei->d.argc[ei->d.argci--];
   *ei->s.rsp = ret;
-  ei->e.argv = ei->d.callstack[ei->d.callstacki--];
+  ei->e.args = ei->d.callstack[ei->d.callstacki--];
 }
 
 static void rpx_runlmd(machine_t *ei) {

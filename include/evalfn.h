@@ -11,7 +11,7 @@ typedef struct {
 
 typedef struct {
   rrtinfo_t info;
-  real_t *argv;
+  real_t *args;
   bool iscontinue;
 } env_t;
 

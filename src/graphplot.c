@@ -51,7 +51,7 @@ void plotexpr(char const *_Nonnull restrict expr) {
     double x0 = pcfg.xn - pcfg.dx;
     real_t stack = (real_t){.elem = {.real = x0}, .isnum = true};
     init_evalinfo(&ei);
-    ei.e.argv = &stack - 7;
+    ei.e.args = &stack - 7;
     ei.c.expr = expr;
     rpx_eval(&ei);
     double y0 = ei.s.rsp->elem.real;
@@ -86,7 +86,7 @@ void plotexpr_implicit(char const *_Nonnull restrict expr) {
         (real_t){.elem = {.real = x0}, .isnum = true},
     };
     init_evalinfo(&ei);
-    ei.e.argv = stack - 6;
+    ei.e.args = stack - 6;
     ei.c.expr = expr;
     rpx_eval(&ei);
     double res0 = ei.s.rsp->elem.real;
