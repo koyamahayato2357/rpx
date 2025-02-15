@@ -14,7 +14,7 @@
     double duration = 0;                                                       \
     for (int i = 0; i < REPEAT; i++) {                                         \
       clock_t begin = clock();                                                 \
-      BENCHMARKING_H_bench##name();                                            \
+      [[clang::always_inline]] BENCHMARKING_H_bench##name();                   \
       clock_t end = clock();                                                   \
       duration += difftime(end, begin) / CLOCKS_PER_SEC * 1e6;                 \
     }                                                                          \
