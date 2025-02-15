@@ -21,22 +21,13 @@ highlight link RpxFormulaFollowsCmd Special
 syntax match RpxFormulaFollowsCmd /[op]/ contained
 syntax match RpxFormulaFollows /^:[op]/ contains=RpxCmdStart,RpxFormulaFollowsCmd
 
-highlight link RpxDefFnCmd Special
-highlight link RpxFunctionName Function
-highlight link RpxFnType Type
-syntax match RpxDefFnCmd /d/ contained
-syntax match RpxDefFn /^:d/ contained contains=RpxCmdStart,RpxDefFnCmd
-syntax match RpxFunctionName /\l/ contained
-syntax match RpxFnType /\d/ contained
-syntax match RpxDefineFunction /^:d\l\d/ contains=RpxDefFn,RpxFunctionName,RpxFnType
-
 syntax match Comment /;.*/
 syntax match Delimiter /,/
 syntax match Operator "\V\[-+/*=^><%]"
 syntax match Constant "\\."
 syntax match Identifier "\$."
 syntax match Identifier "&."
-syntax match Function "!."
+syntax match Function "!"
 syntax match SpecialChar "@."
 syntax match Number "\d"
 syntax match Number "\."
