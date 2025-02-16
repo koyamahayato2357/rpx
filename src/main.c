@@ -98,25 +98,35 @@ void proc_input(char const *_Nonnull restrict input_buf) {
  */
 void proc_alist(int argc, char **argv) {
   for (int i = 1; i < argc; i++) {
-    if (argv[i][0] == '-') // interpreted as a option
-      switch (argv[i][1]) {
-      case 'h':
-        startup_message();
-        continue;
-      case 'r':
-        proc_input(argv[++i]);
-        continue;
-      case 'q':
-        exit(0);
-      default:
-        panic(ERR_UNKNOWN_OPTION, "%c ", argv[i][1]);
-      }
+    if (argv[i][0] != '-') { // interpreted as a file name
+      FILE *fp dropfile =
+          fopen(argv[i], "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s ", argv[i]);
+      reader_loop(fp);
+      continue;
+    }
 
-    // interpreted as a file name
-    FILE *fp dropfile =
-        fopen(argv[i], "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s ", argv[i]);
-    reader_loop(fp);
+    switch (argv[i][1]) { // interpreted as a option
+    case 'h':
+      startup_message();
+      break;
+    case 'r':
+      proc_input(argv[++i]);
+      break;
+    case 'q':
+      exit(0);
+    default:
+      panic(ERR_UNKNOWN_OPTION, "%c ", argv[i][1]);
+    }
   }
+}
+
+bool reader(char *buf, size_t len, FILE *fp) {
+  return fgets(buf, len, fp) != nullptr;
+}
+
+bool reader_stdin(char *buf, size_t len, FILE *fp) {
+  _ = fp;
+  return editline(len, buf);
 }
 
 /**
@@ -125,14 +135,8 @@ void proc_alist(int argc, char **argv) {
  */
 void reader_loop(FILE *_Nonnull restrict fp) {
   char input_buf[BUFSIZE];
-  while (fgets(input_buf, BUFSIZE, fp) != nullptr) [[clang::likely]]
-    proc_input(input_buf);
-}
-
-//! @brief Interactive input loop
-void reader_loop_stdin() {
-  char input_buf[BUFSIZE] = {};
-  while (editline(BUFSIZE, input_buf)) [[clang::likely]]
+  auto reader_fn = fp == stdin ? reader_stdin : reader;
+  while (reader_fn(input_buf, BUFSIZE, fp)) [[clang::likely]]
     proc_input(input_buf);
 }
 

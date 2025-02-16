@@ -1,9 +1,10 @@
 //! @file editline.c
 
+#include <stdio.h>
 #define _GNU_SOURCE
-#include "editline.h"
 #include "ansiesc.h"
 #include "chore.h"
+#include "editline.h"
 #include "error.h"
 #include "exproriented.h"
 #include "main.h"
@@ -504,7 +505,7 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
  * @return Is not CTRL-D pressed
  */
 bool editline(int sz, char *buf) {
-  int c = 0;
+  bool not_ctrl_d;
   char *cur = buf;
   char *len = buf;
 
@@ -512,9 +513,8 @@ bool editline(int sz, char *buf) {
   // getchar() becomes like getch() in MSVC
   enable_rawmode(&orig_termios);
 
-  while (true) {
-    c = getchar();
-    if (c == '\n' || c == CTRL_D || buf + sz < len)
+  for (int c = getchar();; c = getchar()) {
+    if ((not_ctrl_d = c == CTRL_D) || c == '\n' || buf + sz < len)
       break;
 
     switch (c) {
@@ -538,5 +538,5 @@ bool editline(int sz, char *buf) {
   }
   putchar('\n');
 
-  return c != CTRL_D;
+  return not_ctrl_d;
 }
