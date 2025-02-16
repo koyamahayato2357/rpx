@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 
   proc_alist(argc, argv);
 
-  reader_loop_stdin();
+  reader_loop(stdin);
 
   return 0;
 }
@@ -120,11 +120,19 @@ void proc_alist(int argc, char **argv) {
   }
 }
 
-bool reader(char *buf, size_t len, FILE *fp) {
+/**
+ * @brief Read raw line from fp
+ * @return is reached EOF
+ */
+bool read_raw_line(char *buf, size_t len, FILE *fp) {
   return fgets(buf, len, fp) != nullptr;
 }
 
-bool reader_stdin(char *buf, size_t len, FILE *fp) {
+/**
+ * @brief Read from stdin
+ * @return is pressed ctrl_d
+ */
+bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
   _ = fp;
   return editline(len, buf);
 }
@@ -135,7 +143,7 @@ bool reader_stdin(char *buf, size_t len, FILE *fp) {
  */
 void reader_loop(FILE *_Nonnull restrict fp) {
   char input_buf[BUFSIZE];
-  auto reader_fn = fp == stdin ? reader_stdin : reader;
+  auto reader_fn = fp == stdin ? reader_interactive_line : read_raw_line;
   while (reader_fn(input_buf, BUFSIZE, fp)) [[clang::likely]]
     proc_input(input_buf);
 }
