@@ -96,6 +96,7 @@ DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 
 # rules
 .PHONY: run analyze clean-all clean install doc test lint fmt help release log
+.DEFAULT_GOAL := build
 
 build: $(TARGET)
 
