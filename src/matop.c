@@ -18,8 +18,7 @@
                     .matrix = palloc(rows * cols * sizeof(double complex))};
 }
 
-bool mcheckdim(matrix_t const *_Nonnull lhs,
-                      matrix_t const *_Nonnull rhs) {
+bool mcheckdim(matrix_t const *_Nonnull lhs, matrix_t const *_Nonnull rhs) {
   return lhs->rows == rhs->rows && lhs->cols == rhs->cols;
 }
 

@@ -2,10 +2,10 @@
 #include "ice.h"
 
 ic_t ic_conf = {
-  .enable = true,
-  .context = false,
-  .prefix = nullptr,
-  .fp = nullptr,
+    .enable = true,
+    .context = false,
+    .prefix = nullptr,
+    .fp = nullptr,
 };
 
 #ifdef TEST_MODE_ALL

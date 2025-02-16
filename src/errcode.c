@@ -28,8 +28,8 @@ char const *codetomsg(int code) {
     return "Allocation failure";
   case ERR_UNKNOWN_COMMAND:
     return "Unknown command";
-    case ERR_UNKNOWN_OPTION:
-      return "Unknown option";
+  case ERR_UNKNOWN_OPTION:
+    return "Unknown option";
   default:
     return "";
   }
