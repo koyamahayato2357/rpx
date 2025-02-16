@@ -60,7 +60,7 @@ test(movecur) {
  * @param[in] end End of erase range
  * @param[in/out] len End of line
  */
-void deletes(char *begin, char *end, char **len) {
+void deletes(char *_Nonnull begin, char const *_Nonnull end, char **len) {
   memcpy(begin, end, *len - end);
   *len -= end - begin;
   **len = '\0';
@@ -320,7 +320,8 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
  * @param[in/out] len End of line
  * @detail Possible buffer overrun
  */
-void insertc(char c, char **cur, char **len) {
+void insertc(char c, char *_Nonnull *_Nonnull cur,
+             char *_Nonnull *_Nonnull len) {
   if (*cur != *len)
     memmove(*cur + 1, *cur, *len - *cur);
   *(*cur)++ = c;
