@@ -58,9 +58,7 @@ CFLAGS += -DLOGLEVEL=$(LOGLEVEL)
 
 ifeq ($(TYPE),test)
   CFLAGS += -DTEST_MODE
-endif
-
-ifeq ($(TYPE),bench)
+else ifeq ($(TYPE),bench)
   CFLAGS += -DBENCHMARK_MODE
 endif
 
