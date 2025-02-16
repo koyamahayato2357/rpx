@@ -37,11 +37,13 @@ INCDIR := include
 BUILDDIR := .build
 PREFIX ?= /usr/local
 
+# compiler flags
 CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wextra   \
           -Wimplicit-fallthrough -Wall -O$(OPTLEVEL)
 OPTFLAGS := -ffast-math -fno-finite-math-only -DNDEBUG -faddrsig -march=native \
            -mtune=native -funroll-loops -fomit-frame-pointer -fdata-sections   \
            -fforce-emit-vtables -ffunction-sections
+# linker flags
 LDFLAGS := -lm
 OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination \
               -fuse-ld=lld -Wl,--gc-sections -Wl,--icf=all -s
@@ -139,6 +141,7 @@ install: $(TARGET) | $(PREFIX)/
 uninstall:
 	rm $(PREFIX)/bin/$(PROJECT_NAME)
 
+# generate doc
 doc: doc/Doxyfile
 	doxygen $<
 
