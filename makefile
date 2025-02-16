@@ -123,7 +123,7 @@ run-%: $(TARGET)
 	$* $<
 
 test:
-	$(MAKE) run TYPE=TEST
+	$(MAKE) run TYPE=test
 
 clean-all:
 	rm -rf $(BUILDDIR)
