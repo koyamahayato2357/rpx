@@ -135,7 +135,7 @@ clean-all:
 clean:
 	rm -rf $(OUTDIR)
 
-install: $(TARGET) | $(PREFIX)/
+install: $(TARGET) | $(PREFIX)/bin/
 	cp $^ $(PREFIX)/bin/
 
 uninstall:
