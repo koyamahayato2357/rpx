@@ -1,7 +1,7 @@
 //! @file editline.c
 
 #include <stdio.h>
-#define _GNU_SOURCE
+#define __USE_GNU
 #include "ansiesc.h"
 #include "chore.h"
 #include "editline.h"
