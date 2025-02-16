@@ -3,7 +3,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-void disperr(char const *funcname, char const *errmsgfmt, ...) {
+__attribute__((format(printf, 2, 3))) void disperr(char const *funcname,
+                                                   char const *errmsgfmt, ...) {
 #ifndef TEST_MODE
   va_list ap;
   va_start(ap, errmsgfmt);
