@@ -19,6 +19,7 @@
 - git
 - make
 - clang
+- lld
 - coreutils
 ### Optional
 - ccache
