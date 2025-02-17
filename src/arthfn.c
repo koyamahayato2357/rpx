@@ -2,7 +2,7 @@
 #include <tgmath.h>
 
 double gcd(double n, double m) {
-  while (m) {
+  while (m != 0) {
     double temp = n;
     n = m;
     m = fmod(temp, m);
