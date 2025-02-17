@@ -1,8 +1,8 @@
 #include "sysconf.h"
 
 plotcfg_t pcfg;
-rrtinfo_t info_r = (rrtinfo_t){.histi = ~0};
-rtinfo_t info_c = (rtinfo_t){.histi = ~0};
+rrtinfo_t info_r = (rrtinfo_t){.histi = ~(argc_t)0};
+rtinfo_t info_c = (rtinfo_t){.histi = ~(argc_t)0};
 
 plotcfg_t get_plotcfg() { return pcfg; }
 
