@@ -345,12 +345,12 @@ void (*eval_table['~' - ' ' + 1])(machine_t *) = {
 
 void (*get_eval_table(char c))(machine_t *) { return eval_table[c - ' ']; }
 
-void rpx_eval(machine_t *_Nonnull restrict ei) {
+[[gnu::nonnull]] void rpx_eval(machine_t *restrict ei) {
   for (; *ei->c.expr && ei->e.iscontinue; ei->c.expr++) [[clang::likely]]
     get_eval_table (*ei->c.expr)(ei);
 }
 
-void init_evalinfo(machine_t *_Nonnull restrict ret) {
+[[gnu::nonnull]] void init_evalinfo(machine_t *restrict ret) {
   ret->s.rbp = ret->s.rsp = ret->s.payload - 1;
   ret->e.info = get_rrtinfo();
   ret->e.iscontinue = true;
@@ -362,7 +362,7 @@ void init_evalinfo(machine_t *_Nonnull restrict ret) {
  * @param a_expr String of expression
  * @return Expression evaluation result
  */
-elem_t eval_expr_real(char const *_Nonnull restrict a_expr) {
+[[gnu::nonnull]] elem_t eval_expr_real(char const *restrict a_expr) {
   machine_t ei;
   init_evalinfo(&ei);
   ei.c.expr = a_expr;

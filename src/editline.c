@@ -62,7 +62,7 @@ test(movecur) {
  * @param[in] end End of erase range
  * @param[in, out] len End of line
  */
-void deletes(char *_Nonnull begin, char const *_Nonnull end, char **len) {
+[[gnu::nonnull]] void deletes(char *begin, char const *end, char **len) {
   memcpy(begin, end, (size_t)(*len - end));
   *len -= end - begin;
   **len = '\0';
@@ -319,8 +319,7 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
  * @param[in, out] len End of line
  * @detail Possible buffer overrun
  */
-void insertc(char c, char *_Nonnull *_Nonnull cur,
-             char *_Nonnull *_Nonnull len) {
+[[gnu::nonnull]] void insertc(char c, char **cur, char **len) {
   if (*cur != *len)
     memmove(*cur + 1, *cur, (size_t)(*len - *cur));
   *(*cur)++ = c;

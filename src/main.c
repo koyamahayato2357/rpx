@@ -81,7 +81,7 @@ void startup_message() {
  * @brief Process input
  * @param[in] input_buf input
  */
-void proc_input(char const *_Nonnull restrict input_buf) {
+[[gnu::nonnull]] void proc_input(char const *restrict input_buf) {
   if (*input_buf == ':') {
     proc_cmds(input_buf + 1);
     return;
@@ -141,7 +141,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
  * @brief File reading loop
  * @param[in] fp File stream
  */
-void reader_loop(FILE *_Nonnull restrict fp) {
+[[gnu::nonnull]] void reader_loop(FILE *restrict fp) {
   char input_buf[BUFSIZE];
   auto reader_fn = fp == stdin ? reader_interactive_line : read_raw_line;
   while (reader_fn(input_buf, BUFSIZE, fp)) [[clang::likely]]
@@ -153,7 +153,7 @@ void reader_loop(FILE *_Nonnull restrict fp) {
  * @param expr String of expression
  * @return elem_t Expression evaluation result
  */
-elem_t eval_expr_complex(char const *_Nonnull expr) {
+[[gnu::nonnull]] elem_t eval_expr_complex(char const *expr) {
   elem_t operand_stack[BUFSIZE] = {0};
   elem_t *rsp = operand_stack, *rbp = operand_stack;
   rtinfo_t info_c = get_rtinfo();
@@ -253,7 +253,7 @@ elem_t eval_expr_complex(char const *_Nonnull expr) {
       rsp->elem.comp *= -1;
       break;
     case 'i': // imaginary number
-      rsp->elem.comp *= 1i;
+      rsp->elem.comp *= I;
       break;
     case 'p': { // polar
       double complex theta = (rsp--)->elem.comp;
@@ -495,7 +495,7 @@ void print_matrix(matrix_t result) {
   }
 }
 
-void print_lambda(char const *_Nonnull restrict result) {
+[[gnu::nonnull]] void print_lambda(char const *restrict result) {
   printf("result: ");
   puts(result);
 }
@@ -504,7 +504,7 @@ void print_lambda(char const *_Nonnull restrict result) {
  * @brief Process command
  * @param[in] cmd Command input
  */
-void proc_cmds(char const *_Nonnull restrict cmd) {
+[[gnu::nonnull]] void proc_cmds(char const *restrict cmd) {
   plotcfg_t pcfg = get_plotcfg();
 
   // TODO save registers

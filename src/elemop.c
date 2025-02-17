@@ -5,18 +5,18 @@
 #include <string.h>
 #include <tgmath.h>
 
-void free_matr(matrix_t *_Nonnull restrict x) { free(x->matrix); }
+[[gnu::nonnull]] void free_matr(matrix_t *restrict x) { free(x->matrix); }
 #define dropmatr [[gnu::cleanup(free_matr)]]
 
-void elem_set(elem_t *_Nonnull restrict lhs,
-              elem_t const *_Nonnull restrict rhs) {
+[[gnu::nonnull]] void elem_set(elem_t *restrict lhs,
+                               elem_t const *restrict rhs) {
   if (lhs->rtype == RTYPE_MATR)
     free(lhs->elem.matr.matrix);
 
   *lhs = *rhs;
 }
 
-bool elem_eq(elem_t const *_Nonnull lhs, elem_t const *_Nonnull rhs) {
+[[gnu::nonnull]] bool elem_eq(elem_t const *lhs, elem_t const *rhs) {
   if (lhs == rhs)
     return true;
   if (lhs->rtype != rhs->rtype)

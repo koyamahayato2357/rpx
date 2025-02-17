@@ -29,20 +29,10 @@ inline bool isint(double arg) {
   return expo > 1023 && !((mantissa << (expo - 1023)) & 0x000fffffffffffff);
 }
 
-test_table(isint, isint, (bool, double),
-           {{true, 5.0},
-            {true, 3.000},
-            {true, 100},
-            {true, -10},
-            {false, 5.6},
-            {false, 10.9},
-            {false, 99.99999},
-            {false, -10.4}});
-
 /**
  * @brief Skip pointer to first non-white-space char
  */
-void skipspcs(char const **_Nonnull restrict str) {
+[[gnu::nonnull]] void skipspcs(char const **restrict str) {
   for (; isspace(**str); (*str)++)
     ;
 }
@@ -51,7 +41,7 @@ void skipspcs(char const **_Nonnull restrict str) {
  * @brief Skip pointer to the char following the comma
  * @param[in, out] s String pointer
  */
-void skip_untilcomma(char const **_Nonnull restrict s) {
+[[gnu::nonnull]] void skip_untilcomma(char const **restrict s) {
   *s = strchr(*s, ',') ?: *s + strlen(*s);
   *s += !!**s;
 }
@@ -60,7 +50,7 @@ void skip_untilcomma(char const **_Nonnull restrict s) {
  * @brief Nullable free
  * @param[in] p Nullable pointer
  */
-inline void nfree(void *_Nullable restrict p) {
+inline void nfree(void *restrict p) {
   if (p)
     free(p);
 }
@@ -76,6 +66,16 @@ inline void nfree(void *_Nullable restrict p) {
 /**
  * @brief free for drop
  */
-void free_cl(void *_Nonnull p) { free(*(void **)p); }
-void fclose_cl(FILE **_Nonnull fp) { fclose(*fp); }
-void closedir_cl(DIR **_Nonnull fp) { closedir(*fp); }
+[[gnu::nonnull]] void free_cl(void *p) { free(*(void **)p); }
+[[gnu::nonnull]] void fclose_cl(FILE **fp) { fclose(*fp); }
+[[gnu::nonnull]] void closedir_cl(DIR **fp) { closedir(*fp); }
+
+test_table(isint, isint, (bool, double),
+           {{true, 5.0},
+            {true, 3.000},
+            {true, 100},
+            {true, -10},
+            {false, 5.6},
+            {false, 10.9},
+            {false, 99.99999},
+            {false, -10.4}})
