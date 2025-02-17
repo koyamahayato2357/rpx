@@ -85,6 +85,8 @@ DEF_MULTI(todeg, 180 / M_PI)
       OVERWRITE_REAL(c1, f1)                                                   \
       OVERWRITE_REAL(c2, f2)                                                   \
       OVERWRITE_REAL(c3, f3)                                                   \
+    default:                                                                   \
+      [[clang::unlikely]];                                                     \
     }                                                                          \
   }
 DEF_TWOCHARFN(hyp, 's', sinh, 'c', cosh, 't', tanh)
@@ -122,6 +124,8 @@ static void rpx_intfn(machine_t *ei) {
     CASE_TWOARGFN('l', lcm)
     CASE_TWOARGFN('p', permutation)
     CASE_TWOARGFN('c', combination)
+  default:
+    [[clang::unlikely]];
   }
 }
 
@@ -136,7 +140,7 @@ static void rpx_sysfn(machine_t *ei) {
     break;
   case 'h':
     ei->s.rsp->elem.real =
-        ei->e.info.hist[ei->e.info.histi - (int)ei->s.rsp->elem.real - 1]
+        ei->e.info.hist[ei->e.info.histi - (size_t)ei->s.rsp->elem.real - 1]
             .elem.real;
     break;
   case 'n':
@@ -152,11 +156,13 @@ static void rpx_sysfn(machine_t *ei) {
   case 's':
     *ei->s.rsp = *(ei->s.rsp - (int)ei->s.rsp->elem.real - 1);
     break;
+  default:
+    [[clang::unlikely]];
   }
 }
 
 static real_t handle_function_args(machine_t *ei) {
-  int argnum = *ei->c.expr - '0';
+  char argnum = *ei->c.expr - '0';
   if (ei->d.argc[ei->d.argci] < argnum)
     ei->d.argc[ei->d.argci] = argnum;
   return ei->e.args[8 - argnum];
@@ -189,7 +195,7 @@ static void rpx_grpend(machine_t *ei) {
 
 static void rpx_lmdbgn(machine_t *ei) {
   ei->c.expr++;
-  int i = 0;
+  size_t i = 0;
   for (int nest = 1; *ei->c.expr; i++)
     if (ei->c.expr[i] == '{')
       nest++;
@@ -348,7 +354,7 @@ void init_evalinfo(machine_t *_Nonnull restrict ret) {
   ret->s.rbp = ret->s.rsp = ret->s.payload - 1;
   ret->e.info = get_rrtinfo();
   ret->e.iscontinue = true;
-  ret->d.callstacki = ~0;
+  ret->d.callstacki = ~(typeof(ret->d.callstacki))0;
 }
 
 /**

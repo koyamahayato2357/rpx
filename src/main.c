@@ -35,7 +35,7 @@
 auto eval_f = eval_expr_real;
 
 int main(int argc, char **argv) {
-  srand(time(nullptr));
+  srand((unsigned int)time(nullptr));
 
   init_plotconfig();
   load_initscript(nullptr);
@@ -125,7 +125,7 @@ void proc_alist(int argc, char **argv) {
  * @return is reached EOF
  */
 bool read_raw_line(char *buf, size_t len, FILE *fp) {
-  return fgets(buf, len, fp) != nullptr;
+  return fgets(buf, (int)len, fp) != nullptr;
 }
 
 /**
@@ -134,7 +134,7 @@ bool read_raw_line(char *buf, size_t len, FILE *fp) {
  */
 bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
   _ = fp;
-  return editline(len, buf);
+  return editline((int)len, buf);
 }
 
 /**
@@ -168,12 +168,12 @@ elem_t eval_expr_complex(char const *_Nonnull expr) {
       expr++;
       matrix_t val = {.matrix = palloc(MAT_INITSIZE * sizeof(double complex))};
       matrix curelem = val.matrix;
-      val.cols = strtol(expr, (char **)&expr, 10);
+      val.cols = (size_t)strtol(expr, (char **)&expr, 10);
       for (; *expr != ']';) {
         *curelem++ = eval_expr_complex(expr).elem.comp;
         skip_untilcomma(&expr);
       }
-      val.rows = (curelem - val.matrix) / val.cols;
+      val.rows = (size_t)(curelem - val.matrix) / val.cols;
       rsp->elem.matr = val;
       continue;
     }
@@ -184,11 +184,11 @@ elem_t eval_expr_complex(char const *_Nonnull expr) {
 
     switch (*expr) {
     case '(':
-      (++rsp)->elem.real = rbp - operand_stack;
+      *(long *)&(++rsp)->elem.real = rbp - operand_stack;
       rbp = rsp;
       break;
     case ')':
-      rbp = operand_stack + (int)rbp->elem.real;
+      rbp = operand_stack + *(long *)&rbp->elem.real;
       rsp--;
       *rsp = *(rsp + 1);
       break;
@@ -240,7 +240,7 @@ elem_t eval_expr_complex(char const *_Nonnull expr) {
       break;
 
     case 'L': { // log with base
-      double x = (rsp--)->elem.comp;
+      double x = creal((rsp--)->elem.comp);
       rsp->elem.comp = log(rsp->elem.comp) / log(x);
     } break;
     case 'r': // to radian
@@ -270,7 +270,7 @@ elem_t eval_expr_complex(char const *_Nonnull expr) {
         print_complex(rsp->elem.comp);
         break;
       case 'h': // history operation
-        elem_set(rsp, &info_c.hist[info_c.histi - (int)rsp->elem.real - 1]);
+        elem_set(rsp, &info_c.hist[info_c.histi - (size_t)rsp->elem.real - 1]);
         break;
       case 'n':
         elem_set(++rsp, &(elem_t){.rtype = RTYPE_COMP, .elem = {.comp = SNAN}});
@@ -285,6 +285,8 @@ elem_t eval_expr_complex(char const *_Nonnull expr) {
       case 's': // stack value operation
         elem_set(rsp, rsp - (int)rsp->elem.real - 1);
         break;
+      default:
+        [[clang::unlikely]];
       }
       break;
 
@@ -427,6 +429,8 @@ void print_elem(elem_t elem) {
     print_lambda(elem.elem.lamb);
     free(elem.elem.lamb);
     break;
+  default:
+    [[clang::unlikely]];
   }
 }
 
@@ -514,6 +518,8 @@ void proc_cmds(char const *_Nonnull restrict cmd) {
       pcfg.plotexpr = pcfg.plotexpr == plotexpr ? plotexpr_implicit : plotexpr;
       set_plotcfg(pcfg);
       break;
+    default:
+      [[clang::unlikely]];
     }
     break;
   case 'o': {
@@ -538,6 +544,8 @@ void proc_cmds(char const *_Nonnull restrict cmd) {
     case 'p': // plot
       change_plotconfig(cmd + 1);
       break;
+    default:
+      [[clang::unlikely]];
     }
     break;
   default:

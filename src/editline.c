@@ -14,11 +14,13 @@
 #include <termios.h>
 #include <unistd.h>
 
+#define getchar() ((char)getchar())
+
 void enable_rawmode(struct termios *orig_termios) {
   struct termios raw;
   tcgetattr(STDIN_FILENO, orig_termios);
   raw = *orig_termios;
-  raw.c_lflag &= ~(ICANON | ECHO);
+  raw.c_lflag &= ~(unsigned)(ICANON | ECHO);
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
 
@@ -30,7 +32,7 @@ void disable_rawmode(struct termios *orig_termios) {
  * @brief Move cursor
  * @param[in] n Number of moves
  * @param[in] buf Start of line
- * @param[in/out] cur Cursor pointer
+ * @param[in, out] cur Cursor pointer
  * @param[in] len End of line
  */
 void movecur(int n, char *buf, char **cur, char *len) {
@@ -58,10 +60,10 @@ test(movecur) {
  * @brief Delete a string from within a string
  * @param[in] begin Beginning of erase range
  * @param[in] end End of erase range
- * @param[in/out] len End of line
+ * @param[in, out] len End of line
  */
 void deletes(char *_Nonnull begin, char const *_Nonnull end, char **len) {
-  memcpy(begin, end, *len - end);
+  memcpy(begin, end, (size_t)(*len - end));
   *len -= end - begin;
   **len = '\0';
 }
@@ -78,9 +80,8 @@ test(deletes) {
 
 /**
  * @brief Find character from a string
+ * @param[in] s String
  * @param[in] c Character to look for
- * @param[in] cur Cursor pointer
- * @param[in] len End of line
  * @return Pointer to the location found
  */
 inline char *findc(char *s, char c) { return strchr(s, c); }
@@ -93,7 +94,7 @@ inline char *findc(char *s, char c) { return strchr(s, c); }
  * @return Pointer to the location found
  */
 char *findc_r(char c, char *buf, char *cur) {
-  return memrchr(buf, c, cur - buf);
+  return memrchr(buf, c, (size_t)(cur - buf));
 }
 
 /**
@@ -101,8 +102,7 @@ char *findc_r(char c, char *buf, char *cur) {
  * @param[in] c Character to look for
  * @param[in] dir Search direction
  * @param[in] buf Start of line
- * @param[in/out] cur Cursor pointer
- * @param[in] len End of line
+ * @param[in, out] cur Cursor pointer
  */
 bool findmove(char c, int dir, char *buf, char **cur) {
   char *old_cur = *cur;
@@ -132,7 +132,7 @@ test(findmove) {
 
 /**
  * @brief Move the cursor forward one word
- * @param[in/out] cur Cursor pointer
+ * @param[in, out] cur Cursor pointer
  * @param[in] len End of line
  */
 void fwdw(char **cur, char *len) {
@@ -164,7 +164,7 @@ test(fwdw) {
 /**
  * @brief Move the cursor backward one word
  * @param[in] buf Start of line
- * @param[in/out] cur Cursor pointer
+ * @param[in, out] cur Cursor pointer
  */
 void bwdw(char *buf, char **cur) {
   if (buf >= *cur)
@@ -193,7 +193,7 @@ test(bwdw) {
 
 /**
  * @brief Move the cursor forward one WORD
- * @param[in/out] cur Cursor pointer
+ * @param[in, out] cur Cursor pointer
  * @param[in] len End of line
  */
 void fwdW(char **cur, char *len) {
@@ -215,13 +215,12 @@ test(fwdW) {
 /**
  * @brief Move the cursor backward one WORD
  * @param[in] buf Start of line
- * @param[in/out] cur Cursor pointer
- * @param[in] len End of line
+ * @param[in, out] cur Cursor pointer
  */
 void bwdW(char *buf, char **cur) {
   for ((*cur)--; isspace(**cur) && buf < *cur; (*cur)--)
     ;
-  *cur = memrchr(buf, ' ', *cur - buf) ?: buf - 1;
+  *cur = memrchr(buf, ' ', (size_t)(*cur - buf)) ?: buf - 1;
   (*cur)++;
 }
 
@@ -239,8 +238,8 @@ test(bwdW) {
  * @brief Handle escape sequence
  * @param[in] key Escape sequence
  * @param[in] buf Start of line
- * @param[in/out] cur Cursor pointer
- * @param[in/out] len End of line
+ * @param[in, out] cur Cursor pointer
+ * @param[in, out] len End of line
  */
 void handle_es(char key, char *buf, char **cur, char **len) {
   switch (key) {
@@ -249,7 +248,7 @@ void handle_es(char key, char *buf, char **cur, char **len) {
       break;
     if (*len == *cur)
       break;
-    memmove(*cur, *cur + 1, *len - *cur - 1);
+    memmove(*cur, *cur + 1, (size_t)(*len - *cur - 1));
     (*len)--;
     break;
   case 'C':
@@ -271,7 +270,7 @@ void handle_es(char key, char *buf, char **cur, char **len) {
 
 /**
  * @brief Handle text object
- * @param[in] textobj Second character of text object
+ * @param[in] txtobj Second character of text object
  * @param[in] buf Start of line
  * @param[in] cur Cursor pointer
  * @param[in] len End of line
@@ -316,14 +315,14 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
 /**
  * @brief Insert a character at cursor position
  * @param[in] c Character to be inserted
- * @param[in/out] cur Cursor pointer
- * @param[in/out] len End of line
+ * @param[in, out] cur Cursor pointer
+ * @param[in, out] len End of line
  * @detail Possible buffer overrun
  */
 void insertc(char c, char *_Nonnull *_Nonnull cur,
              char *_Nonnull *_Nonnull len) {
   if (*cur != *len)
-    memmove(*cur + 1, *cur, *len - *cur);
+    memmove(*cur + 1, *cur, (size_t)(*len - *cur));
   *(*cur)++ = c;
   *++*len = '\0';
 }
@@ -333,18 +332,18 @@ void insertc(char c, char *_Nonnull *_Nonnull cur,
  * @param[in] slen Number of characters in string to be inserted
  * @param[in] s String to be inserted
  * @param[in] curpos New cursor position
- * @param[in/out] cur Cursor pointer
- * @param[in/out] len End of line
+ * @param[in, out] cur Cursor pointer
+ * @param[in, out] len End of line
  * @param[in] margin Number of characters can be added to the buffer
  */
-void inserts(int slen, char const *s, int curpos, char **cur, char **len,
-             int margin) {
+void inserts(size_t slen, char const *s, int curpos, char **cur, char **len,
+             size_t margin) {
   if (slen > margin) {
     disperr(__FUNCTION__, "buffer depreletion");
     abort();
   }
   if (*cur != *len)
-    memmove(*cur + slen, *cur, *len - *cur);
+    memmove(*cur + slen, *cur, (size_t)(*len - *cur));
   memcpy(*cur, s, slen);
   *cur += curpos;
   *len += slen;
@@ -357,13 +356,13 @@ test(inserts) {
   char *cur = len - 1;
 
   char str1[] = "new string";
-  inserts(strlen(str1), str1, 0, &cur, &len, buf + 256 - len);
+  inserts(strlen(str1), str1, 0, &cur, &len, (size_t)(buf + 256 - len));
   expecteq("sample textnew string.", (char *)buf);
   expecteq("new string.", cur);
   expecteq(strlen(buf), (size_t)(len - buf));
 
   char str2[] = "extra string";
-  inserts(strlen(str2), str2, 6, &cur, &len, buf + 256 - len);
+  inserts(strlen(str2), str2, 6, &cur, &len, (size_t)(buf + 256 - len));
   expecteq("sample textextra stringnew string.", (char *)buf);
   expecteq("stringnew string.", cur);
   expecteq(strlen(buf), (size_t)(len - buf));
@@ -373,13 +372,13 @@ test(inserts) {
  * @brief Behavior in insert mode
  * @param[in] c Typed character
  * @param[in] buf Start of line
- * @param[in/out] cur Cursor pointer
- * @param[in/out] len End of line
+ * @param[in, out] cur Cursor pointer
+ * @param[in, out] len End of line
  */
 void insbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
   case '(':
-    inserts(2, "()", 1, cur, len, buf + BUFSIZE - *len);
+    inserts(2, "()", 1, cur, len, (size_t)(buf + BUFSIZE - *len));
     break;
 
   case ')':
@@ -387,7 +386,7 @@ void insbind(char c, char *buf, char **cur, char **len) {
     break;
 
   case '[':
-    inserts(2, "[]", 1, cur, len, buf + BUFSIZE - *len);
+    inserts(2, "[]", 1, cur, len, (size_t)(buf + BUFSIZE - *len));
     break;
 
   case ']': {
@@ -407,8 +406,8 @@ auto handle_printable = insbind;
  * @brief Behavior in normal mode
  * @param[in] c Typed character
  * @param[in] buf Start of line
- * @param[in/out] cur Cursor pointer
- * @param[in/out] len End of line
+ * @param[in, out] cur Cursor pointer
+ * @param[in, out] len End of line
  */
 void nrmbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
@@ -514,7 +513,7 @@ bool editline(int sz, char *buf) {
   // getchar() becomes like getch() in MSVC
   enable_rawmode(&orig_termios);
 
-  for (int c = getchar();; c = getchar()) {
+  for (char c = getchar();; c = getchar()) {
     if ((not_ctrl_d = c == CTRL_D) || c == '\n' || buf + sz < len)
       break;
 
@@ -526,7 +525,7 @@ bool editline(int sz, char *buf) {
     case BS:
       if (cur <= buf)
         continue;
-      memmove(cur - 1, cur, len - cur + 1);
+      memmove(cur - 1, cur, (size_t)(len - cur + 1));
       cur--;
       len--;
       break;

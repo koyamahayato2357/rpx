@@ -82,26 +82,26 @@ double det(matrix_t const *_Nonnull restrict A) {
     disperr(__FUNCTION__, "not a square matrix");
 
   double result = 1;
-  int dim = A->rows;
-  for (int i = 0; i < dim - 1; i++)
-    for (int j = 0; j < dim - 1; j++) {
-      for (int k = 1; !A->matrix[dim * i + i]; k++) {
-        for (int l = i; l < dim; l++) {
+  size_t dim = A->rows;
+  for (size_t i = 0; i < dim - 1; i++)
+    for (size_t j = 0; j < dim - 1; j++) {
+      for (size_t k = 1; !A->matrix[dim * i + i]; k++) {
+        for (size_t l = i; l < dim; l++) {
           if (k >= dim) [[clang::unlikely]] // case of singular matrix
             return 0;
 
-          double temp = A->matrix[dim * i + l];
+          double temp = creal(A->matrix[dim * i + l]);
           A->matrix[dim * i + l] = A->matrix[dim * (i + k) + l];
           A->matrix[dim * (i + k) + l] = -temp;
         }
       }
       // elimination
-      double temp = A->matrix[dim * (j + 1) + i] / A->matrix[dim * i + i];
-      for (int k = i; k < dim; k++)
+      double temp = creal(A->matrix[dim * (j + 1) + i] / A->matrix[dim * i + i]);
+      for (size_t k = i; k < dim; k++)
         A->matrix[dim * (j + 1) + k] -= temp * A->matrix[dim * i + k];
     }
 
-  for (int i = 0; i < dim; i++)
+  for (size_t i = 0; i < dim; i++)
     result *= A->matrix[dim * i + i];
   return result;
 }
@@ -112,7 +112,7 @@ double det(matrix_t const *_Nonnull restrict A) {
  * @return Inverted A
  */
 [[nodiscard]] matrix_t inverse_matrix(matrix_t const *_Nonnull restrict A) {
-  int dim = A->rows;
+  size_t dim = A->rows;
 
   if (A->rows != A->cols) [[clang::unlikely]] {
     disperr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
@@ -121,13 +121,13 @@ double det(matrix_t const *_Nonnull restrict A) {
 
   matrix_t result = new_matrix(dim, dim);
 
-  for (int i = 0; i < dim; i++)
+  for (size_t i = 0; i < dim; i++)
     result.matrix[i * dim + i] = 1;
 
   // to diagonal matrix
-  for (int i = 0; i < dim; i++) {
+  for (size_t i = 0; i < dim; i++) {
     if (A->matrix[i * dim + i] == 0) {
-      int j;
+      size_t j;
       for (j = (i + 1) % dim; A->matrix[j * dim + i] == 0; j = (j + 1) % dim)
         if (j == i) [[clang::unlikely]] {
           free(result.matrix);
@@ -135,7 +135,7 @@ double det(matrix_t const *_Nonnull restrict A) {
           return *A;
         }
 
-      for (int k = 0; k < dim; k++) {
+      for (size_t k = 0; k < dim; k++) {
         double complex temp = A->matrix[i * dim + k];
         A->matrix[i * dim + k] = A->matrix[j * dim + k];
         A->matrix[j * dim + k] = -temp;
@@ -145,10 +145,10 @@ double det(matrix_t const *_Nonnull restrict A) {
       }
     }
 
-    for (int j = (i + 1) % dim; j != i; j = (j + 1) % dim) {
+    for (size_t j = (i + 1) % dim; j != i; j = (j + 1) % dim) {
       double complex coef = A->matrix[j * dim + i] / A->matrix[i * dim + i];
-      for (int k = 0; k < dim; k++) {
-        unsigned int id = (k + i) % dim;
+      for (size_t k = 0; k < dim; k++) {
+        size_t id = (k + i) % dim;
         A->matrix[j * dim + id] -= coef * A->matrix[i * dim + id];
         result.matrix[j * dim + id] -= coef * result.matrix[i * dim + id];
       }
@@ -156,8 +156,8 @@ double det(matrix_t const *_Nonnull restrict A) {
   }
 
   // A->matrix to unit matrix
-  for (int i = 0; i < dim; i++)
-    for (int j = 0; j < dim; j++) {
+  for (size_t i = 0; i < dim; i++)
+    for (size_t j = 0; j < dim; j++) {
       if (A->matrix[i * dim + i] == 0) [[clang::unlikely]] {
         free(result.matrix);
         disperr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
@@ -172,7 +172,7 @@ double det(matrix_t const *_Nonnull restrict A) {
 
 /**
  * @brief Scalar mul
- * @param[in/out] lhs Matrix
+ * @param[in, out] lhs Matrix
  * @param[in] rhs Scalar
  */
 void smul(matrix_t *_Nonnull restrict lhs, double complex rhs) {

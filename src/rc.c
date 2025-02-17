@@ -5,11 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-void set_configpath(char const *_Nullable specified_cfgpath, int len,
+void set_configpath(char const *_Nullable specified_cfgpath, size_t len,
                     char *_Nonnull restrict cfgpath) {
   char const *configdir = specified_cfgpath ?: "/.config/rpx/";
   char const *homedir = getenv("HOME") ?: ".";
-  int const hdlen = strlen(homedir);
+  size_t const hdlen = strlen(homedir);
 
   strncpy(cfgpath, homedir, len);
   strncpy(cfgpath + hdlen, configdir, len - hdlen);
@@ -22,7 +22,7 @@ void load_initscript(char const *_Nullable path) {
 
   DIR *dp dropdir = opendir(configpath) ?: p$return();
 
-  int const configpathlen = strlen(configpath);
+  size_t const configpathlen = strlen(configpath);
   char fname[BUFSIZE];
   strncpy(fname, configpath, configpathlen);
 

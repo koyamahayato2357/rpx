@@ -1,5 +1,6 @@
 #include "chore.h"
 #include "exproriented.h"
+#include "testing.h"
 #include <ctype.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -20,7 +21,22 @@ struct winsize get_winsz() {
  * @param[in] arg Checked double number
  * @return Is decimal part 0
  */
-inline bool isint(double arg) { return arg == (long long)arg; }
+inline bool isint(double arg) {
+  long unsigned x = *(long unsigned *)&arg;
+  long unsigned mantissa = (x & 0x000fffffffffffff);
+  short unsigned expo = (x >> 52) & 0x7ff;
+  return expo > 1023 && !((mantissa << (expo - 1023)) & 0x000fffffffffffff);
+}
+
+test_table(isint, isint, (bool, double),
+           {{true, 5.0},
+            {true, 3.000},
+            {true, 100},
+            {true, -10},
+            {false, 5.6},
+            {false, 10.9},
+            {false, 99.99999},
+            {false, -10.4}});
 
 /**
  * @brief Skip pointer to first non-white-space char
@@ -32,7 +48,7 @@ void skipspcs(char const **_Nonnull restrict str) {
 
 /**
  * @brief Skip pointer to the char following the comma
- * @param[in/out] s String pointer
+ * @param[in, out] s String pointer
  */
 void skip_untilcomma(char const **_Nonnull restrict s) {
   *s = strchr(*s, ',') ?: *s + strlen(*s);
@@ -52,7 +68,7 @@ inline void nfree(void *_Nullable restrict p) {
  * @brief panic alloc
  * @param[in] sz Memory size
  */
-[[nodiscard, gnu::returns_nonnull]] void *palloc(int sz) {
+[[nodiscard, gnu::returns_nonnull]] void *palloc(size_t sz) {
   return malloc(sz) ?: p$panic(ERR_ALLOCATION_FAILURE);
 }
 

@@ -38,8 +38,10 @@ BUILDDIR := .build
 PREFIX ?= /usr/local
 
 # compiler flags
-CFLAGS := -std=c23 -I$(INCDIR) -Wtautological-compare -Wsign-compare -Wextra   \
-          -Wimplicit-fallthrough -Wall -O$(OPTLEVEL)
+CFLAGS := -std=c2y -I$(INCDIR) -Wtautological-compare -Wextra -Wall \
+          -Wimplicit-fallthrough -Wbitwise-instead-of-logical -O$(OPTLEVEL) \
+		  -Wconversion -Wdangling -Wdeprecated -Wdocumentation -Wmicrosoft \
+		  -Wswitch-enum -Wswitch-default -Wtype-limits -Wunreachable-code-aggressive
 OPTFLAGS := -ffast-math -fno-finite-math-only -DNDEBUG -faddrsig -march=native \
            -mtune=native -funroll-loops -fomit-frame-pointer -fdata-sections   \
            -fforce-emit-vtables -ffunction-sections

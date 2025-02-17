@@ -23,7 +23,7 @@ struct winsize get_winsz();
 void skipspcs(char const **);
 void skip_untilcomma(char const **);
 void nfree(void *);
-void *palloc(int);
+void *palloc(size_t);
 void free_cl(void *);
 void fclose_cl(FILE **);
 void closedir_cl(DIR **);
