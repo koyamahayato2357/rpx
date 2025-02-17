@@ -13,13 +13,12 @@
 
 #ifdef TEST_MODE
   _ = funcname;
-  _ = errmsgfmt;
 #else
   fprintf(stderr, "\n[%s]\n", funcname);
   fprintf(stderr, "  " ESCRED "Error: ");
   vfprintf(stderr, errmsgfmt, ap);
   fputs(ESCLR "\n", stderr);
+#endif
 
   va_end(ap);
-#endif
 }
