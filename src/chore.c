@@ -22,6 +22,7 @@ struct winsize get_winsz() {
  * @return Is decimal part 0
  */
 inline bool isint(double arg) {
+  // forced to implement this way to suppress type warnings
   long unsigned x = *(long unsigned *)&arg;
   long unsigned mantissa = (x & 0x000fffffffffffff);
   short unsigned expo = (x >> 52) & 0x7ff;

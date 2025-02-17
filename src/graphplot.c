@@ -9,7 +9,7 @@
 
 void init_plotconfig() {
   struct winsize w = get_winsz();
-  int dispsz = lesser(w.ws_row, w.ws_col * FONTRATIO);
+  int dispsz = (int)lesser((double)w.ws_row, w.ws_col * FONTRATIO);
 
   plotcfg_t pcfg = get_plotcfg();
   pcfg.dispx = pcfg.dispy = dispsz - 5;
@@ -128,15 +128,15 @@ void change_plotconfig(char const *_Nonnull cmd) {
   case 'd': { // display size
     plotcfg_t pcfg = get_plotcfg();
 
-    int newx = eval_expr_real(cmd).elem.real;
+    double newx = eval_expr_real(cmd).elem.real;
     skip_untilcomma(&cmd);
-    int newy = eval_expr_real(cmd).elem.real;
+    double newy = eval_expr_real(cmd).elem.real;
 
-    int centerx = (pcfg.xx + pcfg.xn) / 2;
-    int centery = (pcfg.yx + pcfg.yn) / 2;
+    double centerx = (pcfg.xx + pcfg.xn) / 2;
+    double centery = (pcfg.yx + pcfg.yn) / 2;
 
-    double coefx = (double)newx / pcfg.dispx;
-    double coefy = (double)newy / pcfg.dispy;
+    double coefx = newx / pcfg.dispx;
+    double coefy = newy / pcfg.dispy;
 
     double diffxx = (pcfg.xx - centerx) * coefx;
     double diffxn = (pcfg.xn - centerx) * coefx;
@@ -148,8 +148,8 @@ void change_plotconfig(char const *_Nonnull cmd) {
     pcfg.yx = centery + diffyx;
     pcfg.yn = centery + diffyn;
 
-    pcfg.dispx = newx;
-    pcfg.dispy = newy;
+    pcfg.dispx = (int)newx;
+    pcfg.dispy = (int)newy;
 
     set_plotcfg(pcfg);
   } break;
@@ -164,5 +164,7 @@ void change_plotconfig(char const *_Nonnull cmd) {
 
     set_pbounds(newxx, newxn, newyx, newyn);
   } break;
+  default:
+    [[clang::unlikely]];
   }
 }

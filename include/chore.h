@@ -9,8 +9,8 @@
 #define TO2STR(x) TOSTR(x)
 #define HERE __FILE__ ":" TO2STR(__LINE__)
 #define ALPN ('z' - 'a' + 1)
-#define lesser(lhs, rhs) (lhs) < (rhs) ? (lhs) : (rhs)
-#define bigger(lhs, rhs) (lhs) > (rhs) ? (lhs) : (rhs)
+#define lesser(lhs, rhs) ((lhs) < (rhs) ? (lhs) : (rhs))
+#define bigger(lhs, rhs) ((lhs) > (rhs) ? (lhs) : (rhs))
 #define overloadable [[clang::overloadable]]
 #define ondrop(cl) [[gnu::cleanup(cl)]]
 #define drop ondrop(free_cl)
