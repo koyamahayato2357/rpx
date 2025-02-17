@@ -9,7 +9,7 @@
 
 #define bench(name)                                                            \
   void BENCHMARKING_H_bench##name();                                           \
-  __attribute__((constructor)) void BENCHMARKING_H_benchrunner##name() {       \
+  [[gnu::destructor]] void BENCHMARKING_H_benchrunner##name() {                \
     puts("Benchmarking " #name "...");                                         \
     double duration = 0;                                                       \
     for (int i = 0; i < REPEAT; i++) {                                         \

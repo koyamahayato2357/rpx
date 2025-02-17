@@ -52,7 +52,7 @@ inline void nfree(void *_Nullable restrict p) {
  * @brief panic alloc
  * @param[in] sz Memory size
  */
-[[nodiscard]] __attribute__((returns_nonnull)) void *palloc(int sz) {
+[[nodiscard, gnu::returns_nonnull]] void *palloc(int sz) {
   return malloc(sz) ?: p$panic(ERR_ALLOCATION_FAILURE);
 }
 

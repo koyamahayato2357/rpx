@@ -6,7 +6,7 @@
 #include <tgmath.h>
 
 void free_matr(matrix_t *_Nonnull restrict x) { free(x->matrix); }
-#define dropmatr __attribute__((cleanup(free_matr)))
+#define dropmatr [[gnu::cleanup(free_matr)]]
 
 void elem_set(elem_t *_Nonnull restrict lhs,
               elem_t const *_Nonnull restrict rhs) {

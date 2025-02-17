@@ -1,11 +1,11 @@
 #pragma once
 #include <stddef.h>
 
-#define overloadable __attribute__((overloadable))
+#define overloadable [[clang::overloadable]]
 
 #define DEF_GEN(T)                                                             \
-  void printany(T) overloadable;                                               \
-  bool eq(T, T) overloadable;
+  overloadable void printany(T);                                               \
+  overloadable bool eq(T, T);
 
 #define APPLY_PRIMITIVE_TYPES(M) M(int) M(size_t) M(double) M(char) M(bool)
 #define APPLY_POINTER_TYPES(M)                                                 \

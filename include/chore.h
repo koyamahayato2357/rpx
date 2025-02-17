@@ -11,15 +11,15 @@
 #define ALPN ('z' - 'a' + 1)
 #define lesser(lhs, rhs) (lhs) < (rhs) ? (lhs) : (rhs)
 #define bigger(lhs, rhs) (lhs) > (rhs) ? (lhs) : (rhs)
-#define overloadable __attribute__((overloadable))
-#define ondrop(cl) __attribute__((cleanup(cl)))
+#define overloadable [[clang::overloadable]]
+#define ondrop(cl) [[gnu::cleanup(cl)]]
 #define drop ondrop(free_cl)
 #define dropfile ondrop(fclose_cl)
 #define dropdir ondrop(closedir_cl)
 #define _ auto CAT(_DISCARD_, __COUNTER__) [[maybe_unused]]
 
 struct winsize get_winsz();
-bool isint(double) __attribute__((const));
+[[gnu::const]] bool isint(double);
 void skipspcs(char const **);
 void skip_untilcomma(char const **);
 void nfree(void *);

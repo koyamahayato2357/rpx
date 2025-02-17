@@ -12,7 +12,7 @@ extern int TESTING_H_success;
 extern int TESTING_H_fail;
 #define test(name)                                                             \
   void TESTING_H_tester##name(jmp_buf);                                        \
-  __attribute__((constructor)) void TESTING_H_testrunner##name() {             \
+  [[gnu::constructor]] void TESTING_H_testrunner##name() {                     \
     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8;                           \
     jmp_buf jb;                                                                \
     printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "...");                   \
@@ -51,7 +51,7 @@ extern int TESTING_H_fail;
   }
 #define test_table(name, fn, signature, ...)                                   \
   typedef SIGNATURE signature ds##name;                                        \
-  __attribute__((constructor)) void TESTING_H_tabletester##name() {            \
+  [[gnu::constructor]] void TESTING_H_tabletester##name() {                    \
     ds##name data[] = __VA_ARGS__;                                             \
     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8;                           \
     printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "...");                   \
