@@ -47,7 +47,7 @@ typedef struct {
   bool isnum;
 } real_t;
 
-void proc_alist(int, char **);
+void proc_alist(int, char const **);
 void reader_loop(FILE *);
 elem_t eval_expr_complex(char const *);
 void print_elem(elem_t);

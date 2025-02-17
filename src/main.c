@@ -34,7 +34,7 @@
 
 auto eval_f = eval_expr_real;
 
-int main(int argc, char **argv) {
+int main(int argc, char const **argv) {
   srand((unsigned int)time(nullptr));
 
   init_plotconfig();
@@ -96,7 +96,7 @@ void proc_input(char const *_Nonnull restrict input_buf) {
  * @param[in] argc arg count
  * @param[in] argv arg value
  */
-void proc_alist(int argc, char **argv) {
+void proc_alist(int argc, char const **argv) {
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != '-') { // interpreted as a file name
       FILE *fp dropfile =
