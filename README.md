@@ -158,7 +158,7 @@ Arguments whose first letter is not '-' are interpreted as file name.
 
 ## Examples
 1. Basic arithmetic: `3 4 + 2 *` -> $14$
-2. Using constants: `\P 2 / s` -> $1$ ($sin(Pi/2)$)
+2. Using constants: `\P 2 / s` -> $1$ ( $sin(Pi/2)$ )
 3. Complex expression: `2 3 ^ (4 5 *) + (6 7 /) -` -> $27.142857$
 4. Using previous result: `5 @a +` -> Adds 5 to previous result
 5. Complex mode: `3 4i +` -> $3 + 4i$
