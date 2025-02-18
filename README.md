@@ -157,24 +157,24 @@ tips: Parentheses do not specify priority. Operators are evaluated in definitive
 Arguments whose first letter is not '-' are interpreted as file name.
 
 ## Examples
-1. Basic arithmetic: `3 4 + 2 *` -> 14
-2. Using constants: `\P 2 / s` -> 1 (sin(Pi/2))
-3. Complex expression: `2 3 ^ (4 5 *) + (6 7 /) -` -> 27.142857
+1. Basic arithmetic: `3 4 + 2 *` -> $14$
+2. Using constants: `\P 2 / s` -> $1$ ($sin(Pi/2)$)
+3. Complex expression: `2 3 ^ (4 5 *) + (6 7 /) -` -> $27.142857$
 4. Using previous result: `5 @a +` -> Adds 5 to previous result
-5. Complex mode: `3 4i +` -> 3 + 4i
+5. Complex mode: `3 4i +` -> $3 + 4i$
 8. Matrix addition: `[2 1,2,3,4,][2,4,5,6,7,]+` -> [2 5,7,9,11,]
 9. Matrix inverse: `[3 1,1,1m,2m,0,1,0,2,1,]~` -> [3 -0.5,-0.75,0.25,0.5,0.25,0.25,-1,-0.5,0.5,]
-10. Plot fn: `:p $1s` -> Graph of sin(x)
-11. Plot implicit fn: `:p $12^($22^)+1-` -> Circle of radius 1
-12. Define fn: `{$1 2 ^} &f` -> f(x) = x^2
-13. Define multi-arg fn: `{$1 $2 +} &g` -> g(x, y) = x + y
-14. Call fn: `5 $f !` -> f(5)
-15. Call multi-arg fn: `6 7 $g !` -> g(7, 6)
-16. Lambda fn: `4 {$1 2 *} !` -> 8
-17. Lambda multi-arg fn: `5 6 {$1 $2 -} !` -> 1
-18. Conditional Branch: `3 4 (5 6 <) ?` -> 3
-19. Recursive fn: `5 {{1} {$1 1 - $f! $1 *} ($1 1 =) ? !} &f!` -> 120
-20. higher-order fn: `{$1 3 *} {5 $1!}!` -> 15
+10. Plot fn: `:p $1s` -> Graph of $sin(x)$
+11. Plot implicit fn: `:p $12^($22^)+1-` -> Circle of radius $1$
+12. Define fn: `{$1 2 ^} &f` -> $f(x) = x^2$
+13. Define multi-arg fn: `{$1 $2 +} &g` -> $g(x, y) = x + y$
+14. Call fn: `5 $f !` -> $f(5)$
+15. Call multi-arg fn: `6 7 $g !` -> $g(7, 6)$
+16. Lambda fn: `4 {$1 2 *} !` -> $8$
+17. Lambda multi-arg fn: `5 6 {$1 $2 -} !` -> $1$
+18. Conditional Branch: `3 4 (5 6 <) ?` -> $3$
+19. Recursive fn: `5 {{1} {$1 1 - $f! $1 *} ($1 1 =) ? !} &f!` -> $120$
+20. higher-order fn: `{$1 3 *} {5 $1!}!` -> $15$
 21. Display help and exit: `rpx -h -q`
 22. One-shot calculator: `rpx -r "1 1 +" -q`
 23. One-shot graph plottor: `rpx -r ":spr\\P,\\Pm,1,1m" -r ":p $1s" -q`
