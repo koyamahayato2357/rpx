@@ -360,8 +360,8 @@ test(eval_expr_complex) {
   free(resultm.matrix);
 
   // Test matrix multiplication
-  char expr2[] = "[2 1,2,3,4,][2 5,6,7,8,]*";
-  resultm = eval_expr_complex(expr2).elem.matr;
+  char const *expr = "[2 1,2,3,4,][2 5,6,7,8,]*";
+  resultm = eval_expr_complex(expr).elem.matr;
   expecteq(2, resultm.rows);
   expecteq(2, resultm.cols);
   expecteq(19.0, resultm.matrix[0]);
@@ -371,8 +371,8 @@ test(eval_expr_complex) {
   free(resultm.matrix);
 
   // Test matrix inverse
-  char expr3[] = "[2 1,2,3,4,]~";
-  resultm = eval_expr_complex(expr3).elem.matr;
+  expr = "[2 1,2,3,4,]~";
+  resultm = eval_expr_complex(expr).elem.matr;
   expecteq(2, resultm.rows);
   expecteq(2, resultm.cols);
   expecteq(-2.0, resultm.matrix[0]);
@@ -382,8 +382,8 @@ test(eval_expr_complex) {
   free(resultm.matrix);
 
   // Scalar multiplication
-  char expr4[] = "[3 5,6,7,] 5 *";
-  resultm = eval_expr_complex(expr4).elem.matr;
+  expr = "[3 5,6,7,] 5 *";
+  resultm = eval_expr_complex(expr).elem.matr;
   expecteq(1, resultm.rows);
   expecteq(3, resultm.cols);
   expecteq(25, resultm.matrix[0]);
