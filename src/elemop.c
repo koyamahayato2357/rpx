@@ -37,7 +37,7 @@ void elem_add(elem_t *lhs, elem_t const *rhs) {
   if (rhs->rtype == RTYPE_MATR) {
     _ drop = lhs->elem.matr.matrix;
     lhs->elem.matr = madd(&lhs->elem.matr, &rhs->elem.matr);
-    nfree(rhs->elem.matr.matrix);
+    free(rhs->elem.matr.matrix);
     return;
   }
 
