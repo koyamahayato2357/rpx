@@ -504,7 +504,7 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
  * @return Is not CTRL-D pressed
  */
 bool editline(int sz, char *buf) {
-  bool not_ctrl_d;
+  bool ctrl_d;
   char *cur = buf;
   char *len = buf;
 
@@ -513,7 +513,7 @@ bool editline(int sz, char *buf) {
   enable_rawmode(&orig_termios);
 
   for (char c = getchar();; c = getchar()) {
-    if ((not_ctrl_d = c == CTRL_D) || c == '\n' || buf + sz < len)
+    if ((ctrl_d = c == CTRL_D) || c == '\n' || buf + sz < len)
       break;
 
     switch (c) {
@@ -537,5 +537,5 @@ bool editline(int sz, char *buf) {
   }
   putchar('\n');
 
-  return not_ctrl_d;
+  return !ctrl_d;
 }
