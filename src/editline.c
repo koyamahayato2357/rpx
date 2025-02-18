@@ -218,6 +218,8 @@ test(fwdW) {
  * @param[in,out] cur Cursor pointer
  */
 void bwdW(char *buf, char **cur) {
+  if (buf == *cur)
+    return;
   for ((*cur)--; isspace(**cur) && buf < *cur; (*cur)--)
     ;
   *cur = memrchr(buf, ' ', (size_t)(*cur - buf)) ?: buf - 1;
