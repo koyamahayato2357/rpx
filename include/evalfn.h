@@ -23,11 +23,11 @@ typedef struct {
   // to restore argv
   // register the list of args
   real_t *callstack[8];
-  argc_t callstacki;
+  unsigned callstacki;
   // to restore rsp
   // register the number of args used
   char argc[ARGN];
-  argc_t argci;
+  unsigned argci;
 } dump_t;
 
 /**

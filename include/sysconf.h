@@ -2,8 +2,6 @@
 #include "chore.h"
 #include "main.h"
 
-typedef _BitInt(3) unsigned argc_t;
-
 typedef struct {
   double xx; // max x
   double xn; // min x
