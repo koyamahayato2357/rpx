@@ -174,7 +174,7 @@ inverse_matrix(matrix_t const *restrict A) {
 
 /**
  * @brief Scalar mul
- * @param[in, out] lhs Matrix
+ * @param[in,out] lhs Matrix
  * @param[in] rhs Scalar
  */
 [[gnu::nonnull]] void smul(matrix_t *restrict lhs, double complex rhs) {

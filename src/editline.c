@@ -32,7 +32,7 @@ void disable_rawmode(struct termios *orig_termios) {
  * @brief Move cursor
  * @param[in] n Number of moves
  * @param[in] buf Start of line
- * @param[in, out] cur Cursor pointer
+ * @param[in,out] cur Cursor pointer
  * @param[in] len End of line
  */
 void movecur(int n, char *buf, char **cur, char *len) {
@@ -60,7 +60,7 @@ test(movecur) {
  * @brief Delete a string from within a string
  * @param[in] begin Beginning of erase range
  * @param[in] end End of erase range
- * @param[in, out] len End of line
+ * @param[in,out] len End of line
  */
 [[gnu::nonnull]] void deletes(char *begin, char const *end, char **len) {
   memcpy(begin, end, (size_t)(*len - end));
@@ -102,7 +102,7 @@ char *findc_r(char c, char *buf, char *cur) {
  * @param[in] c Character to look for
  * @param[in] dir Search direction
  * @param[in] buf Start of line
- * @param[in, out] cur Cursor pointer
+ * @param[in,out] cur Cursor pointer
  */
 bool findmove(char c, int dir, char *buf, char **cur) {
   char *old_cur = *cur;
@@ -132,7 +132,7 @@ test(findmove) {
 
 /**
  * @brief Move the cursor forward one word
- * @param[in, out] cur Cursor pointer
+ * @param[in,out] cur Cursor pointer
  * @param[in] len End of line
  */
 void fwdw(char **cur, char *len) {
@@ -164,7 +164,7 @@ test(fwdw) {
 /**
  * @brief Move the cursor backward one word
  * @param[in] buf Start of line
- * @param[in, out] cur Cursor pointer
+ * @param[in,out] cur Cursor pointer
  */
 void bwdw(char *buf, char **cur) {
   if (buf >= *cur)
@@ -193,7 +193,7 @@ test(bwdw) {
 
 /**
  * @brief Move the cursor forward one WORD
- * @param[in, out] cur Cursor pointer
+ * @param[in,out] cur Cursor pointer
  * @param[in] len End of line
  */
 void fwdW(char **cur, char *len) {
@@ -215,7 +215,7 @@ test(fwdW) {
 /**
  * @brief Move the cursor backward one WORD
  * @param[in] buf Start of line
- * @param[in, out] cur Cursor pointer
+ * @param[in,out] cur Cursor pointer
  */
 void bwdW(char *buf, char **cur) {
   for ((*cur)--; isspace(**cur) && buf < *cur; (*cur)--)
@@ -238,8 +238,8 @@ test(bwdW) {
  * @brief Handle escape sequence
  * @param[in] key Escape sequence
  * @param[in] buf Start of line
- * @param[in, out] cur Cursor pointer
- * @param[in, out] len End of line
+ * @param[in,out] cur Cursor pointer
+ * @param[in,out] len End of line
  */
 void handle_es(char key, char *buf, char **cur, char **len) {
   switch (key) {
@@ -315,9 +315,9 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
 /**
  * @brief Insert a character at cursor position
  * @param[in] c Character to be inserted
- * @param[in, out] cur Cursor pointer
- * @param[in, out] len End of line
- * @detail Possible buffer overrun
+ * @param[in,out] cur Cursor pointer
+ * @param[in,out] len End of line
+ * @details Possible buffer overrun
  */
 [[gnu::nonnull]] void insertc(char c, char **cur, char **len) {
   if (*cur != *len)
@@ -331,8 +331,8 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
  * @param[in] slen Number of characters in string to be inserted
  * @param[in] s String to be inserted
  * @param[in] curpos New cursor position
- * @param[in, out] cur Cursor pointer
- * @param[in, out] len End of line
+ * @param[in,out] cur Cursor pointer
+ * @param[in,out] len End of line
  * @param[in] margin Number of characters can be added to the buffer
  */
 void inserts(size_t slen, char const *s, int curpos, char **cur, char **len,
@@ -371,8 +371,8 @@ test(inserts) {
  * @brief Behavior in insert mode
  * @param[in] c Typed character
  * @param[in] buf Start of line
- * @param[in, out] cur Cursor pointer
- * @param[in, out] len End of line
+ * @param[in,out] cur Cursor pointer
+ * @param[in,out] len End of line
  */
 void insbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
@@ -405,8 +405,8 @@ auto handle_printable = insbind;
  * @brief Behavior in normal mode
  * @param[in] c Typed character
  * @param[in] buf Start of line
- * @param[in, out] cur Cursor pointer
- * @param[in, out] len End of line
+ * @param[in,out] cur Cursor pointer
+ * @param[in,out] len End of line
  */
 void nrmbind(char c, char *buf, char **cur, char **len) {
   switch (c) {

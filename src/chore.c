@@ -39,7 +39,7 @@ inline bool isint(double arg) {
 
 /**
  * @brief Skip pointer to the char following the comma
- * @param[in, out] s String pointer
+ * @param[in,out] s String pointer
  */
 [[gnu::nonnull]] void skip_untilcomma(char const **restrict s) {
   *s = strchr(*s, ',') ?: *s + strlen(*s);
