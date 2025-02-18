@@ -47,16 +47,6 @@ inline bool isint(double arg) {
 }
 
 /**
- * @brief Nullable free
- * @param[in] p Nullable pointer
- */
-inline void nfree(void *restrict p) {
-  if (p)
-    free(p);
-  p = nullptr;
-}
-
-/**
  * @brief panic alloc
  * @param[in] sz Memory size
  */

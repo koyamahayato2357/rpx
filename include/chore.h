@@ -18,11 +18,18 @@
 #define dropdir ondrop(closedir_cl)
 #define _ auto CAT(_DISCARD_, __COUNTER__) [[maybe_unused]]
 
+#define nfree(p)                                                               \
+  do {                                                                         \
+    if (p == nullptr)                                                          \
+      break;                                                                   \
+    free(p);                                                                   \
+    p = nullptr;                                                               \
+  } while (0)
+
 struct winsize get_winsz();
 [[gnu::const]] bool isint(double);
 void skipspcs(char const **);
 void skip_untilcomma(char const **);
-void nfree(void *);
 void *palloc(size_t);
 void free_cl(void *);
 void fclose_cl(FILE **);
