@@ -53,6 +53,7 @@ inline bool isint(double arg) {
 inline void nfree(void *restrict p) {
   if (p)
     free(p);
+  p = nullptr;
 }
 
 /**
