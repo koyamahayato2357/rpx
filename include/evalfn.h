@@ -30,6 +30,9 @@ typedef struct {
   argc_t argci;
 } dump_t;
 
+/**
+ * @brief Based on SECD machine
+ */
 typedef struct {
   stack_t s;
   env_t e;
