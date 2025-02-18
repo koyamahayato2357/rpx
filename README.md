@@ -183,4 +183,3 @@ Arguments whose first letter is not '-' are interpreted as file name.
 ## Error Handling
 - Unknown operators or functions result in an error message
 - Division by zero and other mathematical errors are not explicitly handled
-- NaN results are not displayed

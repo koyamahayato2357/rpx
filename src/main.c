@@ -439,9 +439,6 @@ void print_elem(elem_t elem) {
  * @param[in] result Output value
  */
 void print_real(double result) {
-  if (isnan(result))
-    return;
-
   if (isint(result))
     printf("result: %lld\n", (long long)result);
   else
@@ -453,9 +450,6 @@ void print_real(double result) {
  * @param[in] result Output value
  */
 void print_complex(double complex result) {
-  if (isnan(creal(result)) || isnan(cimag(result)))
-    return;
-
   printf("result: %lf + %lfi\n", creal(result), cimag(result));
 }
 
@@ -477,11 +471,6 @@ void print_complex_polar(double complex result) {
  * @param[in] result Output value
  */
 void print_matrix(matrix_t result) {
-  // NAN check
-  for (size_t i = 0; i < result.rows * result.cols; i++)
-    if (isnan(creal(result.matrix[i])) || isnan(cimag(result.matrix[i])))
-      return;
-
   for (size_t i = 0; i < result.rows; i++) {
     for (size_t j = 0; j < result.cols; j++)
       if (cimag(result.matrix[result.cols * i + j]) == 0)

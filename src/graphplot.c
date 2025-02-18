@@ -5,7 +5,7 @@
 
 #define FONTROW 2
 #define FONTCOL 1
-#define FONTRATIO (double)((double)FONTCOL / FONTROW)
+#define FONTRATIO ((double)FONTCOL / FONTROW)
 
 void init_plotconfig() {
   struct winsize w = get_winsz();
@@ -62,6 +62,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
       rpx_eval(&ei);
       double y1 = ei.s.rsp->elem.real;
       putchar(ispointgraph(y0, y1, y) ? '*' : ' ');
+      fflush(stdout);
       y0 = y1;
     }
 
