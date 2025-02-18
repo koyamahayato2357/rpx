@@ -355,6 +355,7 @@ void (*get_eval_table(char c))(machine_t *) { return eval_table[c - ' ']; }
   ret->e.info = get_rrtinfo();
   ret->e.iscontinue = true;
   ret->d.callstacki = ~(typeof(ret->d.callstacki))0;
+  memset(ret->d.argc, 0, ARGN * sizeof ret->d.argc);
 }
 
 /**
