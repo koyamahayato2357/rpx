@@ -11,8 +11,8 @@
  * ----------------------------------------------------------------------------
  */
 
-#ifdef TEST_MODE_ALL
 #include "exproriented.h"
+#include "chore.h"
 #include "testing.h"
 
 test(in_expr) {
@@ -39,7 +39,8 @@ test(in_statement) {
 }
 
 test(multi_statement) {
-  int a = $if(true)({
+  int c = 0;
+  int a = $if(!c)({
     int i = 1;
     i * 2;
   }) $else({
@@ -47,7 +48,7 @@ test(multi_statement) {
     (i + 1) * i;
   });
   expecteq(a, 2);
-  a = $if(false)({
+  a = $if(c)({
     int i = 9;
     i - 1;
   }) $else({
@@ -55,6 +56,7 @@ test(multi_statement) {
     a;
   });
   expecteq(a, 2);
+  _ = a;
 }
 
 test(dollar_sign) {
@@ -63,4 +65,3 @@ test(dollar_sign) {
   // I want Unit type
   expecteq(0, $(int i = 5; expecteq(5, i)));
 }
-#endif
