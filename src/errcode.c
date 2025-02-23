@@ -31,6 +31,6 @@ char const *codetomsg(int code) {
   case ERR_UNKNOWN_OPTION:
     return "Unknown option";
   default:
-    return "";
+    [[clang::unlikely]] return "";
   }
 }
