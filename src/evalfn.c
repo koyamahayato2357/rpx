@@ -182,7 +182,7 @@ static void rpx_wregs(machine_t *ei) {
 static void rpx_end(machine_t *ei) { ei->e.iscontinue = false; }
 
 static void rpx_grpbgn(machine_t *ei) {
-  (++ei->s.rsp)->elem.lamb = (char *)ei->s.rbp;
+  PUSH.elem.lamb = (char *)ei->s.rbp;
   ei->s.rbp = ei->s.rsp;
 }
 
