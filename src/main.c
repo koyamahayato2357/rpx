@@ -22,6 +22,7 @@
 #include "evalfn.h"
 #include "exproriented.h"
 #include "graphplot.h"
+#include "mathdef.h"
 #include "optexpr.h"
 #include "phyconst.h"
 #include "rc.h"
@@ -29,7 +30,6 @@
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
-#include <tgmath.h>
 #include <time.h>
 
 auto eval_f = eval_expr_real;
@@ -166,7 +166,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
     if (*expr == '[') {
       (++rsp)->rtype = RTYPE_MATR;
       expr++;
-      matrix_t val = {.matrix = palloc(MAT_INITSIZE * sizeof(double complex))};
+      matrix_t val   = {.matrix = palloc(MAT_INITSIZE * sizeof(complex))};
       matrix curelem = val.matrix;
       val.cols       = (size_t)strtol(expr, (char **)&expr, 10);
       for (; *expr != ']';) {
@@ -252,7 +252,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       rsp->elem.comp *= I;
       break;
     case 'p': { // polar
-      double complex theta = (rsp--)->elem.comp;
+      complex theta = (rsp--)->elem.comp;
       rsp->elem.comp
         = rsp->elem.comp * cos(theta) + I * rsp->elem.comp * sin(theta);
     } break;
@@ -325,7 +325,7 @@ end:
 }
 
 test (eval_expr_complex) {
-  [[maybe_unused]] double complex result;
+  [[maybe_unused]] complex result;
 
   result = eval_expr_complex("1 2i +").elem.comp;
   expecteq(1.0 + 2.0 * I, result);
@@ -442,7 +442,7 @@ void print_real(double result) {
  * @brief Output value of type double complex
  * @param[in] result Output value
  */
-void print_complex(double complex result) {
+void print_complex(complex result) {
   printf("result: %lf + %lfi\n", creal(result), cimag(result));
 }
 
@@ -450,8 +450,8 @@ void print_complex(double complex result) {
  * @brief Output value of type double complex in phasor view
  * @param[in] result Output value
  */
-void print_complex_polar(double complex result) {
-  double complex res = result;
+void print_complex_polar(complex result) {
+  complex res = result;
   if (isnan(creal(res)) || isnan(cimag(res))) return;
 
   printf(

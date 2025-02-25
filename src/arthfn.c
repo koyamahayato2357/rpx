@@ -1,5 +1,5 @@
 #include "arthfn.h"
-#include <tgmath.h>
+#include "mathdef.h"
 
 double gcd(double n, double m) {
   while (m != 0) {

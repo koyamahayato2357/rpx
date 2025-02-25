@@ -4,10 +4,10 @@
 #include "error.h"
 #include "exproriented.h"
 #include "gene.h"
+#include "mathdef.h"
 #include "phyconst.h"
 #include "testing.h"
 #include <ctype.h>
-#include <math.h>
 #include <string.h>
 
 elem_t eval_expr_real(char const *);

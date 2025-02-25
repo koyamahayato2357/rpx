@@ -1,14 +1,14 @@
 #include "gene.h"
+#include "mathdef.h"
 #include <stdio.h>
 #include <string.h>
-#include <tgmath.h>
 
 #define EPSILON 1e-5
 
 static bool double_eq(double a, double b) {
   return fabs(a - b) < EPSILON;
 }
-static bool complex_eq(double complex a, double complex b) {
+static bool complex_eq(complex a, complex b) {
   return fabs(creal(a - b)) < EPSILON && fabs(cimag(a - b)) < EPSILON;
 }
 

@@ -2,8 +2,8 @@
 #include "chore.h"
 #include "error.h"
 #include "gene.h"
+#include "mathdef.h"
 #include <string.h>
-#include <tgmath.h>
 
 [[gnu::nonnull]] void free_matr(matrix_t *restrict x) {
   free(x->matrix);
@@ -93,9 +93,7 @@ void elem_pow(elem_t *lhs, elem_t *rhs) {
 
   unsigned long long n = (unsigned long long)creal(rhs->elem.comp);
   matrix_t A dropmatr  = new_matrix(lhs->elem.matr.rows, lhs->elem.matr.cols);
-  memcpy(
-    A.matrix, lhs->elem.matr.matrix, A.rows * A.cols * sizeof(double complex)
-  );
+  memcpy(A.matrix, lhs->elem.matr.matrix, A.rows * A.cols * sizeof(complex));
   for (size_t i = 1; i < n; i++) {
     _ drop         = lhs->elem.matr.matrix;
     lhs->elem.matr = mmul(&lhs->elem.matr, &A);
