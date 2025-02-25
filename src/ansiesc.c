@@ -1,12 +1,14 @@
 #include <stdio.h>
 
-void putsequence(char *seq) { fputs(seq, stdout); }
+void putsequence(char *seq) {
+  fputs(seq, stdout);
+}
 
 #ifdef TEST_MODE_ALL
-#include "ansiesc.h"
-#include "testing.h"
+ #include "ansiesc.h"
+ #include "testing.h"
 
-test(ansi_escape_sequence) {
+test (ansi_escape_sequence) {
   puts(ESCLR);
 
   puts(ESBLD "hello" ESCLR);

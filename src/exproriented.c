@@ -15,7 +15,7 @@
 #include "chore.h"
 #include "testing.h"
 
-test(in_expr) {
+test (in_expr) {
   int i = 0;
   for (;;) {
     int j [[maybe_unused]] = $if(i == 1) 1 $else $break;
@@ -27,7 +27,7 @@ test(in_expr) {
   }
 }
 
-test(in_statement) {
+test (in_statement) {
   for (;;) {
     $break;
     testing_unreachable;
@@ -38,7 +38,7 @@ test(in_statement) {
   }
 }
 
-test(multi_statement) {
+test (multi_statement) {
   int c = 0;
   int a = $if(!c)({
     int i = 1;
@@ -59,7 +59,7 @@ test(multi_statement) {
   _ = a;
 }
 
-test(dollar_sign) {
+test (dollar_sign) {
   // $ expression returns 0.
   // For now.
   // I want Unit type

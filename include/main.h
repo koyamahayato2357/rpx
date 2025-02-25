@@ -3,14 +3,13 @@
 #pragma once
 #include <stdio.h>
 #define BUFSIZE 64
-#define OP_CASE_ELEM(tok, op)                                                  \
-  case *#op:                                                                   \
-    while (rbp + 1 < rsp)                                                      \
-      elem_##tok(rbp + 1, rsp--);                                              \
+#define OP_CASE_ELEM(tok, op) \
+  case *#op: \
+    while (rbp + 1 < rsp) elem_##tok(rbp + 1, rsp--); \
     break;
-#define OVERWRITE(cas, var, fn)                                                \
-  case cas:                                                                    \
-    var = fn(var);                                                             \
+#define OVERWRITE(cas, var, fn) \
+  case cas: \
+    var = fn(var); \
     break;
 #define OVERWRITE_REAL(cas, fn) OVERWRITE(cas, ei->s.rsp->elem.real, fn)
 #define OVERWRITE_COMP(cas, fn) OVERWRITE(cas, rsp->elem.comp, fn)

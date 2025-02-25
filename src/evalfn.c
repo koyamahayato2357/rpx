@@ -13,56 +13,55 @@
 elem_t eval_expr_real(char const *);
 
 #define PUSH (*++ei->s.rsp)
-#define POP (*ei->s.rsp--)
+#define POP  (*ei->s.rsp--)
 
-#define SET_REAL(v)                                                            \
-  (real_t) { .elem = {.real = v}, .isnum = true }
-#define SET_LAMB(v)                                                            \
-  (real_t) { .elem = {.lamb = v}, .isnum = false }
+#define SET_REAL(v) \
+  (real_t) { \
+    .elem = {.real = v}, .isnum = true \
+  }
+#define SET_LAMB(v) \
+  (real_t) { \
+    .elem = {.lamb = v}, .isnum = false \
+  }
 
-#define DEF_ARTHMS(tok, op)                                                    \
-  static void rpx_##tok(machine_t *ei) {                                       \
-    for (; ei->s.rbp + 1 < ei->s.rsp;                                          \
-         ei->s.rbp[1].elem.real op## = POP.elem.real)                          \
-      ;                                                                        \
+#define DEF_ARTHMS(tok, op) \
+  static void rpx_##tok(machine_t *ei) { \
+    for (; ei->s.rbp + 1 < ei->s.rsp; \
+         ei->s.rbp[1].elem.real op## = POP.elem.real); \
   }
 APPLY_ARTHM(DEF_ARTHMS)
 
 static void rpx_mod(machine_t *ei) {
   for (; ei->s.rbp + 1 < ei->s.rsp;
-       ei->s.rbp[1].elem.real = fmod(ei->s.rbp[1].elem.real, POP.elem.real))
-    ;
+       ei->s.rbp[1].elem.real = fmod(ei->s.rbp[1].elem.real, POP.elem.real));
 }
 
 static void rpx_pow(machine_t *ei) {
   for (; ei->s.rbp + 1 < ei->s.rsp;
-       ei->s.rbp[1].elem.real = pow(ei->s.rbp[1].elem.real, POP.elem.real))
-    ;
+       ei->s.rbp[1].elem.real = pow(ei->s.rbp[1].elem.real, POP.elem.real));
 }
 
 static void rpx_eql(machine_t *ei) {
-  for (; ei->s.rbp + 1 < ei->s.rsp &&
-         eq(ei->s.rsp[-1].elem.real, ei->s.rsp->elem.real);
-       POP)
-    ;
+  for (; ei->s.rbp + 1 < ei->s.rsp
+         && eq(ei->s.rsp[-1].elem.real, ei->s.rsp->elem.real);
+       POP);
   ei->s.rbp[1].elem.real = ei->s.rbp + 1 == ei->s.rsp ?: SNAN;
-  ei->s.rsp = ei->s.rbp + 1;
+  ei->s.rsp              = ei->s.rbp + 1;
 }
 
-#define DEF_LTGT(tok, op)                                                      \
-  static void rpx_##tok(machine_t *ei) {                                       \
-    for (; ei->s.rbp + 1 < ei->s.rsp &&                                        \
-           ei->s.rsp[-1].elem.real op ei->s.rsp->elem.real;                    \
-         POP)                                                                  \
-      ;                                                                        \
-    ei->s.rbp[1].elem.real = ei->s.rbp + 1 == ei->s.rsp ?: SNAN;               \
-    ei->s.rsp = ei->s.rbp + 1;                                                 \
+#define DEF_LTGT(tok, op) \
+  static void rpx_##tok(machine_t *ei) { \
+    for (; ei->s.rbp + 1 < ei->s.rsp \
+           && ei->s.rsp[-1].elem.real op ei->s.rsp->elem.real; \
+         POP); \
+    ei->s.rbp[1].elem.real = ei->s.rbp + 1 == ei->s.rsp ?: SNAN; \
+    ei->s.rsp              = ei->s.rbp + 1; \
   }
 APPLY_LTGT(DEF_LTGT)
 
-#define DEF_ONEARGFN(f)                                                        \
-  static void rpx_##f(machine_t *ei) {                                         \
-    ei->s.rsp->elem.real = f(ei->s.rsp->elem.real);                            \
+#define DEF_ONEARGFN(f) \
+  static void rpx_##f(machine_t *ei) { \
+    ei->s.rsp->elem.real = f(ei->s.rsp->elem.real); \
   }
 DEF_ONEARGFN(sin)
 DEF_ONEARGFN(cos)
@@ -73,28 +72,30 @@ DEF_ONEARGFN(ceil)
 DEF_ONEARGFN(floor)
 DEF_ONEARGFN(round)
 
-#define DEF_MULTI(name, factor)                                                \
-  static void rpx_##name(machine_t *ei) { ei->s.rsp->elem.real *= factor; }
+#define DEF_MULTI(name, factor) \
+  static void rpx_##name(machine_t *ei) { \
+    ei->s.rsp->elem.real *= factor; \
+  }
 DEF_MULTI(negate, -1)
 DEF_MULTI(torad, M_PI / 180)
 DEF_MULTI(todeg, 180 / M_PI)
 
-#define DEF_TWOCHARFN(name, c1, f1, c2, f2, c3, f3)                            \
-  static void rpx_##name(machine_t *ei) {                                      \
-    switch (*++ei->c.expr) {                                                   \
-      OVERWRITE_REAL(c1, f1)                                                   \
-      OVERWRITE_REAL(c2, f2)                                                   \
-      OVERWRITE_REAL(c3, f3)                                                   \
-    default:                                                                   \
-      [[clang::unlikely]];                                                     \
-    }                                                                          \
+#define DEF_TWOCHARFN(name, c1, f1, c2, f2, c3, f3) \
+  static void rpx_##name(machine_t *ei) { \
+    switch (*++ei->c.expr) { \
+      OVERWRITE_REAL(c1, f1) \
+      OVERWRITE_REAL(c2, f2) \
+      OVERWRITE_REAL(c3, f3) \
+    default: \
+      [[clang::unlikely]]; \
+    } \
   }
 DEF_TWOCHARFN(hyp, 's', sinh, 'c', cosh, 't', tanh)
 DEF_TWOCHARFN(arc, 's', asin, 'c', acos, 't', atan)
 DEF_TWOCHARFN(log, '2', log2, 'c', log10, 'e', log)
 
 static void rpx_logbase(machine_t *ei) {
-  double x = POP.elem.real;
+  double x             = POP.elem.real;
   ei->s.rsp->elem.real = log(ei->s.rsp->elem.real) / log(x);
 }
 
@@ -104,7 +105,7 @@ static void rpx_const(machine_t *ei) {
 
 static void rpx_parse(machine_t *ei) {
   char *next = nullptr;
-  PUSH = SET_REAL(strtod(ei->c.expr, &next));
+  PUSH       = SET_REAL(strtod(ei->c.expr, &next));
   ei->c.expr = next - 1;
 }
 
@@ -113,10 +114,10 @@ static void rpx_space(machine_t *ei) {
   ei->c.expr--;
 }
 
-#define CASE_TWOARGFN(c, f)                                                    \
-  case c: {                                                                    \
-    double x = ei->s.rsp->elem.real;                                           \
-    ei->s.rsp->elem.real = f(ei->s.rsp->elem.real, x);                         \
+#define CASE_TWOARGFN(c, f) \
+  case c: { \
+    double x             = ei->s.rsp->elem.real; \
+    ei->s.rsp->elem.real = f(ei->s.rsp->elem.real, x); \
   } break;
 static void rpx_intfn(machine_t *ei) {
   switch (*++ei->c.expr) {
@@ -139,9 +140,9 @@ static void rpx_sysfn(machine_t *ei) {
     putchar('\n');
     break;
   case 'h':
-    ei->s.rsp->elem.real =
-        ei->e.info.hist[ei->e.info.histi - (size_t)ei->s.rsp->elem.real - 1]
-            .elem.real;
+    ei->s.rsp->elem.real
+      = ei->e.info.hist[ei->e.info.histi - (size_t)ei->s.rsp->elem.real - 1]
+          .elem.real;
     break;
   case 'n':
     PUSH = SET_REAL(SNAN);
@@ -163,44 +164,42 @@ static void rpx_sysfn(machine_t *ei) {
 
 static real_t handle_function_args(machine_t *ei) {
   char argnum = *ei->c.expr - '0';
-  if (ei->d.argc[ei->d.argci] < argnum)
-    ei->d.argc[ei->d.argci] = argnum;
+  if (ei->d.argc[ei->d.argci] < argnum) ei->d.argc[ei->d.argci] = argnum;
   return ei->e.args[8 - argnum];
 }
 
 static void rpx_lregs(machine_t *ei) {
   *++ei->s.rsp = (isdigit(*++ei->c.expr)) ? handle_function_args(ei)
-                 : (islower(*ei->c.expr))
-                     ? ei->e.info.reg[*ei->c.expr - 'a']
-                     : *(real_t *)$panic(ERR_CHAR_NOT_FOUND);
+               : (islower(*ei->c.expr))   ? ei->e.info.reg[*ei->c.expr - 'a']
+                                        : *(real_t *)$panic(ERR_CHAR_NOT_FOUND);
 }
 
 static void rpx_wregs(machine_t *ei) {
   ei->e.info.reg[*++ei->c.expr - 'a'] = *ei->s.rsp;
 }
 
-static void rpx_end(machine_t *ei) { ei->e.iscontinue = false; }
+static void rpx_end(machine_t *ei) {
+  ei->e.iscontinue = false;
+}
 
 static void rpx_grpbgn(machine_t *ei) {
   PUSH.elem.lamb = (char *)ei->s.rbp;
-  ei->s.rbp = ei->s.rsp;
+  ei->s.rbp      = ei->s.rsp;
 }
 
 static void rpx_grpend(machine_t *ei) {
   real_t *rbp = ei->s.rbp;
-  ei->s.rbp = *(real_t **)ei->s.rbp;
-  *rbp = *ei->s.rsp;
-  ei->s.rsp = rbp;
+  ei->s.rbp   = *(real_t **)ei->s.rbp;
+  *rbp        = *ei->s.rsp;
+  ei->s.rsp   = rbp;
 }
 
 static void rpx_lmdbgn(machine_t *ei) {
   ei->c.expr++;
   size_t i = 0;
   for (int nest = 1; *ei->c.expr; i++)
-    if (ei->c.expr[i] == '{')
-      nest++;
-    else if (ei->c.expr[i] == '}' && !--nest)
-      break;
+    if (ei->c.expr[i] == '{') nest++;
+    else if (ei->c.expr[i] == '}' && !--nest) break;
 
   *++ei->s.rsp = SET_LAMB(palloc(i + 1));
   memcpy(ei->s.rsp->elem.lamb, ei->c.expr, i);
@@ -208,19 +207,21 @@ static void rpx_lmdbgn(machine_t *ei) {
   ei->c.expr += i;
 }
 
-static void rpx_lmdend(machine_t *ei) { _ = ei; }
+static void rpx_lmdend(machine_t *ei) {
+  _ = ei;
+}
 
 static void call_fn(machine_t *ei) {
   ei->d.callstack[++ei->d.callstacki] = ei->e.args;
-  ei->e.args = ei->s.rsp - 8;
-  ei->d.argc[++ei->d.argci] = 0;
+  ei->e.args                          = ei->s.rsp - 8;
+  ei->d.argc[++ei->d.argci]           = 0;
   rpx_grpbgn(ei);
 }
 
 static void ret_fn(machine_t *ei) {
   rpx_grpend(ei);
   real_t ret = *ei->s.rsp;
-  ei->s.rsp = ei->e.args + 8;
+  ei->s.rsp  = ei->e.args + 8;
   ei->s.rsp -= ei->d.argc[ei->d.argci--];
   *ei->s.rsp = ret;
   ei->e.args = ei->d.callstack[ei->d.callstacki--];
@@ -238,7 +239,7 @@ static void rpx_runlmd(machine_t *ei) {
 static void rpx_cond(machine_t *ei) {
   ei->s.rsp -= 2;
   real_t *rsp = ei->s.rsp;
-  *rsp = *(rsp + isnan((rsp + 2)->elem.real));
+  *rsp        = *(rsp + isnan((rsp + 2)->elem.real));
 }
 
 static void rpx_undfned(machine_t *ei) {
@@ -246,104 +247,106 @@ static void rpx_undfned(machine_t *ei) {
 }
 
 void (*eval_table['~' - ' ' + 1])(machine_t *) = {
-    rpx_space,   // ' '
-    rpx_runlmd,  // '!'
-    rpx_undfned, // '"'
-    rpx_undfned, // '#'
-    rpx_lregs,   // '$'
-    rpx_mod,     // '%'
-    rpx_wregs,   // '&'
-    rpx_undfned, // '''
-    rpx_grpbgn,  // '('
-    rpx_grpend,  // ')'
-    rpx_mul,     // '*'
-    rpx_add,     // '+'
-    rpx_end,     // ','
-    rpx_sub,     // '-'
-    rpx_undfned, // '.'
-    rpx_div,     // '/'
-    rpx_parse,   // '0'
-    rpx_parse,   // '1'
-    rpx_parse,   // '2'
-    rpx_parse,   // '3'
-    rpx_parse,   // '4'
-    rpx_parse,   // '5'
-    rpx_parse,   // '6'
-    rpx_parse,   // '7'
-    rpx_parse,   // '8'
-    rpx_parse,   // '9'
-    rpx_undfned, // ':'
-    rpx_end,     // ';'
-    rpx_lt,      // '<'
-    rpx_eql,     // '='
-    rpx_gt,      // '>'
-    rpx_cond,    // '?'
-    rpx_sysfn,   // '@'
-    rpx_fabs,    // 'A'
-    rpx_undfned, // 'B'
-    rpx_ceil,    // 'C'
-    rpx_undfned, // 'D'
-    rpx_undfned, // 'E'
-    rpx_floor,   // 'F'
-    rpx_undfned, // 'G'
-    rpx_undfned, // 'H'
-    rpx_undfned, // 'I'
-    rpx_undfned, // 'J'
-    rpx_undfned, // 'K'
-    rpx_logbase, // 'L'
-    rpx_undfned, // 'M'
-    rpx_undfned, // 'N'
-    rpx_undfned, // 'O'
-    rpx_undfned, // 'P'
-    rpx_undfned, // 'Q'
-    rpx_round,   // 'R'
-    rpx_undfned, // 'S'
-    rpx_undfned, // 'T'
-    rpx_undfned, // 'U'
-    rpx_undfned, // 'V'
-    rpx_undfned, // 'W'
-    rpx_undfned, // 'X'
-    rpx_undfned, // 'Y'
-    rpx_undfned, // 'Z'
-    rpx_undfned, // '['
-    rpx_const,   // '\'
-    rpx_undfned, // ']'
-    rpx_pow,     // '^'
-    rpx_undfned, // '_'
-    rpx_undfned, // '`'
-    rpx_arc,     // 'a'
-    rpx_undfned, // 'b'
-    rpx_cos,     // 'c'
-    rpx_todeg,   // 'd'
-    rpx_undfned, // 'e'
-    rpx_undfned, // 'f'
-    rpx_tgamma,  // 'g'
-    rpx_hyp,     // 'h'
-    rpx_intfn,   // 'i'
-    rpx_undfned, // 'j'
-    rpx_undfned, // 'k'
-    rpx_log,     // 'l'
-    rpx_negate,  // 'm'
-    rpx_undfned, // 'n'
-    rpx_undfned, // 'o'
-    rpx_undfned, // 'p'
-    rpx_undfned, // 'q'
-    rpx_torad,   // 'r'
-    rpx_sin,     // 's'
-    rpx_tan,     // 't'
-    rpx_undfned, // 'u'
-    rpx_undfned, // 'v'
-    rpx_undfned, // 'w'
-    rpx_undfned, // 'x'
-    rpx_undfned, // 'y'
-    rpx_undfned, // 'z'
-    rpx_lmdbgn,  // '{'
-    rpx_undfned, // '|'
-    rpx_lmdend,  // '}'
-    rpx_undfned, // '~'
+  rpx_space,   // ' '
+  rpx_runlmd,  // '!'
+  rpx_undfned, // '"'
+  rpx_undfned, // '#'
+  rpx_lregs,   // '$'
+  rpx_mod,     // '%'
+  rpx_wregs,   // '&'
+  rpx_undfned, // '''
+  rpx_grpbgn,  // '('
+  rpx_grpend,  // ')'
+  rpx_mul,     // '*'
+  rpx_add,     // '+'
+  rpx_end,     // ','
+  rpx_sub,     // '-'
+  rpx_undfned, // '.'
+  rpx_div,     // '/'
+  rpx_parse,   // '0'
+  rpx_parse,   // '1'
+  rpx_parse,   // '2'
+  rpx_parse,   // '3'
+  rpx_parse,   // '4'
+  rpx_parse,   // '5'
+  rpx_parse,   // '6'
+  rpx_parse,   // '7'
+  rpx_parse,   // '8'
+  rpx_parse,   // '9'
+  rpx_undfned, // ':'
+  rpx_end,     // ';'
+  rpx_lt,      // '<'
+  rpx_eql,     // '='
+  rpx_gt,      // '>'
+  rpx_cond,    // '?'
+  rpx_sysfn,   // '@'
+  rpx_fabs,    // 'A'
+  rpx_undfned, // 'B'
+  rpx_ceil,    // 'C'
+  rpx_undfned, // 'D'
+  rpx_undfned, // 'E'
+  rpx_floor,   // 'F'
+  rpx_undfned, // 'G'
+  rpx_undfned, // 'H'
+  rpx_undfned, // 'I'
+  rpx_undfned, // 'J'
+  rpx_undfned, // 'K'
+  rpx_logbase, // 'L'
+  rpx_undfned, // 'M'
+  rpx_undfned, // 'N'
+  rpx_undfned, // 'O'
+  rpx_undfned, // 'P'
+  rpx_undfned, // 'Q'
+  rpx_round,   // 'R'
+  rpx_undfned, // 'S'
+  rpx_undfned, // 'T'
+  rpx_undfned, // 'U'
+  rpx_undfned, // 'V'
+  rpx_undfned, // 'W'
+  rpx_undfned, // 'X'
+  rpx_undfned, // 'Y'
+  rpx_undfned, // 'Z'
+  rpx_undfned, // '['
+  rpx_const,   // '\'
+  rpx_undfned, // ']'
+  rpx_pow,     // '^'
+  rpx_undfned, // '_'
+  rpx_undfned, // '`'
+  rpx_arc,     // 'a'
+  rpx_undfned, // 'b'
+  rpx_cos,     // 'c'
+  rpx_todeg,   // 'd'
+  rpx_undfned, // 'e'
+  rpx_undfned, // 'f'
+  rpx_tgamma,  // 'g'
+  rpx_hyp,     // 'h'
+  rpx_intfn,   // 'i'
+  rpx_undfned, // 'j'
+  rpx_undfned, // 'k'
+  rpx_log,     // 'l'
+  rpx_negate,  // 'm'
+  rpx_undfned, // 'n'
+  rpx_undfned, // 'o'
+  rpx_undfned, // 'p'
+  rpx_undfned, // 'q'
+  rpx_torad,   // 'r'
+  rpx_sin,     // 's'
+  rpx_tan,     // 't'
+  rpx_undfned, // 'u'
+  rpx_undfned, // 'v'
+  rpx_undfned, // 'w'
+  rpx_undfned, // 'x'
+  rpx_undfned, // 'y'
+  rpx_undfned, // 'z'
+  rpx_lmdbgn,  // '{'
+  rpx_undfned, // '|'
+  rpx_lmdend,  // '}'
+  rpx_undfned, // '~'
 };
 
-void (*get_eval_table(char c))(machine_t *) { return eval_table[c - ' ']; }
+void (*get_eval_table(char c))(machine_t *) {
+  return eval_table[c - ' '];
+}
 
 [[gnu::nonnull]] void rpx_eval(machine_t *restrict ei) {
   for (; *ei->c.expr && ei->e.iscontinue; ei->c.expr++) [[clang::likely]]
@@ -352,9 +355,9 @@ void (*get_eval_table(char c))(machine_t *) { return eval_table[c - ' ']; }
 
 [[gnu::nonnull]] void init_evalinfo(machine_t *restrict ret) {
   ret->s.rbp = ret->s.rsp = ret->s.payload - 1;
-  ret->e.info = get_rrtinfo();
-  ret->e.iscontinue = true;
-  ret->d.callstacki = ~(typeof(ret->d.callstacki))0;
+  ret->e.info             = get_rrtinfo();
+  ret->e.iscontinue       = true;
+  ret->d.callstacki       = ~(typeof(ret->d.callstacki))0;
   memset(ret->d.argc, 0, ARGN * sizeof ret->d.argc);
 }
 
@@ -368,14 +371,13 @@ void (*get_eval_table(char c))(machine_t *) { return eval_table[c - ' ']; }
   init_evalinfo(&ei);
   ei.c.expr = a_expr;
   rpx_eval(&ei);
-  if (ei.e.info.histi < BUFSIZE)
-    ei.e.info.hist[ei.e.info.histi++] = *ei.s.rsp;
+  if (ei.e.info.histi < BUFSIZE) ei.e.info.hist[ei.e.info.histi++] = *ei.s.rsp;
   set_rrtinfo(ei.e.info);
   return (elem_t){{ei.s.rsp->elem.real},
                   ei.s.rsp->isnum ? RTYPE_REAL : RTYPE_LAMB};
 }
 
-test(eval_expr_real) {
+test (eval_expr_real) {
   expecteq(11.0, eval_expr_real("5 6 + &x").elem.real);
   expecteq(22.0, eval_expr_real("$x 2 *").elem.real);
 
@@ -388,12 +390,13 @@ test(eval_expr_real) {
 
   // lambda
   expecteq(8.0, eval_expr_real("4 {$1 2 *}!").elem.real);
-  expecteq(19.0,
-           eval_expr_real("1 5 {$1 3 +}! {5 $1 * {$1 4 -}! {$1 2 /}! $2 +}!")
-               .elem.real);
+  expecteq(
+    19.0,
+    eval_expr_real("1 5 {$1 3 +}! {5 $1 * {$1 4 -}! {$1 2 /}! $2 +}!").elem.real
+  );
 }
 
-bench(eval_expr_real) {
+bench (eval_expr_real) {
   eval_expr_real("1 2 3 4 5 +");
   eval_expr_real("4 5 ^");
   eval_expr_real("1s2^(1c2^)+");

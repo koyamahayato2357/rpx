@@ -5,11 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-[[gnu::nonnull(3)]] void set_configpath(char const *specified_cfgpath,
-                                        size_t len, char *restrict cfgpath) {
+[[gnu::nonnull(3)]] void set_configpath(
+  char const *specified_cfgpath, size_t len, char *restrict cfgpath
+) {
   char const *configdir = specified_cfgpath ?: "/.config/rpx/";
-  char const *homedir = getenv("HOME") ?: ".";
-  size_t const hdlen = strlen(homedir);
+  char const *homedir   = getenv("HOME") ?: ".";
+  size_t const hdlen    = strlen(homedir);
 
   strncpy(cfgpath, homedir, len);
   strncpy(cfgpath + hdlen, configdir, len - hdlen);
@@ -27,8 +28,7 @@ void load_initscript(char const *path) {
   strncpy(fname, configpath, configpathlen);
 
   for (struct dirent *entry; (entry = readdir(dp));) {
-    if (entry->d_name[0] == '.')
-      continue; // ignore hidden files
+    if (entry->d_name[0] == '.') continue; // ignore hidden files
     strncpy(fname + configpathlen, entry->d_name, BUFSIZE - configpathlen);
     FILE *fp dropfile = fopen(fname, "r");
     reader_loop(fp);

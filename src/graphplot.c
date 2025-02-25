@@ -3,17 +3,17 @@
 #include "sysconf.h"
 #include <sys/ioctl.h>
 
-#define FONTROW 2
-#define FONTCOL 1
+#define FONTROW   2
+#define FONTCOL   1
 #define FONTRATIO ((double)FONTCOL / FONTROW)
 
 void init_plotconfig() {
   struct winsize w = get_winsz();
-  int dispsz = (int)lesser((double)w.ws_row, w.ws_col * FONTRATIO);
+  int dispsz       = (int)lesser((double)w.ws_row, w.ws_col * FONTRATIO);
 
   plotcfg_t pcfg = get_plotcfg();
   pcfg.dispx = pcfg.dispy = dispsz - 5;
-  pcfg.plotexpr = plotexpr;
+  pcfg.plotexpr           = plotexpr;
   set_plotcfg(pcfg);
   set_pbounds(1, -1, 1, -1);
 }
@@ -21,22 +21,20 @@ void init_plotconfig() {
 bool ispointgraph(double y0, double y1, double y) {
   plotcfg_t pcfg = get_plotcfg();
 
-  return (y > y0 && y0 > y - pcfg.dy) || (y > y1 && y1 > y - pcfg.dy) ||
-         (y0 > y && y > y1) || (y1 > y && y > y0) ||
-         (y0 > y - pcfg.dy && y - pcfg.dy > y1) ||
-         (y1 > y - pcfg.dy && y - pcfg.dy > y0);
+  return (y > y0 && y0 > y - pcfg.dy) || (y > y1 && y1 > y - pcfg.dy)
+      || (y0 > y && y > y1) || (y1 > y && y > y0)
+      || (y0 > y - pcfg.dy && y - pcfg.dy > y1)
+      || (y1 > y - pcfg.dy && y - pcfg.dy > y0);
 }
 
 static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   putchar('\t');
   putchar('+');
-  for (int i = 0; i < dsplysz / FONTRATIO; i++)
-    putchar('-');
+  for (int i = 0; i < dsplysz / FONTRATIO; i++) putchar('-');
   putchar('\n');
   putchar('\t');
   printf("%.3lf", xn);
-  for (int i = 0; i < dsplysz / FONTRATIO / 2; i++)
-    putchar(' ');
+  for (int i = 0; i < dsplysz / FONTRATIO / 2; i++) putchar(' ');
   printf("%.3lf", xn + dx * dsplysz / 2 / FONTRATIO);
   putchar('\n');
 }
@@ -48,7 +46,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   for (int i = 0; i < pcfg.dispy; i++) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
-    double x0 = pcfg.xn - pcfg.dx;
+    double x0    = pcfg.xn - pcfg.dx;
     real_t stack = (real_t){.elem = {.real = x0}, .isnum = true};
     init_evalinfo(&ei);
     ei.e.args = &stack - 7;
@@ -57,7 +55,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
     double y0 = ei.s.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * j + pcfg.dx;
-      stack = (real_t){.elem = {.real = x1}, .isnum = true};
+      stack     = (real_t){.elem = {.real = x1}, .isnum = true};
       ei.c.expr = expr;
       rpx_eval(&ei);
       double y1 = ei.s.rsp->elem.real;
@@ -80,11 +78,11 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   for (int i = 0; i < pcfg.dispy; i++) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
-    double x0 = pcfg.xn - pcfg.dx;
-    double y1 = pcfg.yx - pcfg.dy * (i - 1);
+    double x0       = pcfg.xn - pcfg.dx;
+    double y1       = pcfg.yx - pcfg.dy * (i - 1);
     real_t stack[2] = {
-        (real_t){.elem = {.real = y0}, .isnum = true},
-        (real_t){.elem = {.real = x0}, .isnum = true},
+      (real_t){.elem = {.real = y0}, .isnum = true},
+      (real_t){.elem = {.real = x0}, .isnum = true},
     };
     init_evalinfo(&ei);
     ei.e.args = stack - 6;
@@ -93,8 +91,8 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
     double res0 = ei.s.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * (j + 1);
-      stack[0] = (real_t){.elem = {.real = y1}, .isnum = true};
-      stack[1] = (real_t){.elem = {.real = x1}, .isnum = true};
+      stack[0]  = (real_t){.elem = {.real = y1}, .isnum = true};
+      stack[1]  = (real_t){.elem = {.real = x1}, .isnum = true};
       ei.c.expr = expr;
       rpx_eval(&ei);
       double res1 = ei.s.rsp->elem.real;
@@ -109,8 +107,9 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   drawaxisx(pcfg.xn, pcfg.dispx, pcfg.dx);
 }
 
-void set_pbounds(double const xx, double const xn, double const yx,
-                 double const yn) {
+void set_pbounds(
+  double const xx, double const xn, double const yx, double const yn
+) {
   plotcfg_t pcfg = get_plotcfg();
 
   pcfg.xx = xx;

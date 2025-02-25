@@ -39,10 +39,10 @@ void movecur(int n, char *buf, char **cur, char *len) {
   *cur = $if(n > len - *cur) len $else $if(-n > *cur - buf) buf $else * cur + n;
 }
 
-test(movecur) {
+test (movecur) {
   char buf[256] = "sample text.";
-  char *cur = buf;
-  char *len = buf + strlen(buf);
+  char *cur     = buf;
+  char *len     = buf + strlen(buf);
 
   movecur(1, buf, &cur, len);
   expecteq(buf + 1, cur);
@@ -68,11 +68,11 @@ test(movecur) {
   **len = '\0';
 }
 
-test(deletes) {
-  char str[] = "sample text.";
-  char *len = str + strlen(str);
+test (deletes) {
+  char str[]  = "sample text.";
+  char *len   = str + strlen(str);
   char *begin = str;
-  char *end = str + 7;
+  char *end   = str + 7;
 
   deletes(begin, end, &len);
   expecteq("text.", (char *)str);
@@ -84,7 +84,9 @@ test(deletes) {
  * @param[in] c Character to look for
  * @return Pointer to the location found
  */
-inline char *findc(char *s, char c) { return strchr(s, c); }
+inline char *findc(char *s, char c) {
+  return strchr(s, c);
+}
 
 /**
  * @brief Find character from a string in opposite direction
@@ -106,7 +108,7 @@ char *findc_r(char c, char *buf, char *cur) {
  */
 bool findmove(char c, int dir, char *buf, char **cur) {
   char *old_cur = *cur;
-  *cur = $if(dir > 0) findc(*cur, c) $else findc_r(c, buf, *cur);
+  *cur          = $if(dir > 0) findc(*cur, c) $else findc_r(c, buf, *cur);
   if (*cur == nullptr) {
     *cur = old_cur;
     return false;
@@ -114,9 +116,9 @@ bool findmove(char c, int dir, char *buf, char **cur) {
   return true;
 }
 
-test(findmove) {
+test (findmove) {
   char buf[256] = "sample text.";
-  char *cur = buf;
+  char *cur     = buf;
 
   findmove(' ', 1, buf, &cur);
   expecteq(' ', *cur);
@@ -136,24 +138,22 @@ test(findmove) {
  * @param[in] len End of line
  */
 void fwdw(char **cur, char *len) {
-  if (*cur >= len)
-    return;
+  if (*cur >= len) return;
 
   int wasalnum = isalnum(**cur);
   int wasspace = isspace(**cur);
   (*cur)++;
-  for (; !isspace(**cur) ^ wasspace && *cur != len &&
-         !(isalnum(**cur) ^ wasalnum);
-       (*cur)++)
-    ;
+  for (; !isspace(**cur) ^ wasspace && *cur != len
+         && !(isalnum(**cur) ^ wasalnum);
+       (*cur)++);
 
   skipspcs((char const **)cur);
 }
 
-test(fwdw) {
+test (fwdw) {
   char buf[] = "sample text.";
-  char *cur = buf;
-  char *len = buf + strlen(buf);
+  char *cur  = buf;
+  char *len  = buf + strlen(buf);
 
   fwdw(&cur, len);
   expecteq(buf + 7, cur);
@@ -167,23 +167,20 @@ test(fwdw) {
  * @param[in,out] cur Cursor pointer
  */
 void bwdw(char *buf, char **cur) {
-  if (buf >= *cur)
-    return;
+  if (buf >= *cur) return;
 
   (*cur)--;
-  for (; isspace(**cur); (*cur)--)
-    ;
+  for (; isspace(**cur); (*cur)--);
 
   int wasalnum = isalnum(**cur);
-  for (; !isspace(*(*cur - 1)) && *cur != buf &&
-         !(isalnum(*(*cur - 1)) ^ wasalnum);
-       (*cur)--) {
-  }
+  for (; !isspace(*(*cur - 1)) && *cur != buf
+         && !(isalnum(*(*cur - 1)) ^ wasalnum);
+       (*cur)--) { }
 }
 
-test(bwdw) {
+test (bwdw) {
   char buf[] = "sample text.";
-  char *cur = buf + strlen(buf);
+  char *cur  = buf + strlen(buf);
 
   bwdw(buf, &cur);
   expecteq(buf + 11, cur);
@@ -201,10 +198,10 @@ void fwdW(char **cur, char *len) {
   skipspcs((char const **)cur);
 }
 
-test(fwdW) {
+test (fwdW) {
   char buf[] = "sample text.";
-  char *cur = buf;
-  char *len = buf + strlen(buf);
+  char *cur  = buf;
+  char *len  = buf + strlen(buf);
 
   fwdW(&cur, len);
   expecteq('t', *cur);
@@ -218,17 +215,15 @@ test(fwdW) {
  * @param[in,out] cur Cursor pointer
  */
 void bwdW(char *buf, char **cur) {
-  if (buf == *cur)
-    return;
-  for ((*cur)--; isspace(**cur) && buf < *cur; (*cur)--)
-    ;
+  if (buf == *cur) return;
+  for ((*cur)--; isspace(**cur) && buf < *cur; (*cur)--);
   *cur = memrchr(buf, ' ', (size_t)(*cur - buf)) ?: buf - 1;
   (*cur)++;
 }
 
-test(bwdW) {
+test (bwdW) {
   char buf[] = "sample text.";
-  char *cur = buf + strlen(buf);
+  char *cur  = buf + strlen(buf);
 
   bwdW(buf, &cur);
   expecteq('t', *cur);
@@ -246,10 +241,8 @@ test(bwdW) {
 void handle_es(char key, char *buf, char **cur, char **len) {
   switch (key) {
   case '3': // delete key
-    if (getchar() != '~')
-      break;
-    if (*len == *cur)
-      break;
+    if (getchar() != '~') break;
+    if (*len == *cur) break;
     memmove(*cur, *cur + 1, (size_t)(*len - *cur - 1));
     (*len)--;
     break;
@@ -279,8 +272,9 @@ void handle_es(char key, char *buf, char **cur, char **len) {
  * @param[out] begin Beginning of selected range of text object
  * @param[out] end End of selected range of text object
  */
-void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
-                   char **end) {
+void handle_txtobj(
+  char txtobj, char *buf, char *cur, char *len, char **begin, char **end
+) {
   switch (txtobj) {
   case 'w':
     fwdw(&cur, len);
@@ -309,7 +303,7 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
   default:
     disperr(__FUNCTION__, "unknown char: %c", txtobj);
     *begin = nullptr;
-    *end = nullptr;
+    *end   = nullptr;
     break;
   }
 }
@@ -322,10 +316,9 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
  * @details Possible buffer overrun
  */
 [[gnu::nonnull]] void insertc(char c, char **cur, char **len) {
-  if (*cur != *len)
-    memmove(*cur + 1, *cur, (size_t)(*len - *cur));
+  if (*cur != *len) memmove(*cur + 1, *cur, (size_t)(*len - *cur));
   *(*cur)++ = c;
-  *++*len = '\0';
+  *++*len   = '\0';
 }
 
 /**
@@ -337,24 +330,24 @@ void handle_txtobj(char txtobj, char *buf, char *cur, char *len, char **begin,
  * @param[in,out] len End of line
  * @param[in] margin Number of characters can be added to the buffer
  */
-void inserts(size_t slen, char const *s, int curpos, char **cur, char **len,
-             size_t margin) {
+void inserts(
+  size_t slen, char const *s, int curpos, char **cur, char **len, size_t margin
+) {
   if (slen > margin) {
     disperr(__FUNCTION__, "buffer depreletion");
     abort();
   }
-  if (*cur != *len)
-    memmove(*cur + slen, *cur, (size_t)(*len - *cur));
+  if (*cur != *len) memmove(*cur + slen, *cur, (size_t)(*len - *cur));
   memcpy(*cur, s, slen);
   *cur += curpos;
   *len += slen;
   **len = '\0';
 }
 
-test(inserts) {
+test (inserts) {
   char buf[256] = "sample text.";
-  char *len = buf + strlen(buf);
-  char *cur = len - 1;
+  char *len     = buf + strlen(buf);
+  char *cur     = len - 1;
 
   char str1[] = "new string";
   inserts(strlen(str1), str1, 0, &cur, &len, (size_t)(buf + 256 - len));
@@ -395,7 +388,7 @@ void insbind(char c, char *buf, char **cur, char **len) {
     break;
   }
 
-  dflt:
+dflt:
   default:
     insertc(c, cur, len);
   }
@@ -437,13 +430,11 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     findmove(getchar(), -1, buf, cur);
     break;
   case 't':
-    if (!findmove(getchar(), 1, buf, cur))
-      break;
+    if (!findmove(getchar(), 1, buf, cur)) break;
     (*cur)--;
     break;
   case 'T':
-    if (!findmove(getchar(), -1, buf, cur))
-      break;
+    if (!findmove(getchar(), -1, buf, cur)) break;
     (*cur)++;
     break;
   case 'A':
@@ -463,7 +454,7 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     handle_printable = insbind;
     [[fallthrough]];
   case 'd': {
-    char *end = *cur;
+    char *end  = *cur;
     char input = getchar();
     char *dst, *src;
     if (input == 'i' || input == 'a') {
@@ -474,17 +465,16 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
       src = bigger(*cur, end);
     }
 
-    if (!dst || !src)
-      break;
+    if (!dst || !src) break;
     deletes(dst, src, len);
-    *cur = dst;
+    *cur  = dst;
     **len = '\0';
   } break;
   case 'C':
     handle_printable = insbind;
     [[fallthrough]];
   case 'D':
-    *len = *cur;
+    *len  = *cur;
     **len = '\0';
     break;
   case 'r':
@@ -515,8 +505,7 @@ bool editline(int sz, char *buf) {
   enable_rawmode(&orig_termios);
 
   for (char c = getchar();; c = getchar()) {
-    if ((ctrl_d = c == CTRL_D) || c == '\n' || buf + sz < len)
-      break;
+    if ((ctrl_d = c == CTRL_D) || c == '\n' || buf + sz < len) break;
 
     switch (c) {
     case ES:
@@ -524,8 +513,7 @@ bool editline(int sz, char *buf) {
       break;
 
     case BS:
-      if (cur <= buf)
-        continue;
+      if (cur <= buf) continue;
       memmove(cur - 1, cur, (size_t)(len - cur + 1));
       cur--;
       len--;

@@ -23,18 +23,18 @@ struct winsize get_winsz() {
  */
 inline bool isint(double arg) {
   // forced to implement this way to suppress type warnings
-  long unsigned x = *(long unsigned *)&arg;
-  long unsigned mantissa = (x & 0x000fffffffffffff);
-  short unsigned expo = (x >> 52) & 0x7ff;
-  return expo > 1023 && !((mantissa << (expo - 1023)) & 0x000fffffffffffff);
+  long unsigned x        = *(long unsigned *)&arg;
+  long unsigned mantissa = (x & 0x00'0f'ff'ff'ff'ff'ff'ff);
+  short unsigned expo    = (x >> 52) & 0x7ff;
+  return expo > 1023
+      && !((mantissa << (expo - 1023)) & 0x00'0f'ff'ff'ff'ff'ff'ff);
 }
 
 /**
  * @brief Skip pointer to first non-white-space char
  */
 [[gnu::nonnull]] void skipspcs(char const **restrict str) {
-  for (; isspace(**str); (*str)++)
-    ;
+  for (; isspace(**str); (*str)++);
 }
 
 /**
@@ -57,16 +57,26 @@ inline bool isint(double arg) {
 /**
  * @brief free for drop
  */
-[[gnu::nonnull]] void free_cl(void *p) { free(*(void **)p); }
-[[gnu::nonnull]] void fclose_cl(FILE **fp) { fclose(*fp); }
-[[gnu::nonnull]] void closedir_cl(DIR **fp) { closedir(*fp); }
+[[gnu::nonnull]] void free_cl(void *p) {
+  free(*(void **)p);
+}
+[[gnu::nonnull]] void fclose_cl(FILE **fp) {
+  fclose(*fp);
+}
+[[gnu::nonnull]] void closedir_cl(DIR **fp) {
+  closedir(*fp);
+}
 
-test_table(isint, isint, (bool, double),
-           {{true, 5.0},
-            {true, 3.000},
-            {true, 100},
-            {true, -10},
-            {false, 5.6},
-            {false, 10.9},
-            {false, 99.99999},
-            {false, -10.4}})
+test_table(
+  isint, isint, (bool, double),
+  {
+    { true,      5.0},
+    { true,    3.000},
+    { true,      100},
+    { true,      -10},
+    {false,      5.6},
+    {false,     10.9},
+    {false, 99.99999},
+    {false,    -10.4}
+}
+)

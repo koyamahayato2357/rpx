@@ -19,11 +19,11 @@ typedef enum {
   ERR_UNKNOWN_OPTION,
 } errcode_t;
 
-#define panic(e, ...)                                                          \
-  do {                                                                         \
-    printf("Panicked at " HERE " " __VA_ARGS__);                               \
-    puts(codetomsg(e));                                                        \
-    abort();                                                                   \
+#define panic(e, ...) \
+  do { \
+    printf("Panicked at " HERE " " __VA_ARGS__); \
+    puts(codetomsg(e)); \
+    abort(); \
   } while (0)
 
 char const *codetomsg(int);

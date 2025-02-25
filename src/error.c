@@ -3,8 +3,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-[[gnu::format(printf, 2, 3)]] void disperr(char const *funcname,
-                                           char const *errmsgfmt, ...) {
+[[gnu::format(printf, 2, 3)]] void
+disperr(char const *funcname, char const *errmsgfmt, ...) {
   va_list ap;
   va_start(ap, errmsgfmt);
 

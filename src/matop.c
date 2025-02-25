@@ -7,14 +7,13 @@
 
 [[nodiscard]] matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
-  for (size_t i = 0; i < rows * cols; i++)
-    result.matrix[i] = SNAN;
+  for (size_t i = 0; i < rows * cols; i++) result.matrix[i] = SNAN;
   return result;
 }
 
 [[nodiscard]] matrix_t new_matrix(size_t rows, size_t cols) {
-  return (matrix_t){.rows = rows,
-                    .cols = cols,
+  return (matrix_t){.rows   = rows,
+                    .cols   = cols,
                     .matrix = palloc(rows * cols * sizeof(double complex))};
 }
 
@@ -23,12 +22,10 @@
 }
 
 [[gnu::nonnull]] bool meq(matrix_t const *lhs, matrix_t const *rhs) {
-  if (!mcheckdim(lhs, rhs))
-    return false;
+  if (!mcheckdim(lhs, rhs)) return false;
 
   for (size_t i = 0; i < lhs->cols * lhs->rows; i++)
-    if (!eq(lhs->matrix[i], rhs->matrix[i]))
-      return false;
+    if (!eq(lhs->matrix[i], rhs->matrix[i])) return false;
 
   return true;
 }
@@ -36,20 +33,27 @@
 /**
  * @brief Add/Sub between matrices
  */
-#define MOPS(name, op)                                                         \
-  [[nodiscard, gnu::nonnull]] matrix_t m##name(matrix_t const *lhs,            \
-                                               matrix_t const *rhs) {          \
-    if (!mcheckdim(lhs, rhs))                                                  \
-      disperr(__FUNCTION__, "%s: %dx%d && %dx%d",                              \
-              codetomsg(ERR_DIMENTION_MISMATCH), lhs->rows, lhs->cols,         \
-              rhs->rows, rhs->cols);                                           \
-                                                                               \
-    matrix_t result = new_matrix(lhs->rows, lhs->cols);                        \
-                                                                               \
-    for (size_t i = 0; i < lhs->rows * lhs->cols; i++)                         \
-      result.matrix[i] = lhs->matrix[i] op rhs->matrix[i];                     \
-                                                                               \
-    return result;                                                             \
+#define MOPS(name, op) \
+  [[nodiscard, gnu::nonnull]] matrix_t m##name( \
+    matrix_t const *lhs, matrix_t const *rhs \
+  ) { \
+    if (!mcheckdim(lhs, rhs)) \
+      disperr( \
+        __FUNCTION__, \
+        "%s: %dx%d && %dx%d", \
+        codetomsg(ERR_DIMENTION_MISMATCH), \
+        lhs->rows, \
+        lhs->cols, \
+        rhs->rows, \
+        rhs->cols \
+      ); \
+\
+    matrix_t result = new_matrix(lhs->rows, lhs->cols); \
+\
+    for (size_t i = 0; i < lhs->rows * lhs->cols; i++) \
+      result.matrix[i] = lhs->matrix[i] op rhs->matrix[i]; \
+\
+    return result; \
   }
 MOPS(add, +)
 MOPS(sub, -)
@@ -59,17 +63,23 @@ MOPS(sub, -)
  */
 [[nodiscard]] matrix_t mmul(matrix_t const *lhs, matrix_t const *rhs) {
   if (lhs->rows != rhs->cols && lhs->cols != rhs->rows) [[clang::unlikely]]
-    disperr(__FUNCTION__, "%s: %dx%d && %dx%d",
-            codetomsg(ERR_DIMENTION_MISMATCH), lhs->rows, lhs->cols, rhs->rows,
-            rhs->cols);
+    disperr(
+      __FUNCTION__,
+      "%s: %dx%d && %dx%d",
+      codetomsg(ERR_DIMENTION_MISMATCH),
+      lhs->rows,
+      lhs->cols,
+      rhs->rows,
+      rhs->cols
+    );
 
   matrix_t result = new_matrix(lhs->rows, rhs->cols);
 
   for (size_t i = 0; i < lhs->rows; i++)
     for (size_t j = 0; j < rhs->cols; j++)
       for (size_t k = 0; k < lhs->cols; k++)
-        result.matrix[rhs->cols * i + j] +=
-            lhs->matrix[lhs->cols * i + k] * rhs->matrix[rhs->cols * k + j];
+        result.matrix[rhs->cols * i + j]
+          += lhs->matrix[lhs->cols * i + k] * rhs->matrix[rhs->cols * k + j];
 
   return result;
 }
@@ -82,7 +92,7 @@ MOPS(sub, -)
     disperr(__FUNCTION__, "not a square matrix");
 
   double result = 1;
-  size_t dim = A->rows;
+  size_t dim    = A->rows;
   for (size_t i = 0; i < dim - 1; i++)
     for (size_t j = 0; j < dim - 1; j++) {
       for (size_t k = 1; !A->matrix[dim * i + i]; k++) {
@@ -90,20 +100,19 @@ MOPS(sub, -)
           if (k >= dim) [[clang::unlikely]] // case of singular matrix
             return 0;
 
-          double temp = creal(A->matrix[dim * i + l]);
-          A->matrix[dim * i + l] = A->matrix[dim * (i + k) + l];
+          double temp                  = creal(A->matrix[dim * i + l]);
+          A->matrix[dim * i + l]       = A->matrix[dim * (i + k) + l];
           A->matrix[dim * (i + k) + l] = -temp;
         }
       }
       // elimination
-      double temp =
-          creal(A->matrix[dim * (j + 1) + i] / A->matrix[dim * i + i]);
+      double temp
+        = creal(A->matrix[dim * (j + 1) + i] / A->matrix[dim * i + i]);
       for (size_t k = i; k < dim; k++)
         A->matrix[dim * (j + 1) + k] -= temp * A->matrix[dim * i + k];
     }
 
-  for (size_t i = 0; i < dim; i++)
-    result *= A->matrix[dim * i + i];
+  for (size_t i = 0; i < dim; i++) result *= A->matrix[dim * i + i];
   return result;
 }
 
@@ -112,8 +121,8 @@ MOPS(sub, -)
  * @param[in] A Matrix
  * @return Inverted A
  */
-[[nodiscard, gnu::nonnull]] matrix_t
-inverse_matrix(matrix_t const *restrict A) {
+[[nodiscard, gnu::nonnull]] matrix_t inverse_matrix(matrix_t const *restrict A
+) {
   size_t dim = A->rows;
 
   if (A->rows != A->cols) [[clang::unlikely]] {
@@ -123,8 +132,7 @@ inverse_matrix(matrix_t const *restrict A) {
 
   matrix_t result = new_matrix(dim, dim);
 
-  for (size_t i = 0; i < dim; i++)
-    result.matrix[i * dim + i] = 1;
+  for (size_t i = 0; i < dim; i++) result.matrix[i * dim + i] = 1;
 
   // to diagonal matrix
   for (size_t i = 0; i < dim; i++) {
@@ -138,10 +146,10 @@ inverse_matrix(matrix_t const *restrict A) {
         }
 
       for (size_t k = 0; k < dim; k++) {
-        double complex temp = A->matrix[i * dim + k];
-        A->matrix[i * dim + k] = A->matrix[j * dim + k];
-        A->matrix[j * dim + k] = -temp;
-        temp = result.matrix[i * dim + k];
+        double complex temp        = A->matrix[i * dim + k];
+        A->matrix[i * dim + k]     = A->matrix[j * dim + k];
+        A->matrix[j * dim + k]     = -temp;
+        temp                       = result.matrix[i * dim + k];
         result.matrix[i * dim + k] = result.matrix[j * dim + k];
         result.matrix[j * dim + k] = -temp;
       }
@@ -178,6 +186,5 @@ inverse_matrix(matrix_t const *restrict A) {
  * @param[in] rhs Scalar
  */
 [[gnu::nonnull]] void smul(matrix_t *restrict lhs, double complex rhs) {
-  for (size_t i = 0; i < lhs->rows * lhs->cols; i++)
-    lhs->matrix[i] *= rhs;
+  for (size_t i = 0; i < lhs->rows * lhs->cols; i++) lhs->matrix[i] *= rhs;
 }

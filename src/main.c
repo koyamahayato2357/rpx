@@ -99,8 +99,8 @@ void startup_message() {
 void proc_alist(int argc, char const **argv) {
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != '-') { // interpreted as a file name
-      FILE *fp dropfile =
-          fopen(argv[i], "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s ", argv[i]);
+      FILE *fp dropfile
+        = fopen(argv[i], "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s ", argv[i]);
       reader_loop(fp);
       continue;
     }
@@ -168,24 +168,22 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       expr++;
       matrix_t val = {.matrix = palloc(MAT_INITSIZE * sizeof(double complex))};
       matrix curelem = val.matrix;
-      val.cols = (size_t)strtol(expr, (char **)&expr, 10);
+      val.cols       = (size_t)strtol(expr, (char **)&expr, 10);
       for (; *expr != ']';) {
         *curelem++ = eval_expr_complex(expr).elem.comp;
         skip_untilcomma(&expr);
       }
-      val.rows = (size_t)(curelem - val.matrix) / val.cols;
+      val.rows       = (size_t)(curelem - val.matrix) / val.cols;
       rsp->elem.matr = val;
       continue;
     }
-    if (isspace(*expr))
-      continue;
-    if (*expr == '\0')
-      break;
+    if (isspace(*expr)) continue;
+    if (*expr == '\0') break;
 
     switch (*expr) {
     case '(':
       *(long *)&(++rsp)->elem.real = rbp - operand_stack;
-      rbp = rsp;
+      rbp                          = rsp;
       break;
     case ')':
       rbp = operand_stack + *(long *)&rbp->elem.real;
@@ -204,15 +202,13 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       OVERWRITE_COMP('t', tan)
 
     case '~': {
-      _ drop = rsp->elem.matr.matrix;
+      _ drop         = rsp->elem.matr.matrix;
       rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
     } break;
     case '=':
-      for (; rbp + 1 < rsp && elem_eq(rsp - 1, rsp); rsp--)
-        ;
+      for (; rbp + 1 < rsp && elem_eq(rsp - 1, rsp); rsp--);
       (rbp + 1)->elem.real = rbp + 1 == rsp;
-      if (rbp + 1 != rsp)
-        rsp = rbp + 1;
+      if (rbp + 1 != rsp) rsp = rbp + 1;
       break;
 
     case 'a':
@@ -240,7 +236,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       break;
 
     case 'L': { // log with base
-      double x = creal((rsp--)->elem.comp);
+      double x       = creal((rsp--)->elem.comp);
       rsp->elem.comp = log(rsp->elem.comp) / log(x);
     } break;
     case 'r': // to radian
@@ -257,11 +253,11 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       break;
     case 'p': { // polar
       double complex theta = (rsp--)->elem.comp;
-      rsp->elem.comp =
-          rsp->elem.comp * cos(theta) + I * rsp->elem.comp * sin(theta);
+      rsp->elem.comp
+        = rsp->elem.comp * cos(theta) + I * rsp->elem.comp * sin(theta);
     } break;
 
-    case '@': // system functions
+    case '@':   // system functions
       switch (*++expr) {
       case 'a': // ANS
         elem_set(++rsp, &info_c.hist[info_c.histi - 1]);
@@ -320,8 +316,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
 end:
   if (rsp->rtype == RTYPE_MATR) {
     elem_t *rhs = &info_c.hist[info_c.histi++];
-    if (rhs->rtype == RTYPE_MATR)
-      nfree(rhs->elem.matr.matrix);
+    if (rhs->rtype == RTYPE_MATR) nfree(rhs->elem.matr.matrix);
     *rhs = *rsp;
   } else if (info_c.histi < BUFSIZE)
     info_c.hist[info_c.histi++].elem.comp = rsp->elem.comp;
@@ -329,7 +324,7 @@ end:
   return *rsp;
 }
 
-test(eval_expr_complex) {
+test (eval_expr_complex) {
   [[maybe_unused]] double complex result;
 
   result = eval_expr_complex("1 2i +").elem.comp;
@@ -361,7 +356,7 @@ test(eval_expr_complex) {
 
   // Test matrix multiplication
   char const *expr = "[2 1,2,3,4,][2 5,6,7,8,]*";
-  resultm = eval_expr_complex(expr).elem.matr;
+  resultm          = eval_expr_complex(expr).elem.matr;
   expecteq(2, resultm.rows);
   expecteq(2, resultm.cols);
   expecteq(19.0, resultm.matrix[0]);
@@ -371,7 +366,7 @@ test(eval_expr_complex) {
   free(resultm.matrix);
 
   // Test matrix inverse
-  expr = "[2 1,2,3,4,]~";
+  expr    = "[2 1,2,3,4,]~";
   resultm = eval_expr_complex(expr).elem.matr;
   expecteq(2, resultm.rows);
   expecteq(2, resultm.cols);
@@ -382,7 +377,7 @@ test(eval_expr_complex) {
   free(resultm.matrix);
 
   // Scalar multiplication
-  expr = "[3 5,6,7,] 5 *";
+  expr    = "[3 5,6,7,] 5 *";
   resultm = eval_expr_complex(expr).elem.matr;
   expecteq(1, resultm.rows);
   expecteq(3, resultm.cols);
@@ -392,7 +387,7 @@ test(eval_expr_complex) {
   free(resultm.matrix);
 }
 
-bench(eval_expr_complex) {
+bench (eval_expr_complex) {
   eval_expr_complex("1 2 3 4 5 +");
   eval_expr_complex("4 5 ^");
   eval_expr_complex("1s2^(1c2^)+");
@@ -439,10 +434,8 @@ void print_elem(elem_t elem) {
  * @param[in] result Output value
  */
 void print_real(double result) {
-  if (isint(result))
-    printf("result: %lld\n", (long long)result);
-  else
-    printf("result: %lf\n", result);
+  if (isint(result)) printf("result: %lld\n", (long long)result);
+  else printf("result: %lf\n", result);
 }
 
 /**
@@ -459,11 +452,11 @@ void print_complex(double complex result) {
  */
 void print_complex_polar(double complex result) {
   double complex res = result;
-  if (isnan(creal(res)) || isnan(cimag(res)))
-    return;
+  if (isnan(creal(res)) || isnan(cimag(res))) return;
 
-  printf("result: %lf \\phasor %lf\n", cabs(res),
-         atan2(cimag(res), creal(res)));
+  printf(
+    "result: %lf \\phasor %lf\n", cabs(res), atan2(cimag(res), creal(res))
+  );
 }
 
 /**
@@ -476,8 +469,11 @@ void print_matrix(matrix_t result) {
       if (cimag(result.matrix[result.cols * i + j]) == 0)
         printf("\t%lf", creal(result.matrix[result.cols * i + j]));
       else {
-        printf("\t%lf + %lfi", creal(result.matrix[result.cols * i + j]),
-               cimag(result.matrix[result.cols * i + j]));
+        printf(
+          "\t%lf + %lfi",
+          creal(result.matrix[result.cols * i + j]),
+          cimag(result.matrix[result.cols * i + j])
+        );
       }
 
     putchar('\n');
@@ -498,7 +494,7 @@ void print_matrix(matrix_t result) {
 
   // TODO save registers
   switch (*cmd++) {
-  case 't': // toggle
+  case 't':   // toggle
     switch (*cmd) {
     case 'c': // complex mode
       eval_f = eval_f == eval_expr_real ? eval_expr_complex : eval_expr_real;
@@ -528,7 +524,7 @@ void print_matrix(matrix_t result) {
     strncpy(pcfg.prevexpr, cmd, BUFSIZE);
     set_plotcfg(pcfg);
     break;
-  case 's': // settings
+  case 's':   // settings
     switch (*cmd) {
     case 'p': // plot
       change_plotconfig(cmd + 1);
