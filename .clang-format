@@ -1,14 +1,10 @@
 AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Right
-AlignConsecutiveAssignments:
-  Enabled: true
-AlignConsecutiveMacros:
-  Enabled: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveMacros: true
 AlignConsecutiveShortCaseStatements:
-  Enabled: false
-AlignConsecutiveTableGenCondOperatorColons:
   Enabled: true
-  AcrossEmptyLines: true
+AlignConsecutiveTableGenCondOperatorColons: true
 AlignEscapedNewlines: DontAlign
 AlignOperands: AlignAfterOperator
 AlignTrailingComments:
