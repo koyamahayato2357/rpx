@@ -12,6 +12,7 @@ disperr(char const *funcname, char const *errmsgfmt, ...) {
   _ = va_arg(ap, int);
 
 #ifdef TEST_MODE
+  _ = errmsgfmt;
   _ = funcname;
 #else
   fprintf(stderr, "\n[%s]\n", funcname);
