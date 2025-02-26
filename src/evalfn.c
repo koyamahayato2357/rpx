@@ -357,7 +357,7 @@ void (*get_eval_table(char c))(machine_t *) {
   ret->s.rbp = ret->s.rsp = ret->s.payload;
   ret->e.info             = get_rrtinfo();
   ret->e.iscontinue       = true;
-  ret->d.argci            = ~(unsigned)0;
+  ret->d.argci            = 0;
   ret->d.callstacki       = ~(unsigned)0;
   memset(ret->d.argc, 0, sizeof ret->d.argc);
 }
