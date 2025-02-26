@@ -388,13 +388,19 @@ test (eval_expr_real) {
 test_table(
   eval_real, eval_expr_real_return_double, (double, char const *),
   {
-    {11.0,                                         "5 6 + &x"}, // write reg
-    {22.0,                                           "$x 2 *"}, // load reg
-    {33.0,                            "4 5 (5 6 (6 7 +) +) +"}, // nest grp
+    {11.0,              "5 6 + &x"}, // write reg
+    {22.0,                "$x 2 *"}, // load reg
+    {33.0, "4 5 (5 6 (6 7 +) +) +"}, // nest grp
+    {66.0,               "@a @a +"}, // ans
+    { 4.0,            "1 1 + @p +"}, // prev
+    { 0.0,                 "\\P s"}, // const
+}
+)
+test_table(
+  eval_lamb, eval_expr_real_return_double, (double, char const *),
+  {
     { 8.0,                                      "4 {$1 2 *}!"}, // lamb
     {19.0, "1 5 {$1 3 +}! {5 $1 * {$1 4 -}! {$1 2 /}! $2 +}!"}, // nest lamb
-    {38.0,                                          "@a @a +"}, // ans
-    { 4.0,                                       "1 1 + @p +"}, // prev
 }
 )
 #undef eval_expr_real_return_double
