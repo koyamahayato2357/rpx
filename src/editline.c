@@ -120,15 +120,15 @@ test (findmove) {
   char buf[256] = "sample text.";
   char *cur     = buf;
 
-  findmove(' ', 1, buf, &cur);
+  expect(findmove(' ', 1, buf, &cur));
   expecteq(' ', *cur);
-  findmove('e', 1, buf, &cur);
+  expect(findmove('e', 1, buf, &cur));
   expecteq('e', *cur);
-  findmove('s', -1, buf, &cur);
+  expect(findmove('s', -1, buf, &cur));
   expecteq('s', *cur);
-  findmove('z', 1, buf, &cur);
+  expect(!findmove('z', 1, buf, &cur));
   expecteq('s', *cur);
-  findmove('.', 1, buf, &cur);
+  expect(findmove('.', 1, buf, &cur));
   expecteq('.', *cur);
 }
 
