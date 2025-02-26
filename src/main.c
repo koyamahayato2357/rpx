@@ -261,13 +261,13 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
     case '@':   // system functions
       switch (*++expr) {
       case 'a': // ANS
-        elem_set(++rsp, &info_c.hist[info_c.histi - 1]);
+        elem_set(++rsp, &info_c.hist[info_c.histi]);
         break;
       case 'd':
         print_complex(rsp->elem.comp);
         break;
       case 'h': // history operation
-        elem_set(rsp, &info_c.hist[info_c.histi - (size_t)rsp->elem.real - 1]);
+        elem_set(rsp, &info_c.hist[info_c.histi - (size_t)rsp->elem.real]);
         break;
       case 'n':
         elem_set(++rsp, &(elem_t){.rtype = RTYPE_COMP, .elem = {.comp = SNAN}});
@@ -316,11 +316,11 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
 
 end:
   if (rsp->rtype == RTYPE_MATR) {
-    elem_t *rhs = &info_c.hist[info_c.histi++];
+    elem_t *rhs = &info_c.hist[++info_c.histi];
     if (rhs->rtype == RTYPE_MATR) nfree(rhs->elem.matr.matrix);
     *rhs = *rsp;
   } else if (info_c.histi < BUFSIZE)
-    info_c.hist[info_c.histi++].elem.comp = rsp->elem.comp;
+    info_c.hist[++info_c.histi].elem.comp = rsp->elem.comp;
   set_rtinfo(info_c);
   return *rsp;
 }

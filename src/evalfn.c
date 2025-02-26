@@ -133,7 +133,7 @@ static void rpx_intfn(machine_t *ei) {
 static void rpx_sysfn(machine_t *ei) {
   switch (*++ei->c.expr) {
   case 'a': // ANS
-    PUSH = ei->e.info.hist[ei->e.info.histi - 1];
+    PUSH = ei->e.info.hist[ei->e.info.histi];
     break;
   case 'd': // display
     printany(ei->s.rsp->elem.real);
@@ -141,7 +141,7 @@ static void rpx_sysfn(machine_t *ei) {
     break;
   case 'h':
     ei->s.rsp->elem.real
-      = ei->e.info.hist[ei->e.info.histi - (size_t)ei->s.rsp->elem.real - 1]
+      = ei->e.info.hist[ei->e.info.histi - (size_t)ei->s.rsp->elem.real]
           .elem.real;
     break;
   case 'n':
@@ -354,10 +354,11 @@ void (*get_eval_table(char c))(machine_t *) {
 }
 
 [[gnu::nonnull]] void init_evalinfo(machine_t *restrict ret) {
-  ret->s.rbp = ret->s.rsp = ret->s.payload - 1;
+  ret->s.rbp = ret->s.rsp = ret->s.payload;
   ret->e.info             = get_rrtinfo();
   ret->e.iscontinue       = true;
-  ret->d.callstacki       = ~(typeof(ret->d.callstacki))0;
+  ret->d.argci            = ~(unsigned)0;
+  ret->d.callstacki       = ~(unsigned)0;
   memset(ret->d.argc, 0, sizeof ret->d.argc);
 }
 
@@ -371,7 +372,7 @@ void (*get_eval_table(char c))(machine_t *) {
   init_evalinfo(&ei);
   ei.c.expr = a_expr;
   rpx_eval(&ei);
-  if (ei.e.info.histi < BUFSIZE) ei.e.info.hist[ei.e.info.histi++] = *ei.s.rsp;
+  if (ei.e.info.histi < BUFSIZE) ei.e.info.hist[++ei.e.info.histi] = *ei.s.rsp;
   set_rrtinfo(ei.e.info);
   return (elem_t){{ei.s.rsp->elem.real},
                   ei.s.rsp->isnum ? RTYPE_REAL : RTYPE_LAMB};
