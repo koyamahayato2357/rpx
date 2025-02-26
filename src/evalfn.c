@@ -378,23 +378,23 @@ void (*get_eval_table(char c))(machine_t *) {
 }
 
 test (eval_expr_real) {
-  expecteq(11.0, eval_expr_real("5 6 + &x").elem.real);
-  expecteq(22.0, eval_expr_real("$x 2 *").elem.real);
-
   // function
   expecteq("$1$1+", eval_expr_real("{$1$1+}&f").elem.lamb);
   expecteq(10.0, eval_expr_real("5$f!").elem.real);
-
-  // nest group
-  expecteq(33.0, eval_expr_real("4 5 (5 6 (6 7 +) +) +").elem.real);
-
-  // lambda
-  expecteq(8.0, eval_expr_real("4 {$1 2 *}!").elem.real);
-  expecteq(
-    19.0,
-    eval_expr_real("1 5 {$1 3 +}! {5 $1 * {$1 4 -}! {$1 2 /}! $2 +}!").elem.real
-  );
 }
+
+#define eval_expr_real_return_double(expr) eval_expr_real(expr).elem.real
+test_table(
+  eval_real, eval_expr_real_return_double, (double, char const *),
+  {
+    {11.0,                                         "5 6 + &x"}, // write reg
+    {22.0,                                           "$x 2 *"}, // load reg
+    {33.0,                            "4 5 (5 6 (6 7 +) +) +"}, // nest grp
+    { 8.0,                                      "4 {$1 2 *}!"}, // lamb
+    {19.0, "1 5 {$1 3 +}! {5 $1 * {$1 4 -}! {$1 2 /}! $2 +}!"}, // nest lamb
+}
+)
+#undef eval_expr_real_return_double
 
 bench (eval_expr_real) {
   eval_expr_real("1 2 3 4 5 +");

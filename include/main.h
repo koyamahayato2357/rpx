@@ -1,6 +1,7 @@
 //! @file main.h
 
 #pragma once
+#include "chore.h"
 #include <stdio.h>
 #define BUFSIZE 64
 #define OP_CASE_ELEM(tok, op) \
@@ -55,3 +56,4 @@ void print_complex(double complex);
 void print_matrix(matrix_t);
 void print_lambda(char const *);
 void proc_cmds(char const *);
+overloadable void printany(elem_t);

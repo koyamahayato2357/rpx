@@ -3,7 +3,6 @@
 #include "chore.h"
 #include "errcode.h"
 #include "error.h"
-#include "gene.h"
 
 [[nodiscard]] matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
@@ -28,6 +27,10 @@
     if (!eq(lhs->matrix[i], rhs->matrix[i])) return false;
 
   return true;
+}
+
+overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
+  return meq(lhs, rhs);
 }
 
 /**

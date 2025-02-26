@@ -21,6 +21,7 @@
 #include "error.h"
 #include "evalfn.h"
 #include "exproriented.h"
+#include "gene.h"
 #include "graphplot.h"
 #include "mathdef.h"
 #include "optexpr.h"
@@ -426,6 +427,26 @@ void print_elem(elem_t elem) {
     break;
   default:
     [[clang::unlikely]];
+  }
+}
+
+overloadable void printany(elem_t elem) {
+  print_elem(elem);
+}
+
+overloadable bool eq(elem_t lhs, elem_t rhs) {
+  if (lhs.rtype != rhs.rtype) return false;
+  switch (lhs.rtype) {
+  case RTYPE_REAL:
+    return eq(lhs.elem.real, rhs.elem.real);
+  case RTYPE_COMP:
+    return eq(lhs.elem.comp, rhs.elem.comp);
+  case RTYPE_MATR:
+    return eq(&lhs.elem.matr, &rhs.elem.matr);
+  case RTYPE_LAMB:
+    return eq(lhs.elem.lamb, rhs.elem.lamb);
+  default:
+    return false;
   }
 }
 

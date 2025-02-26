@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gene.h"
 #include <complex.h>
 #include <stdlib.h>
 
@@ -21,3 +22,4 @@ matrix_t mmul(matrix_t const *, matrix_t const *);
 double det(matrix_t const *);
 matrix_t inverse_matrix(matrix_t const *);
 void smul(matrix_t *, double complex);
+overloadable bool eq(matrix_t const *, matrix_t const *);
