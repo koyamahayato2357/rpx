@@ -1,12 +1,12 @@
 #pragma once
 
 #include "gene.h"
-#include <complex.h>
+#include "mathdef.h"
 #include <stdlib.h>
 
 #define MAT_INITSIZE 32
 
-typedef double complex *matrix;
+typedef complex *matrix;
 
 typedef struct {
   size_t rows;
@@ -21,5 +21,5 @@ matrix_t msub(matrix_t const *, matrix_t const *);
 matrix_t mmul(matrix_t const *, matrix_t const *);
 double det(matrix_t const *);
 matrix_t inverse_matrix(matrix_t const *);
-void smul(matrix_t *, double complex);
+void smul(matrix_t *, complex);
 overloadable bool eq(matrix_t const *, matrix_t const *);

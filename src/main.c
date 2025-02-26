@@ -6,11 +6,11 @@
  * OVERWRITE: *rsp = val;
  * PREV BASE: val = *rbp;
  *
- * matrix_t:  double complex *
+ * matrix_t:  complex *
  * SNAN:      (double)nan
  * BUFSIZE:   0x100
  * rtype_t:   enum {RTYPE_REAL, RTYPE_COMP, RTYPE_MATR, RTYPE_LAST}
- * result_t:  union {double, double complex, matrix_t}
+ * result_t:  union {double, complex, matrix_t}
  */
 
 #include "main.h"
@@ -460,7 +460,7 @@ void print_real(double result) {
 }
 
 /**
- * @brief Output value of type double complex
+ * @brief Output value of type complex
  * @param[in] result Output value
  */
 void print_complex(complex result) {
@@ -468,7 +468,7 @@ void print_complex(complex result) {
 }
 
 /**
- * @brief Output value of type double complex in phasor view
+ * @brief Output value of type complex in phasor view
  * @param[in] result Output value
  */
 void print_complex_polar(complex result) {

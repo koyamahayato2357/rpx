@@ -13,7 +13,7 @@
 [[nodiscard]] matrix_t new_matrix(size_t rows, size_t cols) {
   return (matrix_t){.rows   = rows,
                     .cols   = cols,
-                    .matrix = palloc(rows * cols * sizeof(double complex))};
+                    .matrix = palloc(rows * cols * sizeof(complex))};
 }
 
 [[gnu::nonnull]] bool mcheckdim(matrix_t const *lhs, matrix_t const *rhs) {
@@ -149,7 +149,7 @@ MOPS(sub, -)
         }
 
       for (size_t k = 0; k < dim; k++) {
-        double complex temp        = A->matrix[i * dim + k];
+        complex temp        = A->matrix[i * dim + k];
         A->matrix[i * dim + k]     = A->matrix[j * dim + k];
         A->matrix[j * dim + k]     = -temp;
         temp                       = result.matrix[i * dim + k];
@@ -159,7 +159,7 @@ MOPS(sub, -)
     }
 
     for (size_t j = (i + 1) % dim; j != i; j = (j + 1) % dim) {
-      double complex coef = A->matrix[j * dim + i] / A->matrix[i * dim + i];
+      complex coef = A->matrix[j * dim + i] / A->matrix[i * dim + i];
       for (size_t k = 0; k < dim; k++) {
         size_t id = (k + i) % dim;
         A->matrix[j * dim + id] -= coef * A->matrix[i * dim + id];
@@ -188,6 +188,6 @@ MOPS(sub, -)
  * @param[in,out] lhs Matrix
  * @param[in] rhs Scalar
  */
-[[gnu::nonnull]] void smul(matrix_t *restrict lhs, double complex rhs) {
+[[gnu::nonnull]] void smul(matrix_t *restrict lhs, complex rhs) {
   for (size_t i = 0; i < lhs->rows * lhs->cols; i++) lhs->matrix[i] *= rhs;
 }
