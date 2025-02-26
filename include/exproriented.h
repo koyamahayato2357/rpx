@@ -1,6 +1,8 @@
 #pragma once
 #include "errcode.h"
 
+#define UNIT 0UL
+
 #define $break         $(break)
 #define $continue      $(continue)
 #define $return(...)   $(return __VA_ARGS__)
@@ -19,10 +21,10 @@
 #define $(statements) \
   ({ \
     statements; \
-    0UL; \
+    UNIT; \
   })
 #define p$(statements) \
   ({ \
     statements; \
-    (void *)0; \
+    (void *)UNIT; \
   })
