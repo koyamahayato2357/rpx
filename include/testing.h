@@ -30,24 +30,30 @@ extern int TESTING_H_fail;
      TESTING_H_success++; \
    } \
    void TESTING_H_tester##name(jmp_buf jb)
+
  #define ARGS_0
- #define ARGS_1                               t->a1
- #define ARGS_2                               ARGS_1, t->a2
- #define ARGS_3                               ARGS_2, t->a3
- #define ARGS_4                               ARGS_3, t->a4
- #define MEM_DEF_1(_1)                        _1 a0;
- #define MEM_DEF_2(_1, _2)                    MEM_DEF_1(_1) _2 a1;
- #define MEM_DEF_3(_1, _2, _3)                MEM_DEF_2(_1, _2) _3 a2;
- #define MEM_DEF_4(_1, _2, _3, _4)            MEM_DEF_3(_1, _2, _3) _4 a3;
- #define MEM_DEF_5(_1, _2, _3, _4, _5)        MEM_DEF_4(_1, _2, _3, _4) _5 a4;
+ #define ARGS_1 t->a1
+ #define ARGS_2 ARGS_1, t->a2
+ #define ARGS_3 ARGS_2, t->a3
+ #define ARGS_4 ARGS_3, t->a4
+
+ #define MEM_DEF_1(_1)                 _1 a0;
+ #define MEM_DEF_2(_1, _2)             MEM_DEF_1(_1) _2 a1;
+ #define MEM_DEF_3(_1, _2, _3)         MEM_DEF_2(_1, _2) _3 a2;
+ #define MEM_DEF_4(_1, _2, _3, _4)     MEM_DEF_3(_1, _2, _3) _4 a3;
+ #define MEM_DEF_5(_1, _2, _3, _4, _5) MEM_DEF_4(_1, _2, _3, _4) _5 a4;
+
  #define GET_M(_1, _2, _3, _4, _5, NAME, ...) NAME
+
  #define DO_FN(fn, ...) \
    fn(GET_M(__VA_ARGS__, ARGS_4, ARGS_3, ARGS_2, ARGS_1, ARGS_0))
+
  #define SIGNATURE(...) \
    struct { \
      GET_M(__VA_ARGS__, MEM_DEF_5, MEM_DEF_4, MEM_DEF_3, MEM_DEF_2, MEM_DEF_1) \
      (__VA_ARGS__) \
    }
+
  #define test_table(name, fn, signature, ...) \
    typedef SIGNATURE signature ds##name; \
    [[gnu::constructor]] void TESTING_H_tabletester##name() { \

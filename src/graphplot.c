@@ -68,6 +68,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
     double y0 = ei.s.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       stack.elem.real = pcfg.xn + pcfg.dx * j + pcfg.dx;
+
       ei.c.expr = expr;
       rpx_eval(&ei);
       double y1 = ei.s.rsp->elem.real;

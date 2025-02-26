@@ -108,7 +108,8 @@ char *findc_r(char c, char *buf, char *cur) {
  */
 bool findmove(char c, int dir, char *buf, char **cur) {
   char *old_cur = *cur;
-  *cur          = $if(dir > 0) findc(*cur, c) $else findc_r(c, buf, *cur);
+
+  *cur = $if(dir > 0) findc(*cur, c) $else findc_r(c, buf, *cur);
   if (*cur == nullptr) {
     *cur = old_cur;
     return false;

@@ -149,7 +149,7 @@ MOPS(sub, -)
         }
 
       for (size_t k = 0; k < dim; k++) {
-        complex temp        = A->matrix[i * dim + k];
+        complex temp               = A->matrix[i * dim + k];
         A->matrix[i * dim + k]     = A->matrix[j * dim + k];
         A->matrix[j * dim + k]     = -temp;
         temp                       = result.matrix[i * dim + k];
