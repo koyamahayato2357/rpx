@@ -372,7 +372,7 @@ void (*get_eval_table(char c))(machine_t *) {
   init_evalinfo(&ei);
   ei.c.expr = a_expr;
   rpx_eval(&ei);
-  if (ei.e.info.histi < BUFSIZE) ei.e.info.hist[++ei.e.info.histi] = *ei.s.rsp;
+  if (++ei.e.info.histi < BUFSIZE) ei.e.info.hist[ei.e.info.histi] = *ei.s.rsp;
   set_rrtinfo(ei.e.info);
   return (elem_t){{ei.s.rsp->elem.real},
                   ei.s.rsp->isnum ? RTYPE_REAL : RTYPE_LAMB};
@@ -393,6 +393,8 @@ test_table(
     {33.0,                            "4 5 (5 6 (6 7 +) +) +"}, // nest grp
     { 8.0,                                      "4 {$1 2 *}!"}, // lamb
     {19.0, "1 5 {$1 3 +}! {5 $1 * {$1 4 -}! {$1 2 /}! $2 +}!"}, // nest lamb
+    {38.0,                                          "@a @a +"}, // ans
+    { 4.0,                                       "1 1 + @p +"}, // prev
 }
 )
 #undef eval_expr_real_return_double
