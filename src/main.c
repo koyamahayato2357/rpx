@@ -325,26 +325,25 @@ end:
   return *rsp;
 }
 
+#define eval_expr_complex_return_complex(expr) eval_expr_complex(expr).elem.comp
+test_table(
+  eval_complex, eval_expr_complex_return_complex, (complex, char const *),
+  {
+    {1.0 + 2.0i,        "1 2i +"},
+    {   1024.0i,        "4i 5 ^"},
+    {      4.0i, "1 1i+(2 2i+)*"},
+}
+)
+test_table(
+  eval_complex_comp, eval_expr_complex_return_complex, (complex, char const *),
+  {
+    {1.2984575814159773 + 0.6349639147847361i, "1 1i+s"},
+    {1.1447298858494002 + 1.5707963267948967i,  "\\Pil"},
+}
+)
+#undef eval_expr_complex_return_complex
+
 test (eval_expr_complex) {
-  [[maybe_unused]] complex result;
-
-  result = eval_expr_complex("1 2i +").elem.comp;
-  expecteq(1.0 + 2.0 * I, result);
-
-  result = eval_expr_complex("4i 5 ^").elem.comp;
-  expecteq(1024.0 * I, result);
-
-  result = eval_expr_complex("1 1i + (2 2i +) *").elem.comp;
-  expecteq(0 + 4.0 * I, result);
-
-  // Test complex trigonometric functions
-  result = eval_expr_complex("1 1i + s").elem.comp;
-  expecteq(1.2984575814159773 + 0.6349639147847361 * I, result);
-
-  // Test complex logarithm
-  result = eval_expr_complex("\\P i l").elem.comp;
-  expecteq(1.1447298858494002 + 1.5707963267948967 * I, result);
-
   matrix_t resultm;
 
   // Test matrix addition
