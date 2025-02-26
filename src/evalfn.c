@@ -239,7 +239,7 @@ static void rpx_runlmd(machine_t *ei) {
 static void rpx_cond(machine_t *ei) {
   ei->s.rsp -= 2;
   real_t *rsp = ei->s.rsp;
-  *rsp        = *(rsp + isnan((rsp + 2)->elem.real));
+  *rsp        = *(rsp + isnan(rsp[2].elem.real));
 }
 
 static void rpx_undfned(machine_t *ei) {
