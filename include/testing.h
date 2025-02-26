@@ -55,17 +55,17 @@ extern int TESTING_H_fail;
    }
 
  #define test_table(name, fn, signature, ...) \
-   typedef SIGNATURE signature ds##name; \
    [[gnu::constructor]] void TESTING_H_tabletester##name() { \
-     ds##name data[]   = __VA_ARGS__; \
-     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8; \
      printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "..."); \
-     fflush(stdout); \
+     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8; \
      for (int TESTING_H_i = 0; TESTING_H_i < TESTING_H_COL; TESTING_H_i++) \
        putchar('\t'); \
      printf(ESTHN "=> "); \
+     fflush(stdout); \
+     typedef SIGNATURE signature ds; \
+     ds data[] = __VA_ARGS__; \
      for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); i++) { \
-       ds##name *t          = data + i; \
+       ds *t                = data + i; \
        typeof(t->a0) result = DO_FN(fn, EXPAND signature); \
        if (!eq(result, t->a0)) { \
          printf("Test case %zu failed: expected ", i); \
