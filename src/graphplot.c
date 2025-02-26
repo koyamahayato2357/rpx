@@ -1,6 +1,7 @@
 #include "graphplot.h"
 #include "evalfn.h"
 #include "sysconf.h"
+#include "testing.h"
 #include <sys/ioctl.h>
 
 #define FONTROW   2
@@ -18,14 +19,26 @@ void init_plotconfig() {
   set_pbounds(1, -1, 1, -1);
 }
 
-bool ispointgraph(double y0, double y1, double y) {
-  plotcfg_t pcfg = get_plotcfg();
-
-  return (y > y0 && y0 > y - pcfg.dy) || (y > y1 && y1 > y - pcfg.dy)
+bool ispointgraph(double y0, double y1, double y, double dy) {
+  return (y > y0 && y0 > y - dy) || (y > y1 && y1 > y - dy)
       || (y0 > y && y > y1) || (y1 > y && y > y0)
-      || (y0 > y - pcfg.dy && y - pcfg.dy > y1)
-      || (y1 > y - pcfg.dy && y - pcfg.dy > y0);
+      || (y0 > y - dy && y - dy > y1) || (y1 > y - dy && y - dy > y0);
 }
+
+test_table(
+  ispoint, ispointgraph, (bool, double, double, double, double),
+  {
+    //        y0    y1    y   dy
+    { true,  0.0,  1.0, 0.5, 1.0},
+    { true,  0.0,  0.0, 0.5, 1.0},
+    { true,  0.0, 10.0, 5.0, 0.5},
+    { true,  1.0,  0.0, 0.5, 0.5},
+    {false,  0.0,  0.0, 0.5, 0.5},
+    {false, -1.0,  0.0, 0.5, 0.5},
+    {false,  0.0,  0.0, 0.0, 0.5},
+    {false,  1.0,  0.0, 5.0, 0.5},
+}
+)
 
 static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   putchar('\t');
@@ -59,7 +72,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
       ei.c.expr = expr;
       rpx_eval(&ei);
       double y1 = ei.s.rsp->elem.real;
-      putchar(ispointgraph(y0, y1, y) ? '*' : ' ');
+      putchar(ispointgraph(y0, y1, y, pcfg.dy) ? '*' : ' ');
       fflush(stdout);
       y0 = y1;
     }
@@ -96,7 +109,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
       ei.c.expr = expr;
       rpx_eval(&ei);
       double res1 = ei.s.rsp->elem.real;
-      putchar(ispointgraph(res0, res1, 0) ? '*' : ' ');
+      putchar(ispointgraph(res0, res1, 0, pcfg.dy) ? '*' : ' ');
       res0 = res1;
     }
 
