@@ -79,27 +79,6 @@ test (deletes) {
 }
 
 /**
- * @brief Find character from a string
- * @param[in] s String
- * @param[in] c Character to look for
- * @return Pointer to the location found
- */
-inline char *findc(char *s, char c) {
-  return strchr(s, c);
-}
-
-/**
- * @brief Find character from a string in opposite direction
- * @param[in] c Character to look for
- * @param[in] buf Start of line
- * @param[in] cur Cursor pointer
- * @return Pointer to the location found
- */
-char *findc_r(char c, char *buf, char *cur) {
-  return memrchr(buf, c, (size_t)(cur - buf));
-}
-
-/**
  * @brief Find character and move there
  * @param[in] c Character to look for
  * @param[in] dir Search direction
@@ -109,7 +88,7 @@ char *findc_r(char c, char *buf, char *cur) {
 bool findmove(char c, int dir, char *buf, char **cur) {
   char *old_cur = *cur;
 
-  *cur = $if(dir > 0) findc(*cur, c) $else findc_r(c, buf, *cur);
+  *cur = $if(dir > 0) strchr(*cur, c) $else memrchr(buf, c, (size_t)(*cur - buf));
   if (*cur == nullptr) {
     *cur = old_cur;
     return false;
@@ -195,7 +174,7 @@ test (bwdw) {
  * @param[in] len End of line
  */
 void fwdW(char **cur, char *len) {
-  *cur = findc(*cur, ' ') ?: len;
+  *cur = strchr(*cur, ' ') ?: len;
   skipspcs((char const **)cur);
 }
 
@@ -377,7 +356,7 @@ void insbind(char c, char *buf, char **cur, char **len) {
     break;
 
   case ')':
-    *cur = 1 + (findc(*cur, ')') ?: p$(goto dflt));
+    *cur = 1 + (strchr(*cur, ')') ?: p$(goto dflt));
     break;
 
   case '[':
@@ -385,7 +364,7 @@ void insbind(char c, char *buf, char **cur, char **len) {
     break;
 
   case ']': {
-    *cur = 1 + (findc(*cur, ']') ?: p$(goto dflt));
+    *cur = 1 + (strchr(*cur, ']') ?: p$(goto dflt));
     break;
   }
 
