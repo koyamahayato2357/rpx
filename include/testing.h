@@ -62,20 +62,19 @@ extern int TESTING_H_fail;
        putchar('\t'); \
      printf(ESTHN "=> "); \
      fflush(stdout); \
-     typedef SIGNATURE signature ds; \
-     ds data[] = __VA_ARGS__; \
+     typedef SIGNATURE signature sig_t; \
+     sig_t data[] = __VA_ARGS__; \
      for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); i++) { \
-       ds *t                = data + i; \
-       typeof(t->a0) result = DO_FN(fn, EXPAND signature); \
-       if (!eq(result, t->a0)) { \
-         printf("Test case %zu failed: expected ", i); \
-         printany(t->a0); \
-         printf(" found "); \
-         printany(result); \
-         puts(" " ESCRED "[NG]" ESCLR); \
-         TESTING_H_fail++; \
-         return; \
-       } \
+       sig_t *t        = data + i; \
+       typeof(t->a0) r = DO_FN(fn, EXPAND signature); \
+       if (eq(r, t->a0)) continue; \
+       printf("Test case %zu failed: expected ", i); \
+       printany(t->a0); \
+       printf(" found "); \
+       printany(r); \
+       puts(" " ESCRED "[NG]" ESCLR); \
+       TESTING_H_fail++; \
+       return; \
      } \
      puts(ESCGRN "[OK]" ESCLR); \
      TESTING_H_success++; \
