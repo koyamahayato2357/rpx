@@ -167,14 +167,14 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
     if (*expr == '[') {
       (++rsp)->rtype = RTYPE_MATR;
       expr++;
-      matrix_t val   = {.matrix = palloc(MAT_INITSIZE * sizeof(complex))};
+      matrix_t val = {.matrix = palloc(MAT_INITSIZE * sizeof(complex))};
       matrix curelem = val.matrix;
-      val.cols       = (size_t)strtol(expr, (char **)&expr, 10);
+      val.cols = (size_t)strtol(expr, (char **)&expr, 10);
       for (; *expr != ']';) {
         *curelem++ = eval_expr_complex(expr).elem.comp;
         skip_untilcomma(&expr);
       }
-      val.rows       = (size_t)(curelem - val.matrix) / val.cols;
+      val.rows = (size_t)(curelem - val.matrix) / val.cols;
       rsp->elem.matr = val;
       continue;
     }
@@ -184,7 +184,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
     switch (*expr) {
     case '(':
       *(long *)&(++rsp)->elem.real = rbp - operand_stack;
-      rbp                          = rsp;
+      rbp = rsp;
       break;
     case ')':
       rbp = operand_stack + *(long *)&rbp->elem.real;
@@ -203,7 +203,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       OVERWRITE_COMP('t', tan)
 
     case '~': {
-      _ drop         = rsp->elem.matr.matrix;
+      _ drop = rsp->elem.matr.matrix;
       rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
     } break;
     case '=':
@@ -237,7 +237,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       break;
 
     case 'L': { // log with base
-      double x       = creal((rsp--)->elem.comp);
+      double x = creal((rsp--)->elem.comp);
       rsp->elem.comp = log(rsp->elem.comp) / log(x);
     } break;
     case 'r': // to radian
@@ -356,7 +356,7 @@ test (eval_expr_complex) {
 
   // Test matrix multiplication
   char const *expr = "[2 1,2,3,4,][2 5,6,7,8,]*";
-  resultm          = eval_expr_complex(expr).elem.matr;
+  resultm = eval_expr_complex(expr).elem.matr;
   expecteq(2, resultm.rows);
   expecteq(2, resultm.cols);
   expecteq(19.0, resultm.matrix[0]);
@@ -366,7 +366,7 @@ test (eval_expr_complex) {
   free(resultm.matrix);
 
   // Test matrix inverse
-  expr    = "[2 1,2,3,4,]~";
+  expr = "[2 1,2,3,4,]~";
   resultm = eval_expr_complex(expr).elem.matr;
   expecteq(2, resultm.rows);
   expecteq(2, resultm.cols);
@@ -377,7 +377,7 @@ test (eval_expr_complex) {
   free(resultm.matrix);
 
   // Scalar multiplication
-  expr    = "[3 5,6,7,] 5 *";
+  expr = "[3 5,6,7,] 5 *";
   resultm = eval_expr_complex(expr).elem.matr;
   expecteq(1, resultm.rows);
   expecteq(3, resultm.cols);

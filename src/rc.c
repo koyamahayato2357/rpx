@@ -9,8 +9,8 @@
   char const *specified_cfgpath, size_t len, char *restrict cfgpath
 ) {
   char const *configdir = specified_cfgpath ?: "/.config/rpx/";
-  char const *homedir   = getenv("HOME") ?: ".";
-  size_t const hdlen    = strlen(homedir);
+  char const *homedir = getenv("HOME") ?: ".";
+  size_t const hdlen = strlen(homedir);
 
   strncpy(cfgpath, homedir, len);
   strncpy(cfgpath + hdlen, configdir, len - hdlen);

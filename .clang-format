@@ -1,6 +1,6 @@
 AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Right
-AlignConsecutiveAssignments: true
+AlignConsecutiveAssignments: false
 AlignConsecutiveMacros: true
 AlignConsecutiveShortCaseStatements:
   Enabled: true

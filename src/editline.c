@@ -41,8 +41,8 @@ void movecur(int n, char *buf, char **cur, char *len) {
 
 test (movecur) {
   char buf[256] = "sample text.";
-  char *cur     = buf;
-  char *len     = buf + strlen(buf);
+  char *cur = buf;
+  char *len = buf + strlen(buf);
 
   movecur(1, buf, &cur, len);
   expecteq(buf + 1, cur);
@@ -69,10 +69,10 @@ test (movecur) {
 }
 
 test (deletes) {
-  char str[]  = "sample text.";
-  char *len   = str + strlen(str);
+  char str[] = "sample text.";
+  char *len = str + strlen(str);
   char *begin = str;
-  char *end   = str + 7;
+  char *end = str + 7;
 
   deletes(begin, end, &len);
   expecteq("text.", (char *)str);
@@ -119,7 +119,7 @@ bool findmove(char c, int dir, char *buf, char **cur) {
 
 test (findmove) {
   char buf[256] = "sample text.";
-  char *cur     = buf;
+  char *cur = buf;
 
   expect(findmove(' ', 1, buf, &cur));
   expecteq(' ', *cur);
@@ -153,8 +153,8 @@ void fwdw(char **cur, char *len) {
 
 test (fwdw) {
   char buf[] = "sample text.";
-  char *cur  = buf;
-  char *len  = buf + strlen(buf);
+  char *cur = buf;
+  char *len = buf + strlen(buf);
 
   fwdw(&cur, len);
   expecteq(buf + 7, cur);
@@ -181,7 +181,7 @@ void bwdw(char *buf, char **cur) {
 
 test (bwdw) {
   char buf[] = "sample text.";
-  char *cur  = buf + strlen(buf);
+  char *cur = buf + strlen(buf);
 
   bwdw(buf, &cur);
   expecteq(buf + 11, cur);
@@ -201,8 +201,8 @@ void fwdW(char **cur, char *len) {
 
 test (fwdW) {
   char buf[] = "sample text.";
-  char *cur  = buf;
-  char *len  = buf + strlen(buf);
+  char *cur = buf;
+  char *len = buf + strlen(buf);
 
   fwdW(&cur, len);
   expecteq('t', *cur);
@@ -224,7 +224,7 @@ void bwdW(char *buf, char **cur) {
 
 test (bwdW) {
   char buf[] = "sample text.";
-  char *cur  = buf + strlen(buf);
+  char *cur = buf + strlen(buf);
 
   bwdW(buf, &cur);
   expecteq('t', *cur);
@@ -304,7 +304,7 @@ void handle_txtobj(
   default:
     disperr(__FUNCTION__, "unknown char: %c", txtobj);
     *begin = nullptr;
-    *end   = nullptr;
+    *end = nullptr;
     break;
   }
 }
@@ -319,7 +319,7 @@ void handle_txtobj(
 [[gnu::nonnull]] void insertc(char c, char **cur, char **len) {
   if (*cur != *len) memmove(*cur + 1, *cur, (size_t)(*len - *cur));
   *(*cur)++ = c;
-  *++*len   = '\0';
+  *++*len = '\0';
 }
 
 /**
@@ -347,8 +347,8 @@ void inserts(
 
 test (inserts) {
   char buf[256] = "sample text.";
-  char *len     = buf + strlen(buf);
-  char *cur     = len - 1;
+  char *len = buf + strlen(buf);
+  char *cur = len - 1;
 
   char str1[] = "new string";
   inserts(strlen(str1), str1, 0, &cur, &len, (size_t)(buf + 256 - len));
@@ -455,7 +455,7 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
     handle_printable = insbind;
     [[fallthrough]];
   case 'd': {
-    char *end  = *cur;
+    char *end = *cur;
     char input = getchar();
     char *dst, *src;
     if (input == 'i' || input == 'a') {
@@ -468,14 +468,14 @@ void nrmbind(char c, char *buf, char **cur, char **len) {
 
     if (!dst || !src) break;
     deletes(dst, src, len);
-    *cur  = dst;
+    *cur = dst;
     **len = '\0';
   } break;
   case 'C':
     handle_printable = insbind;
     [[fallthrough]];
   case 'D':
-    *len  = *cur;
+    *len = *cur;
     **len = '\0';
     break;
   case 'r':

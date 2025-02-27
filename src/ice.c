@@ -2,10 +2,10 @@
  #include "ice.h"
 
 ic_t ic_conf = {
-  .enable  = true,
+  .enable = true,
   .context = false,
-  .prefix  = nullptr,
-  .fp      = nullptr,
+  .prefix = nullptr,
+  .fp = nullptr,
 };
 
  #ifdef TEST_MODE_ALL
@@ -16,8 +16,8 @@ test (ice) {
   ic(0);
   ic_conf.enable = false;
   ic();
-  ic_conf.enable  = true;
-  _               = ic(42);
+  ic_conf.enable = true;
+  _ = ic(42);
   ic_conf.context = true;
   ic("hello world!");
   ic();

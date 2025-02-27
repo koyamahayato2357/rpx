@@ -46,7 +46,7 @@ static void rpx_eql(machine_t *ei) {
          && eq(ei->s.rsp[-1].elem.real, ei->s.rsp->elem.real);
        POP);
   ei->s.rbp[1].elem.real = ei->s.rbp + 1 == ei->s.rsp ?: SNAN;
-  ei->s.rsp              = ei->s.rbp + 1;
+  ei->s.rsp = ei->s.rbp + 1;
 }
 
 #define DEF_LTGT(tok, op) \
@@ -55,7 +55,7 @@ static void rpx_eql(machine_t *ei) {
            && ei->s.rsp[-1].elem.real op ei->s.rsp->elem.real; \
          POP); \
     ei->s.rbp[1].elem.real = ei->s.rbp + 1 == ei->s.rsp ?: SNAN; \
-    ei->s.rsp              = ei->s.rbp + 1; \
+    ei->s.rsp = ei->s.rbp + 1; \
   }
 APPLY_LTGT(DEF_LTGT)
 
@@ -95,7 +95,7 @@ DEF_TWOCHARFN(arc, 's', asin, 'c', acos, 't', atan)
 DEF_TWOCHARFN(log, '2', log2, 'c', log10, 'e', log)
 
 static void rpx_logbase(machine_t *ei) {
-  double x             = POP.elem.real;
+  double x = POP.elem.real;
   ei->s.rsp->elem.real = log(ei->s.rsp->elem.real) / log(x);
 }
 
@@ -105,7 +105,7 @@ static void rpx_const(machine_t *ei) {
 
 static void rpx_parse(machine_t *ei) {
   char *next = nullptr;
-  PUSH       = SET_REAL(strtod(ei->c.expr, &next));
+  PUSH = SET_REAL(strtod(ei->c.expr, &next));
   ei->c.expr = next - 1;
 }
 
@@ -116,7 +116,7 @@ static void rpx_space(machine_t *ei) {
 
 #define CASE_TWOARGFN(c, f) \
   case c: { \
-    double x             = ei->s.rsp->elem.real; \
+    double x = ei->s.rsp->elem.real; \
     ei->s.rsp->elem.real = f(ei->s.rsp->elem.real, x); \
   } break;
 static void rpx_intfn(machine_t *ei) {
@@ -184,14 +184,14 @@ static void rpx_end(machine_t *ei) {
 
 static void rpx_grpbgn(machine_t *ei) {
   PUSH.elem.lamb = (char *)ei->s.rbp;
-  ei->s.rbp      = ei->s.rsp;
+  ei->s.rbp = ei->s.rsp;
 }
 
 static void rpx_grpend(machine_t *ei) {
   real_t *rbp = ei->s.rbp;
-  ei->s.rbp   = *(real_t **)ei->s.rbp;
-  *rbp        = *ei->s.rsp;
-  ei->s.rsp   = rbp;
+  ei->s.rbp = *(real_t **)ei->s.rbp;
+  *rbp = *ei->s.rsp;
+  ei->s.rsp = rbp;
 }
 
 static void rpx_lmdbgn(machine_t *ei) {
@@ -213,15 +213,15 @@ static void rpx_lmdend(machine_t *ei) {
 
 static void call_fn(machine_t *ei) {
   ei->d.callstack[++ei->d.callstacki] = ei->e.args;
-  ei->e.args                          = ei->s.rsp - 8;
-  ei->d.argc[++ei->d.argci]           = 0;
+  ei->e.args = ei->s.rsp - 8;
+  ei->d.argc[++ei->d.argci] = 0;
   rpx_grpbgn(ei);
 }
 
 static void ret_fn(machine_t *ei) {
   rpx_grpend(ei);
   real_t ret = *ei->s.rsp;
-  ei->s.rsp  = ei->e.args + 8;
+  ei->s.rsp = ei->e.args + 8;
   ei->s.rsp -= ei->d.argc[ei->d.argci--];
   *ei->s.rsp = ret;
   ei->e.args = ei->d.callstack[ei->d.callstacki--];
@@ -239,7 +239,7 @@ static void rpx_runlmd(machine_t *ei) {
 static void rpx_cond(machine_t *ei) {
   ei->s.rsp -= 2;
   real_t *rsp = ei->s.rsp;
-  *rsp        = *(rsp + isnan(rsp[2].elem.real));
+  *rsp = *(rsp + isnan(rsp[2].elem.real));
 }
 
 static void rpx_undfned(machine_t *ei) {
@@ -355,10 +355,10 @@ void (*get_eval_table(char c))(machine_t *) {
 
 [[gnu::nonnull]] void init_evalinfo(machine_t *restrict ret) {
   ret->s.rbp = ret->s.rsp = ret->s.payload;
-  ret->e.info             = get_rrtinfo();
-  ret->e.iscontinue       = true;
-  ret->d.argci            = 0;
-  ret->d.callstacki       = ~(unsigned)0;
+  ret->e.info = get_rrtinfo();
+  ret->e.iscontinue = true;
+  ret->d.argci = 0;
+  ret->d.callstacki = ~(unsigned)0;
   memset(ret->d.argc, 0, sizeof ret->d.argc);
 }
 

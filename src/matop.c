@@ -11,8 +11,8 @@
 }
 
 [[nodiscard]] matrix_t new_matrix(size_t rows, size_t cols) {
-  return (matrix_t){.rows   = rows,
-                    .cols   = cols,
+  return (matrix_t){.rows = rows,
+                    .cols = cols,
                     .matrix = palloc(rows * cols * sizeof(complex))};
 }
 
@@ -95,7 +95,7 @@ MOPS(sub, -)
     disperr(__FUNCTION__, "not a square matrix");
 
   double result = 1;
-  size_t dim    = A->rows;
+  size_t dim = A->rows;
   for (size_t i = 0; i < dim - 1; i++)
     for (size_t j = 0; j < dim - 1; j++) {
       for (size_t k = 1; !A->matrix[dim * i + i]; k++) {
@@ -103,8 +103,8 @@ MOPS(sub, -)
           if (k >= dim) [[clang::unlikely]] // case of singular matrix
             return 0;
 
-          double temp                  = creal(A->matrix[dim * i + l]);
-          A->matrix[dim * i + l]       = A->matrix[dim * (i + k) + l];
+          double temp = creal(A->matrix[dim * i + l]);
+          A->matrix[dim * i + l] = A->matrix[dim * (i + k) + l];
           A->matrix[dim * (i + k) + l] = -temp;
         }
       }
@@ -149,10 +149,10 @@ MOPS(sub, -)
         }
 
       for (size_t k = 0; k < dim; k++) {
-        complex temp               = A->matrix[i * dim + k];
-        A->matrix[i * dim + k]     = A->matrix[j * dim + k];
-        A->matrix[j * dim + k]     = -temp;
-        temp                       = result.matrix[i * dim + k];
+        complex temp = A->matrix[i * dim + k];
+        A->matrix[i * dim + k] = A->matrix[j * dim + k];
+        A->matrix[j * dim + k] = -temp;
+        temp = result.matrix[i * dim + k];
         result.matrix[i * dim + k] = result.matrix[j * dim + k];
         result.matrix[j * dim + k] = -temp;
       }

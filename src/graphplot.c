@@ -10,11 +10,11 @@
 
 void init_plotconfig() {
   struct winsize w = get_winsz();
-  int dispsz       = (int)lesser((double)w.ws_row, w.ws_col * FONTRATIO);
+  int dispsz = (int)lesser((double)w.ws_row, w.ws_col * FONTRATIO);
 
   plotcfg_t pcfg = get_plotcfg();
   pcfg.dispx = pcfg.dispy = dispsz - 5;
-  pcfg.plotexpr           = plotexpr;
+  pcfg.plotexpr = plotexpr;
   set_plotcfg(pcfg);
   set_pbounds(1, -1, 1, -1);
 }
@@ -59,7 +59,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   for (int i = 0; i < pcfg.dispy; i++) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
-    double x0    = pcfg.xn - pcfg.dx;
+    double x0 = pcfg.xn - pcfg.dx;
     real_t stack = (real_t){.elem = {.real = x0}, .isnum = true};
     init_evalinfo(&ei);
     ei.e.args = &stack - 7;
@@ -91,8 +91,8 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   for (int i = 0; i < pcfg.dispy; i++) {
     double y = pcfg.yx - pcfg.dy * i;
     printf("%.3lf\t|", y);
-    double x0       = pcfg.xn - pcfg.dx;
-    double y1       = pcfg.yx - pcfg.dy * (i - 1);
+    double x0 = pcfg.xn - pcfg.dx;
+    double y1 = pcfg.yx - pcfg.dy * (i - 1);
     real_t stack[2] = {
       (real_t){.elem = {.real = y0}, .isnum = true},
       (real_t){.elem = {.real = x0}, .isnum = true},
@@ -104,8 +104,8 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
     double res0 = ei.s.rsp->elem.real;
     for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
       double x1 = pcfg.xn + pcfg.dx * (j + 1);
-      stack[0]  = (real_t){.elem = {.real = y1}, .isnum = true};
-      stack[1]  = (real_t){.elem = {.real = x1}, .isnum = true};
+      stack[0] = (real_t){.elem = {.real = y1}, .isnum = true};
+      stack[1] = (real_t){.elem = {.real = x1}, .isnum = true};
       ei.c.expr = expr;
       rpx_eval(&ei);
       double res1 = ei.s.rsp->elem.real;

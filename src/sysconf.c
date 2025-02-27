@@ -2,7 +2,7 @@
 
 plotcfg_t pcfg;
 rrtinfo_t info_r = (rrtinfo_t){.histi = ~0UL};
-rtinfo_t info_c  = (rtinfo_t){.histi = ~0UL};
+rtinfo_t info_c = (rtinfo_t){.histi = ~0UL};
 
 plotcfg_t get_plotcfg() {
   return pcfg;

@@ -4,8 +4,8 @@
 double gcd(double n, double m) {
   while (m != 0) {
     double temp = n;
-    n           = m;
-    m           = fmod(temp, m);
+    n = m;
+    m = fmod(temp, m);
   }
   return fabs(n);
 }

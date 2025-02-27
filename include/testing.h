@@ -65,7 +65,7 @@ extern int TESTING_H_fail;
      typedef SIGNATURE signature sig_t; \
      sig_t data[] = __VA_ARGS__; \
      for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); i++) { \
-       sig_t *t        = data + i; \
+       sig_t *t = data + i; \
        typeof(t->a0) r = DO_FN(fn, EXPAND signature); \
        if (eq(r, t->a0)) continue; \
        printf("Test case %zu failed: expected ", i); \
