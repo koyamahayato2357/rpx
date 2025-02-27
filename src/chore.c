@@ -22,19 +22,14 @@ struct winsize get_winsz() {
  * @return Is decimal part 0
  */
 inline bool isint(double arg) {
-  // forced to implement this way to suppress type warnings
-  long unsigned x = *(long unsigned *)&arg;
-  long unsigned mantissa = (x & 0x00'0f'ff'ff'ff'ff'ff'ff);
-  short unsigned expo = (x >> 52) & 0x7ff;
-  return expo > 1023
-      && !((mantissa << (expo - 1023)) & 0x00'0f'ff'ff'ff'ff'ff'ff);
+  return arg == (double)(long)arg;
 }
 
 /**
  * @brief Skip pointer to first non-white-space char
  */
 [[gnu::nonnull]] void skipspcs(char const **restrict str) {
-  for (; isspace(**str); (*str)++);
+  while (isspace(**str)) (*str)++;
 }
 
 /**
