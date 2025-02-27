@@ -92,7 +92,7 @@ APPLY_ADDSUB(MOPS)
  */
 [[gnu::nonnull]] double det(matrix_t const *restrict A) {
   if (A->rows != A->cols) [[clang::unlikely]]
-    disperr(__FUNCTION__, "not a square matrix");
+    disperr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
 
   double result = 1;
   size_t dim = A->rows;
