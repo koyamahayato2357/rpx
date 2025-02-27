@@ -3,6 +3,7 @@
 #include "chore.h"
 #include "errcode.h"
 #include "error.h"
+#include "gene.h"
 
 [[nodiscard]] matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
@@ -58,8 +59,7 @@ overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
 \
     return result; \
   }
-MOPS(add, +)
-MOPS(sub, -)
+APPLY_ADDSUB(MOPS)
 
 /**
  * @brief Mul between matrices
