@@ -26,7 +26,7 @@ CC3 := $(shell command -v clang)
 
 # if CC is not defined
 ifeq ($(origin $(CC)),undefined)
-  CC := $(or $(CC1),$(CC2),$(CC3))
+  CC := $(or $(CC1),$(CC2),$(CC3),$(CC))
 endif
 # e.g.) disable ccache
 # $ make CCACHE=
