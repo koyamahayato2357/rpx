@@ -20,9 +20,13 @@ endif
 
 OPTLEVEL ?= g
 
+CC1 := $(shell command -v clang-20)
+CC2 := $(if $(shell command -v zig),zig cc,)
+CC3 := $(shell command -v clang)
+
 # if CC is not defined
 ifeq ($(origin $(CC)),undefined)
-  CC := $(if $(shell command -v clang-20),clang-20,clang)
+  CC := $(or $(CC1),$(CC2),$(CC3))
 endif
 # e.g.) disable ccache
 # $ make CCACHE=
