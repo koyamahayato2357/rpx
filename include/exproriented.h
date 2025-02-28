@@ -3,6 +3,8 @@
 
 #define UNIT 0UL
 
+#define orelse ?:
+
 #define $break         $(break)
 #define $continue      $(continue)
 #define $return(...)   $(return __VA_ARGS__)
