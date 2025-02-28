@@ -4,13 +4,13 @@
 #include "testing.h"
 #include <sys/ioctl.h>
 
-#define FONTROW   2
-#define FONTCOL   1
-#define FONTRATIO ((double)FONTCOL / FONTROW)
+constexpr double fontrow = 2;
+constexpr double fontcol = 1;
+constexpr double fontratio = fontcol / fontrow;
 
 void init_plotconfig() {
   struct winsize w = get_winsz();
-  int dispsz = (int)lesser((double)w.ws_row, w.ws_col * FONTRATIO);
+  int dispsz = (int)lesser((double)w.ws_row, w.ws_col * fontratio);
 
   plotcfg_t pcfg = get_plotcfg();
   pcfg.dispx = pcfg.dispy = dispsz - 5;
@@ -43,12 +43,12 @@ test_table(
 static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   putchar('\t');
   putchar('+');
-  for (int i = 0; i < dsplysz / FONTRATIO; i++) putchar('-');
+  for (int i = 0; i < dsplysz / fontratio; i++) putchar('-');
   putchar('\n');
   putchar('\t');
   printf("%.3lf", xn);
-  for (int i = 0; i < dsplysz / FONTRATIO / 2; i++) putchar(' ');
-  printf("%.3lf", xn + dx * dsplysz / 2 / FONTRATIO);
+  for (int i = 0; i < dsplysz / fontratio / 2; i++) putchar(' ');
+  printf("%.3lf", xn + dx * dsplysz / 2 / fontratio);
   putchar('\n');
 }
 
@@ -66,7 +66,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
     ei.c.expr = expr;
     rpx_eval(&ei);
     double y0 = ei.s.rsp->elem.real;
-    for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
+    for (int j = 0; j < pcfg.dispx / fontratio; j++) {
       stack.elem.real = pcfg.xn + pcfg.dx * j + pcfg.dx;
 
       ei.c.expr = expr;
@@ -102,7 +102,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
     ei.c.expr = expr;
     rpx_eval(&ei);
     double res0 = ei.s.rsp->elem.real;
-    for (int j = 0; j < pcfg.dispx / FONTRATIO; j++) {
+    for (int j = 0; j < pcfg.dispx / fontratio; j++) {
       double x1 = pcfg.xn + pcfg.dx * (j + 1);
       stack[0] = (real_t){.elem = {.real = y1}, .isnum = true};
       stack[1] = (real_t){.elem = {.real = x1}, .isnum = true};
@@ -130,7 +130,7 @@ void set_pbounds(
   pcfg.yx = yx;
   pcfg.yn = yn;
 
-  pcfg.dx = (xx - xn) / pcfg.dispx * FONTRATIO;
+  pcfg.dx = (xx - xn) / pcfg.dispx * fontratio;
   pcfg.dy = (yx - yn) / pcfg.dispy;
 
   set_plotcfg(pcfg);

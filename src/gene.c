@@ -3,13 +3,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#define EPSILON 1e-5
+constexpr double eps = 1e-5;
 
 static bool double_eq(double a, double b) {
-  return fabs(a - b) < EPSILON;
+  return fabs(a - b) < eps;
 }
 static bool complex_eq(complex a, complex b) {
-  return fabs(creal(a - b)) < EPSILON && fabs(cimag(a - b)) < EPSILON;
+  return fabs(creal(a - b)) < eps && fabs(cimag(a - b)) < eps;
 }
 
 overloadable void printany(int x) {

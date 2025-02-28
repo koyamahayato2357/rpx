@@ -2,7 +2,7 @@
 #include "main.h"
 #include "sysconf.h"
 
-#define ARGN 8
+constexpr size_t ARGN = 8;
 
 typedef struct {
   real_t payload[BUFSIZE];

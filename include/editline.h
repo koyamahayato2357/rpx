@@ -1,9 +1,9 @@
 #pragma once
 #include <stddef.h>
 
-#define ES     '\033'
-#define BS     127
-#define CTRL_D 4
+constexpr char ES = '\033';
+constexpr char BS = 127;
+constexpr char CTRL_D = 4;
 
 void movecur(int, char *, char **, char *);
 bool findmove(char, int, char *, char **);

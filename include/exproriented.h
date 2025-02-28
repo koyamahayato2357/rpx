@@ -1,7 +1,7 @@
 #pragma once
 #include "errcode.h"
 
-#define UNIT 0UL
+constexpr size_t UNIT = 0;
 
 #define orelse ?:
 

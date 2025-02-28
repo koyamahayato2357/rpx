@@ -4,7 +4,7 @@
 #include "mathdef.h"
 #include <stdlib.h>
 
-#define MAT_INITSIZE 32
+constexpr size_t MAT_INITSIZE = 32;
 
 typedef complex *matrix;
 

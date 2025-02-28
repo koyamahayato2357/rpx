@@ -4,7 +4,7 @@
 #include "matop.h"
 #include <stdio.h>
 
-#define BUFSIZE 64
+constexpr size_t BUFSIZE = 64;
 #define OP_CASE_ELEM(tok, op) \
   case *#op: \
     while (rbp + 1 < rsp) elem_##tok(rbp + 1, rsp--); \
