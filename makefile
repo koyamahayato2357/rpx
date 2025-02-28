@@ -21,8 +21,8 @@ endif
 OPTLEVEL ?= g
 
 CC1 := $(shell command -v clang-20)
-CC2 := $(if $(shell command -v zig),zig cc,)
-CC3 := $(shell command -v clang)
+CC2 := $(shell command -v clang)
+CC3 := $(if $(shell command -v zig),zig cc,)
 
 # if CC is not defined
 ifeq ($(origin $(CC)),undefined)
