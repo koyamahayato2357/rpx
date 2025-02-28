@@ -25,6 +25,20 @@ inline bool isint(double arg) {
   return arg == (double)(long)arg;
 }
 
+test_table(
+  isint, isint, (bool, double),
+  {
+    { true,      5.0},
+    { true,    3.000},
+    { true,      100},
+    { true,      -10},
+    {false,      5.6},
+    {false,     10.9},
+    {false, 99.99999},
+    {false,    -10.4}
+}
+)
+
 /**
  * @brief Skip pointer to first non-white-space char
  */
@@ -61,17 +75,3 @@ inline bool isint(double arg) {
 [[gnu::nonnull]] void closedir_cl(DIR **fp) {
   closedir(*fp);
 }
-
-test_table(
-  isint, isint, (bool, double),
-  {
-    { true,      5.0},
-    { true,    3.000},
-    { true,      100},
-    { true,      -10},
-    {false,      5.6},
-    {false,     10.9},
-    {false, 99.99999},
-    {false,    -10.4}
-}
-)
