@@ -6,10 +6,12 @@
 constexpr double eps = 1e-5;
 
 static bool double_eq(double a, double b) {
-  return fabs(a - b) < eps;
+  if (fabs(a) < eps && fabs(b) < eps) return true; // both 0.0
+  if (a < 0 != b < 0) return false;                // mis signed
+  return fabs(a / b - 1.0) < eps;                  // cmp based on ratios
 }
 static bool complex_eq(complex a, complex b) {
-  return fabs(creal(a - b)) < eps && fabs(cimag(a - b)) < eps;
+  return double_eq(creal(a), creal(b)) && double_eq(cimag(a), cimag(b));
 }
 
 overloadable void printany(int x) {
