@@ -26,6 +26,6 @@ double xorsh_0_1() {
 }
 
 [[gnu::constructor(101)]] void __init_xorsh() {
-  xorsh(SET, (uint64_t)time(nullptr));
-  xorsh(SET, xorsh(GEN));
+  xorsh(SET, (uint64_t)clock());
+  xorsh(GEN);
 }
