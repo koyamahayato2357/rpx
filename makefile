@@ -64,15 +64,21 @@ CFLAGS += -DVERSION=\"$(shell git describe --tags --always 2>/dev/null || echo "
 CFLAGS += -DDATE=\"$(shell date -I)\"
 CFLAGS += -DLOGLEVEL=$(LOGLEVEL)
 
+ifdef ASAN
+  CFLAGS += -fsanitize=$(ASAN)
+  LDFLAGS += -fsanitize=$(ASAN)
+endif
+
+ifdef LLVM
+  ASMFLAGS += -emit-llvm
+endif
+
 ifeq ($(TYPE),test)
   CFLAGS += -DTEST_MODE
 else ifeq ($(TYPE),bench)
   CFLAGS += -DBENCHMARK_MODE
-endif
-
-ifdef ASAN
-  CFLAGS += -fsanitize=$(ASAN)
-  LDFLAGS += -fsanitize=$(ASAN)
+else ifeq ($(TYPE),asm)
+  CFLAGS += $(ASMFLAGS)
 endif
 
 ifeq ($(OPTLEVEL),g)
