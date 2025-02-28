@@ -115,7 +115,7 @@ $(TARGETDIR)/%.o: $(SRCDIR)/%.c $(DEPDIR)/%.d | $(TARGETDIR)/
 	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -c -o $@
 
 $(DEPDIR)/%.d: $(SRCDIR)/%.c | $(DEPDIR)/
-	$(CC) $< -I$(INCDIR) $(DEPFLAGS)
+	$(CC) $< -I$(INCDIR) $(CFLAGS) $(DEPFLAGS)
 
 %/:
 	mkdir -p $@
