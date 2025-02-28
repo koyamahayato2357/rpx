@@ -14,7 +14,8 @@ uint64_t xorsh(rand_method_t met, ...) {
   }
   // set seed
   va_list ap;
-  va_start(ap, met);
+  /* C23 does not require the second parameter for va_start. */
+  va_start(ap);
   state = va_arg(ap, uint64_t);
   va_end(ap);
   return 0;
