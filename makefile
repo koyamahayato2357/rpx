@@ -188,6 +188,6 @@ help:
 	@echo 'build files: .build/HASH/{target,dep}/*'
 
 release:
-	$(MAKE) TYPE=test OPTLEVEL=3
+	$(MAKE) run TYPE=test OPTLEVEL=3
 	$(MAKE) lint
 	$(MAKE) OPTLEVEL=3
