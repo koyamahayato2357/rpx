@@ -117,7 +117,7 @@ static void rpx_space(machine_t *ei) {
 
 #define CASE_TWOARGFN(c, f) \
   case c: { \
-    double x = ei->s.rsp->elem.real; \
+    double x = POP.elem.real; \
     ei->s.rsp->elem.real = f(ei->s.rsp->elem.real, x); \
   } break;
 static void rpx_intfn(machine_t *ei) {
