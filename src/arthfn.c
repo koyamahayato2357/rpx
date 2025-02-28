@@ -39,6 +39,24 @@ double permutation(double n, double r) {
   return tgamma(n + 1) / tgamma(n - r + 1);
 }
 
+test_table(
+  P, permutation, (double, double, double),
+  {
+    {       2520,  7, 5},
+    {        504,  9, 3},
+    {164'490'480, 46, 5},
+}
+)
+
 double combination(double n, double r) {
   return tgamma(n + 1) / tgamma(r + 1) / tgamma(n - r + 1);
 }
+
+test_table(
+  C, combination, (double, double, double),
+  {
+    {       21,  7, 5},
+    {       84,  9, 3},
+    {1'370'754, 46, 5},
+}
+)
