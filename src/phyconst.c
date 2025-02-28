@@ -4,7 +4,7 @@
 #include "testing.h"
 #include <ctype.h>
 
-double const consts[ALPN * 2] = {
+static double const consts[ALPN * 2] = {
   0,               // A
   0,               // B
   0,               // C
