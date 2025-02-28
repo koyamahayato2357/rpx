@@ -8,19 +8,19 @@ ic_t ic_conf = {
   .fp = nullptr,
 };
 
- #ifdef TEST_MODE_ALL
-  #include "chore.h"
-  #include "testing.h"
+ #include "chore.h"
+ #include "testing.h"
 test (ice) {
-  putchar('\n');
-  ic(0);
-  ic_conf.enable = false;
-  ic();
-  ic_conf.enable = true;
-  _ = ic(42);
-  ic_conf.context = true;
-  ic("hello world!");
-  ic();
+  test_filter("all") {
+    putchar('\n');
+    ic(0);
+    ic_conf.enable = false;
+    ic();
+    ic_conf.enable = true;
+    _ = ic(42);
+    ic_conf.context = true;
+    ic("hello world!");
+    ic();
+  }
 }
- #endif
 #endif

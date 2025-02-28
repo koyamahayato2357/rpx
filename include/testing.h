@@ -29,7 +29,12 @@ extern int TESTING_H_fail;
      puts(ESCGRN "[OK]" ESCLR); \
      TESTING_H_success++; \
    } \
-   void TESTING_H_tester##name(jmp_buf jb)
+   void TESTING_H_tester##name(jmp_buf jb [[maybe_unused]])
+
+ #ifndef TEST_FILTER
+  #define TEST_FILTER ""
+ #endif
+ #define test_filter(filter) if (strcmp(filter, TEST_FILTER) == 0)
 
  #define ARGS_0
  #define ARGS_1 t->a1
