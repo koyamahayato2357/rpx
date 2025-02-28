@@ -26,18 +26,16 @@
 #include "mathdef.h"
 #include "optexpr.h"
 #include "phyconst.h"
+#include "rand.h"
 #include "rc.h"
 #include "testing.h"
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
-#include <time.h>
 
 auto eval_f = eval_expr_real;
 
 int main(int argc, char const **argv) {
-  srand((unsigned int)time(nullptr));
-
   init_plotconfig();
   load_initscript(nullptr);
 
@@ -277,7 +275,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
         elem_set(rsp, rsp - 1);
         break;
       case 'r':
-        (++rsp)->elem.comp = rand() / (double)RAND_MAX;
+        (++rsp)->elem.comp = xorsh_0_1();
         break;
       case 's': // stack value operation
         elem_set(rsp, rsp - (int)rsp->elem.real - 1);

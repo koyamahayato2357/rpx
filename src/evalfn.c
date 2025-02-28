@@ -6,6 +6,7 @@
 #include "gene.h"
 #include "mathdef.h"
 #include "phyconst.h"
+#include "rand.h"
 #include "testing.h"
 #include <ctype.h>
 #include <string.h>
@@ -152,7 +153,7 @@ static void rpx_sysfn(machine_t *ei) {
     ei->s.rsp++;
     break;
   case 'r':
-    PUSH = SET_REAL(rand() / (double)RAND_MAX);
+    PUSH = SET_REAL(xorsh_0_1());
     break;
   case 's':
     *ei->s.rsp = *(ei->s.rsp - (int)ei->s.rsp->elem.real - 1);
