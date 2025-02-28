@@ -10,6 +10,8 @@
 
 extern int TESTING_H_success;
 extern int TESTING_H_fail;
+
+// zig style testing syntax
  #define test(name) \
    void TESTING_H_tester##name(jmp_buf); \
    [[gnu::constructor]] void TESTING_H_testrunner##name() { \
@@ -42,13 +44,14 @@ extern int TESTING_H_fail;
  #define ARGS_3 ARGS_2, t->a3
  #define ARGS_4 ARGS_3, t->a4
 
- #define MEM_DEF_1(_1)                 _1 a0;
+ #define MEM_DEF_1(_1)                 _1 expected;
  #define MEM_DEF_2(_1, _2)             MEM_DEF_1(_1) _2 a1;
  #define MEM_DEF_3(_1, _2, _3)         MEM_DEF_2(_1, _2) _3 a2;
  #define MEM_DEF_4(_1, _2, _3, _4)     MEM_DEF_3(_1, _2, _3) _4 a3;
  #define MEM_DEF_5(_1, _2, _3, _4, _5) MEM_DEF_4(_1, _2, _3, _4) _5 a4;
 
- #define EXPAND(...)                          __VA_ARGS__
+ #define EXPAND(...) __VA_ARGS__
+
  #define GET_M(_1, _2, _3, _4, _5, NAME, ...) NAME
 
  #define DO_FN(fn, ...) \
@@ -60,6 +63,9 @@ extern int TESTING_H_fail;
      (__VA_ARGS__) \
    }
 
+// if {a, b, c} is passed as a macro parameter, it becomes "{a", "b", "c}", so
+// it must be received as a variable length argument.
+// the max num of fn params is 4, but thats enough, right?
  #define test_table(name, fn, signature, ...) \
    [[gnu::constructor]] void TESTING_H_tabletester##name() { \
      printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "..."); \
@@ -72,10 +78,10 @@ extern int TESTING_H_fail;
      sig_t data[] = __VA_ARGS__; \
      for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); i++) { \
        sig_t *t = data + i; \
-       typeof(t->a0) r = DO_FN(fn, EXPAND signature); \
-       if (eq(r, t->a0)) continue; \
+       typeof(t->expected) r = DO_FN(fn, EXPAND signature); \
+       if (eq(r, t->expected)) continue; \
        printf("Test case %zu failed: expected ", i); \
-       printany(t->a0); \
+       printany(t->expected); \
        printf(" found "); \
        printany(r); \
        puts(" " ESCRED "[NG]" ESCLR); \
@@ -86,6 +92,7 @@ extern int TESTING_H_fail;
      TESTING_H_success++; \
    }
 
+// disable main function somewhere
  #define main main_
 
  #define expect(cond) \
