@@ -27,7 +27,8 @@
 
 struct winsize get_winsz();
 [[gnu::const]] bool isint(double);
-void skipspcs(char const **);
+overloadable void skipspcs(char const **);
+overloadable void skipspcs(char const **, size_t);
 void skip_untilcomma(char const **);
 void *palloc(size_t);
 void free_cl(void *);

@@ -1,7 +1,9 @@
 #include "chore.h"
 #include "exproriented.h"
+#include "mathdef.h"
 #include "testing.h"
 #include <ctype.h>
+#include <limits.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -22,6 +24,8 @@ struct winsize get_winsz() {
  * @return Is decimal part 0
  */
 inline bool isint(double arg) {
+  if (isinf(arg) || isnan(arg)) return false;
+  if (arg < LONG_MIN || (double)LONG_MAX < arg) return false;
   return arg == (double)(long)arg;
 }
 
@@ -42,8 +46,12 @@ test_table(
 /**
  * @brief Skip pointer to first non-white-space char
  */
-[[gnu::nonnull]] void skipspcs(char const **restrict str) {
-  while (isspace(**str)) (*str)++;
+[[gnu::nonnull]] overloadable void skipspcs(char const **restrict str) {
+  [[clang::always_inline]] skipspcs(str, ~0UL);
+}
+[[gnu::nonnull]] overloadable void
+skipspcs(char const **restrict str, size_t len) {
+  for (size_t i = 0; i < len && isspace(**str); i++, (*str)++);
 }
 
 /**
@@ -51,8 +59,8 @@ test_table(
  * @param[in,out] s String pointer
  */
 [[gnu::nonnull]] void skip_untilcomma(char const **restrict s) {
-  *s = strchr(*s, ',') orelse *s + strlen(*s);
-  *s += !!**s;
+  *s = strchr(*s, ',') orelse * s + strlen(*s) - 1;
+  (*s)++;
 }
 
 /**
