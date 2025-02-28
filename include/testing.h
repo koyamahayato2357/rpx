@@ -9,12 +9,13 @@
  #include <string.h>
 
 extern int TESTING_H_success;
-extern int TESTING_H_fail;
+extern int TESTING_H_count;
 
 // zig style testing syntax
  #define test(name) \
    void TESTING_H_tester##name(jmp_buf); \
    [[gnu::constructor]] void TESTING_H_testrunner##name() { \
+     TESTING_H_count++; \
      int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8; \
      jmp_buf jb; \
      printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "..."); \
@@ -25,7 +26,6 @@ extern int TESTING_H_fail;
      if (setjmp(jb) == 0) TESTING_H_tester##name(jb); \
      else { \
        puts(ESCRED "[NG]" ESCLR); \
-       TESTING_H_fail++; \
        return; \
      } \
      puts(ESCGRN "[OK]" ESCLR); \
@@ -68,6 +68,7 @@ extern int TESTING_H_fail;
 // the max num of fn params is 4, but thats enough, right?
  #define test_table(name, fn, signature, ...) \
    [[gnu::constructor]] void TESTING_H_tabletester##name() { \
+     TESTING_H_count++; \
      printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "..."); \
      int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8; \
      for (int TESTING_H_i = 0; TESTING_H_i < TESTING_H_COL; TESTING_H_i++) \
@@ -85,7 +86,6 @@ extern int TESTING_H_fail;
        printf(" found "); \
        printany(r); \
        puts(" " ESCRED "[NG]" ESCLR); \
-       TESTING_H_fail++; \
        return; \
      } \
      puts(ESCGRN "[OK]" ESCLR); \

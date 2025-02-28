@@ -6,12 +6,10 @@ int main() {
 }
  #define main main_
 int TESTING_H_success;
-int TESTING_H_fail;
+int TESTING_H_count;
 [[gnu::destructor]] void TESTING_H_report_test_result() {
   printf(
-    "\n" ESCBLU "Passed" ESCLR ": %d/%d\n",
-    TESTING_H_success,
-    TESTING_H_success + TESTING_H_fail
+    "\n" ESCBLU "Passed" ESCLR ": %d/%d\n", TESTING_H_success, TESTING_H_count
   );
 }
 #endif
