@@ -48,6 +48,7 @@ extern int TESTING_H_fail;
  #define MEM_DEF_4(_1, _2, _3, _4)     MEM_DEF_3(_1, _2, _3) _4 a3;
  #define MEM_DEF_5(_1, _2, _3, _4, _5) MEM_DEF_4(_1, _2, _3, _4) _5 a4;
 
+ #define EXPAND(...)                          __VA_ARGS__
  #define GET_M(_1, _2, _3, _4, _5, NAME, ...) NAME
 
  #define DO_FN(fn, ...) \
@@ -124,6 +125,7 @@ extern int TESTING_H_fail;
 #else
  #define test(name) void TESTING_H_dummy##name(jmp_buf jb [[maybe_unused]])
  #define test_table(...)
+ #define test_filter(filter)
  #define expect(cond)
  #define expecteq(lhs, rhs)
  #define expectneq(lhs, rhs)
