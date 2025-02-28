@@ -542,6 +542,15 @@ void print_matrix(matrix_t result) {
     strncpy(pcfg.prevexpr, cmd, BUFSIZE);
     set_plotcfg(pcfg);
     break;
+  case 'r':   // rand
+    switch (*cmd) {
+    case 's': // set seed
+      uint64_t seed = (uint64_t)eval_expr_real(cmd + 1).elem.real;
+      xorsh(SET, seed);
+      break;
+    default:
+    }
+    break;
   case 's':   // settings
     switch (*cmd) {
     case 'p': // plot
