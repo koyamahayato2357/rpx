@@ -2,6 +2,7 @@
 #include "arthfn.h"
 #include "chore.h"
 #include "testing.h"
+#include <ctype.h>
 
 double const consts[ALPN * 2] = {
   0,               // A
@@ -60,6 +61,8 @@ double const consts[ALPN * 2] = {
 };
 
 double get_const(char idx) {
+  if (!isalpha(idx)) return SNAN;
+  [[clang::likely]];
   return consts[idx - 'A' - (idx >= 'a') * ('a' - 'Z' - 1)];
 }
 
