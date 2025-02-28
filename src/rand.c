@@ -25,7 +25,7 @@ double xorsh_0_1() {
   return (double)xorsh(GEN) / (double)~(uint64_t)0;
 }
 
-[[gnu::constructor]] void __init_xorsh() {
+[[gnu::constructor(101)]] void __init_xorsh() {
   xorsh(SET, (uint64_t)time(nullptr));
   xorsh(SET, xorsh(GEN));
 }
