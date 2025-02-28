@@ -14,7 +14,7 @@ uint64_t xorsh(rand_method_t met, ...) {
   }
   // set seed
   va_list ap;
-  va_start(ap, cmd);
+  va_start(ap, met);
   state = va_arg(ap, uint64_t);
   va_end(ap);
   return 0;
