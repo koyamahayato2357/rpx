@@ -12,9 +12,9 @@
 }
 
 [[nodiscard]] matrix_t new_matrix(size_t rows, size_t cols) {
-  return (matrix_t){.rows = rows,
-                    .cols = cols,
-                    .matrix = palloc(rows * cols * sizeof(complex))};
+  // formatter broken...
+  return (matrix_t
+  ){.rows = rows, .cols = cols, .matrix = zalloc(complex, rows * cols)};
 }
 
 [[gnu::nonnull]] bool mcheckdim(matrix_t const *lhs, matrix_t const *rhs) {
@@ -51,12 +51,9 @@ overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
         rhs->rows, \
         rhs->cols \
       ); \
-\
     matrix_t result = new_matrix(lhs->rows, lhs->cols); \
-\
     for (size_t i = 0; i < lhs->rows * lhs->cols; i++) \
       result.matrix[i] = lhs->matrix[i] op rhs->matrix[i]; \
-\
     return result; \
   }
 APPLY_ADDSUB(MOPS)

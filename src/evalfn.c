@@ -202,7 +202,7 @@ static void rpx_lmdbgn(machine_t *ei) {
     if (ei->c.expr[i] == '{') nest++;
     else if (ei->c.expr[i] == '}' && !--nest) break;
 
-  *++ei->s.rsp = SET_LAMB(palloc(i + 1));
+  *++ei->s.rsp = SET_LAMB(zalloc(char, i + 1));
   memcpy(ei->s.rsp->elem.lamb, ei->c.expr, i);
   ei->s.rsp->elem.lamb[i] = '\0';
   ei->c.expr += i;

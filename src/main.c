@@ -165,7 +165,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
     if (*expr == '[') {
       (++rsp)->rtype = RTYPE_MATR;
       expr++;
-      matrix_t val = {.matrix = palloc(MAT_INITSIZE * sizeof(complex))};
+      matrix_t val = {.matrix = zalloc(complex, MAT_INITSIZE)};
       matrix curelem = val.matrix;
       val.cols = (size_t)strtol(expr, (char **)&expr, 10);
       for (; *expr != ']';) {

@@ -18,6 +18,8 @@
 #define dropdir          ondrop(closedir_cl)
 #define _                auto CAT(_DISCARD_, __COUNTER__) [[maybe_unused]]
 
+// zig style alloc()
+#define zalloc(T, size) ((T *)palloc(size * sizeof(T)))
 #define nfree(p) \
   do { \
     if (p == nullptr) break; \
