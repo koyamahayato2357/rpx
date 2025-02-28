@@ -51,7 +51,7 @@ test_table(
  * @param[in,out] s String pointer
  */
 [[gnu::nonnull]] void skip_untilcomma(char const **restrict s) {
-  *s = strchr(*s, ',') ?: *s + strlen(*s);
+  *s = strchr(*s, ',') orelse *s + strlen(*s);
   *s += !!**s;
 }
 
@@ -60,7 +60,7 @@ test_table(
  * @param[in] sz Memory size
  */
 [[nodiscard, gnu::returns_nonnull]] void *palloc(size_t sz) {
-  return malloc(sz) ?: p$panic(ERR_ALLOCATION_FAILURE);
+  return malloc(sz) orelse p$panic(ERR_ALLOCATION_FAILURE);
 }
 
 /**
