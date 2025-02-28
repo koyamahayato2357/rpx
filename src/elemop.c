@@ -1,5 +1,6 @@
 #include "elemop.h"
 #include "chore.h"
+#include "errcode.h"
 #include "error.h"
 #include "gene.h"
 #include "mathdef.h"
@@ -13,7 +14,6 @@
 [[gnu::nonnull]] void
 elem_set(elem_t *restrict lhs, elem_t const *restrict rhs) {
   if (lhs->rtype == RTYPE_MATR) free(lhs->elem.matr.matrix);
-
   *lhs = *rhs;
 }
 
@@ -27,7 +27,7 @@ elem_set(elem_t *restrict lhs, elem_t const *restrict rhs) {
 
 void elem_add(elem_t *lhs, elem_t const *rhs) {
   if (lhs->rtype != rhs->rtype) {
-    disperr(__FUNCTION__, "type mismatch; abort");
+    disperr(__FUNCTION__, "%s", codetomsg(ERR_TYPE_MISMATCH));
     return;
   }
 
@@ -43,7 +43,7 @@ void elem_add(elem_t *lhs, elem_t const *rhs) {
 
 void elem_sub(elem_t *lhs, elem_t const *rhs) {
   if (lhs->rtype != rhs->rtype) {
-    disperr(__FUNCTION__, "type mismatch; abort");
+    disperr(__FUNCTION__, "%s", codetomsg(ERR_TYPE_MISMATCH));
     return;
   }
 
@@ -91,7 +91,7 @@ void elem_pow(elem_t *lhs, elem_t *rhs) {
     rhs->elem.comp *= -1;
   }
 
-  unsigned long long n = (unsigned long long)creal(rhs->elem.comp);
+  unsigned long n = (unsigned long)creal(rhs->elem.comp);
   matrix_t A dropmatr = new_matrix(lhs->elem.matr.rows, lhs->elem.matr.cols);
   memcpy(A.matrix, lhs->elem.matr.matrix, A.rows * A.cols * sizeof(complex));
   for (size_t i = 1; i < n; i++) {
