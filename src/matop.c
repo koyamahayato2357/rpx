@@ -17,6 +17,10 @@
   ){.rows = rows, .cols = cols, .matrix = zalloc(complex, rows * cols)};
 }
 
+[[gnu::nonnull]] void free_matr(matrix_t *restrict x) {
+  free(x->matrix);
+}
+
 [[gnu::nonnull]] bool mcheckdim(matrix_t const *lhs, matrix_t const *rhs) {
   return lhs->rows == rhs->rows && lhs->cols == rhs->cols;
 }

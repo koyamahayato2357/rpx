@@ -6,11 +6,6 @@
 #include "mathdef.h"
 #include <string.h>
 
-[[gnu::nonnull]] void free_matr(matrix_t *restrict x) {
-  free(x->matrix);
-}
-#define dropmatr [[gnu::cleanup(free_matr)]]
-
 [[gnu::nonnull]] void
 elem_set(elem_t *restrict lhs, elem_t const *restrict rhs) {
   if (lhs->rtype == RTYPE_MATR) free(lhs->elem.matr.matrix);

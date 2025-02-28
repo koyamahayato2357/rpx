@@ -4,6 +4,8 @@
 #include "mathdef.h"
 #include <stdlib.h>
 
+#define dropmatr [[gnu::cleanup(free_matr)]]
+
 constexpr size_t MAT_INITSIZE = 32;
 
 typedef complex *matrix;
@@ -15,6 +17,7 @@ typedef struct {
 } matrix_t;
 
 matrix_t new_matrix(size_t, size_t);
+void free_matr(matrix_t *restrict);
 bool meq(matrix_t const *, matrix_t const *);
 matrix_t madd(matrix_t const *, matrix_t const *);
 matrix_t msub(matrix_t const *, matrix_t const *);
