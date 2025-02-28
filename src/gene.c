@@ -33,7 +33,7 @@ overloadable void printany(bool x) {
   printf(x ? "true" : "false");
 }
 overloadable void printany(char *x) {
-  printf("%s", x);
+  printf("\"%s\"", x);
 }
 overloadable void printany(void *x) {
   printf("%p", x);
