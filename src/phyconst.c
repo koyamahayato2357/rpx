@@ -5,7 +5,7 @@
 #include "testing.h"
 #include <ctype.h>
 
-static double const consts[ALPN * 2] = {
+constexpr static double const consts[ALPN * 2] = {
   0,               // A
   0,               // B
   0,               // C
