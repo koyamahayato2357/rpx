@@ -107,7 +107,7 @@ extern int TESTING_H_count;
    do { \
      if (eq((typeof(rhs))lhs, rhs)) break; \
      printf("Expected "); \
-     printany(lhs); \
+     printany((typeof(rhs))lhs); \
      printf(" found "); \
      printany(rhs); \
      printf(" at " HERE); \
