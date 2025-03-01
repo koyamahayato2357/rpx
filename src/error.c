@@ -6,9 +6,6 @@ disperr(char const *funcname, char const *errmsgfmt, ...) {
   va_list ap;
   va_start(ap);
 
-  // to remove warning that va_list argument is uninitialized
-  _ = va_arg(ap, int);
-
 #ifdef TEST_MODE
   _ = errmsgfmt;
   _ = funcname;
