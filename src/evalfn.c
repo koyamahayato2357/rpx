@@ -46,7 +46,7 @@ static void rpx_eql(machine_t *ei) {
   for (; ei->s.rbp + 1 < ei->s.rsp
          && eq(ei->s.rsp[-1].elem.real, ei->s.rsp->elem.real);
        POP);
-  ei->s.rbp[1].elem.real = ei->s.rbp + 1 == ei->s.rsp ?: SNAN;
+  ei->s.rbp[1].elem.real = ei->s.rbp + 1 == ei->s.rsp ?: NAN;
   ei->s.rsp = ei->s.rbp + 1;
 }
 
@@ -55,7 +55,7 @@ static void rpx_eql(machine_t *ei) {
     for (; ei->s.rbp + 1 < ei->s.rsp \
            && ei->s.rsp[-1].elem.real op ei->s.rsp->elem.real; \
          POP); \
-    ei->s.rbp[1].elem.real = ei->s.rbp + 1 == ei->s.rsp ?: SNAN; \
+    ei->s.rbp[1].elem.real = ei->s.rbp + 1 == ei->s.rsp ?: NAN; \
     ei->s.rsp = ei->s.rbp + 1; \
   }
 APPLY_LTGT(DEF_LTGT)
@@ -146,7 +146,7 @@ static void rpx_sysfn(machine_t *ei) {
           .elem.real;
     break;
   case 'n':
-    PUSH = SET_REAL(SNAN);
+    PUSH = SET_REAL(NAN);
     break;
   case 'p':
     ei->s.rsp[1] = *ei->s.rsp;

@@ -20,6 +20,7 @@
 
 // zig style alloc()
 #define zalloc(T, size) ((T *)palloc(size * sizeof(T)))
+
 #define nfree(p) \
   do { \
     if (p == nullptr) break; \

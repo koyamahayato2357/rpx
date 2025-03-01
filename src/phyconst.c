@@ -1,6 +1,7 @@
 #include "phyconst.h"
 #include "arthfn.h"
 #include "chore.h"
+#include "mathdef.h"
 #include "testing.h"
 #include <ctype.h>
 
@@ -61,7 +62,7 @@ static double const consts[ALPN * 2] = {
 };
 
 double get_const(char idx) {
-  if (!isalpha(idx)) return SNAN;
+  if (!isalpha(idx)) return NAN;
   [[clang::likely]];
   return consts[idx - 'A' - (idx >= 'a') * ('a' - 'Z' - 1)];
 }

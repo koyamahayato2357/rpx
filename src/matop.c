@@ -1,5 +1,4 @@
 #include "matop.h"
-#include "arthfn.h"
 #include "chore.h"
 #include "errcode.h"
 #include "error.h"
@@ -7,7 +6,7 @@
 
 [[nodiscard]] matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
-  for (size_t i = 0; i < rows * cols; i++) result.matrix[i] = SNAN;
+  for (size_t i = 0; i < rows * cols; i++) result.matrix[i] = NAN;
   return result;
 }
 

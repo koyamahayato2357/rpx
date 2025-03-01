@@ -7,7 +7,6 @@
  * PREV BASE: val = *rbp;
  *
  * matrix_t:  complex *
- * SNAN:      (double)nan
  * BUFSIZE:   0x100
  * rtype_t:   enum {RTYPE_REAL, RTYPE_COMP, RTYPE_MATR, RTYPE_LAST}
  * result_t:  union {double, complex, matrix_t}
@@ -268,7 +267,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
         elem_set(rsp, &info_c.hist[info_c.histi - (size_t)rsp->elem.real]);
         break;
       case 'n':
-        elem_set(++rsp, &(elem_t){.rtype = RTYPE_COMP, .elem = {.comp = SNAN}});
+        elem_set(++rsp, &(elem_t){.rtype = RTYPE_COMP, .elem = {.comp = NAN}});
         break;
       case 'p': // prev stack value
         rsp++;
