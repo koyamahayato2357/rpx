@@ -34,10 +34,11 @@ extern int TESTING_H_count;
    void TESTING_H_tester##name(jmp_buf jb [[maybe_unused]])
 
  #ifndef TEST_FILTER
-  #define TEST_FILTER ""
+  #define test_filter(filter) if (0)
+ // zig style `--test-filter`
+ #else
+  #define test_filter(filter) if (strstr(filter, TEST_FILTER))
  #endif
-// zig style `--test-filter`
- #define test_filter(filter) if (strstr(filter, TEST_FILTER))
 
  #define ARGS_0
  #define ARGS_1 t->a1
