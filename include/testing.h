@@ -77,15 +77,21 @@ extern int TESTING_H_count;
      fflush(stdout); \
      typedef SIGNATURE signature sig_t; \
      sig_t data[] = __VA_ARGS__; \
+     int failed = 0; \
      for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); i++) { \
        sig_t *t = data + i; \
        typeof(t->expected) r = DO_FN(fn, EXPAND signature); \
        if (eq(r, t->expected)) continue; \
-       printf("Test case %zu failed: expected ", i); \
+       if (failed == 0) putchar('\n'); \
+       printf("  ├─ Test case %zu failed: expected ", i); \
        printany(t->expected); \
        printf(" found "); \
        printany(r); \
        puts(" " ESCRED "[NG]" ESCLR); \
+       failed++; \
+     } \
+     if (failed) { \
+       printf("  └" ESCRED "[NG:%d]\n" ESCLR, failed); \
        return; \
      } \
      puts(ESCGRN "[OK]" ESCLR); \
