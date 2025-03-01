@@ -1,5 +1,4 @@
 #pragma once
-#include <setjmp.h>
 
 #ifdef TEST_MODE
  #include "ansiesc.h"
@@ -13,30 +12,29 @@ extern int TESTING_H_count;
 
 // zig style testing syntax
  #define test(name) \
-   void TESTING_H_tester##name(jmp_buf); \
+   void TESTING_H_tester##name(int *); \
    [[gnu::constructor]] void TESTING_H_testrunner##name() { \
      TESTING_H_count++; \
      int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8; \
-     jmp_buf jb; \
      printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "..."); \
      fflush(stdout); \
-     for (int TESTING_H_i = 0; TESTING_H_i < TESTING_H_COL; TESTING_H_i++) \
-       putchar('\t'); \
+     for (int i = 0; i < TESTING_H_COL; i++) putchar('\t'); \
      printf(ESTHN "=> "); \
-     if (setjmp(jb) == 0) TESTING_H_tester##name(jb); \
-     else { \
-       puts(ESCRED "[NG]" ESCLR); \
+     int failed = 0; \
+     TESTING_H_tester##name(&failed); \
+     if (failed) { \
+       printf(ESCRED "[NG:%d]\n" ESCLR, failed); \
        return; \
      } \
      puts(ESCGRN "[OK]" ESCLR); \
      TESTING_H_success++; \
    } \
-   void TESTING_H_tester##name(jmp_buf jb [[maybe_unused]])
+   void TESTING_H_tester##name(int *TESTING_H_failed [[maybe_unused]])
 
  #ifndef TEST_FILTER
   #define test_filter(filter) if (0)
- // zig style `--test-filter`
  #else
+  // zig style `--test-filter`
   #define test_filter(filter) if (strstr(filter, TEST_FILTER))
  #endif
 
@@ -99,36 +97,36 @@ extern int TESTING_H_count;
 
  #define expect(cond) \
    if (!(cond)) { \
-     puts("Failed at " HERE " " #cond " "); \
-     longjmp(jb, 1); \
+     puts("\nFailed at " HERE " " #cond " "); \
+     (*TESTING_H_failed)++; \
    }
 
  #define expecteq(lhs, rhs) \
    do { \
      if (eq((typeof(rhs))lhs, rhs)) break; \
-     printf("Expected "); \
+     printf("\nExpected "); \
      printany((typeof(rhs))lhs); \
      printf(" found "); \
      printany(rhs); \
      printf(" at " HERE); \
-     longjmp(jb, 1); \
+     (*TESTING_H_failed)++; \
    } while (0)
 
  #define expectneq(lhs, rhs) \
    do { \
      if (!eq((typeof(rhs))lhs, rhs)) break; \
-     printf("Not expected equal "); \
+     printf("\nUnexpected equality "); \
      printf(#lhs); \
      printf(" and "); \
      printf(#rhs); \
      printf(" at " HERE); \
-     longjmp(jb, 1); \
+     (*TESTING_H_failed)++; \
    } while (0)
 
  #define testing_unreachable \
    ({ \
-    puts(ESCRED "Reached line " HERE ESCLR); \
-    longjmp(jb, ERR_REACHED_UNREACHABLE); \
+    puts(ESCRED "\nReached line " HERE ESCLR); \
+    (*TESTING_H_failed)++; \
     (size_t)0; \
    })
 #else
