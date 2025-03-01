@@ -38,7 +38,7 @@ test (rand) {
     unsigned xors_arr[N];
     double rand_av = 0;
     double xors_av = 0;
-    for (int i = 0; i < N; i++) {
+    for (size_t i = 0; i < N; i++) {
       rand_arr[i] = (unsigned _BitInt(31))rand();
       xors_arr[i] = (unsigned _BitInt(31))xorsh();
       rand_av += rand_arr[i] / N;
@@ -46,7 +46,7 @@ test (rand) {
     }
     double rand_vari = 0;
     double xors_vari = 0;
-    for (int i = 0; i < N; i++) {
+    for (size_t i = 0; i < N; i++) {
       rand_vari += pow(rand_arr[i] - rand_av, 2) / N;
       xors_vari += pow(xors_arr[i] - xors_av, 2) / N;
     }
