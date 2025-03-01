@@ -23,7 +23,7 @@ extern int TESTING_H_count;
      int failed = 0; \
      TESTING_H_tester##name(&failed); \
      if (failed) { \
-       printf(ESCRED "[NG:%d]\n" ESCLR, failed); \
+       printf("\n  └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
        return; \
      } \
      puts(ESCGRN "[OK]" ESCLR); \
@@ -82,19 +82,18 @@ extern int TESTING_H_count;
        sig_t *t = data + i; \
        typeof(t->expected) r = DO_FN(fn, EXPAND signature); \
        if (eq(r, t->expected)) continue; \
-       if (failed == 0) putchar('\n'); \
-       printf("  ├─ Test case %zu failed: expected ", i); \
+       printf("\n  ├─ Test case %zu failed: expected ", i); \
        printany(t->expected); \
        printf(" found "); \
        printany(r); \
-       puts(" " ESCRED "[NG]" ESCLR); \
+       printf(" " ESCRED ESBLD "[NG]" ESCLR); \
        failed++; \
      } \
      if (failed) { \
-       printf("  └" ESCRED "[NG:%d]\n" ESCLR, failed); \
+       printf("  └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
        return; \
      } \
-     puts(ESCGRN "[OK]" ESCLR); \
+     puts(ESCGRN ESBLD "[OK]" ESCLR); \
      TESTING_H_success++; \
    }
 
@@ -103,35 +102,47 @@ extern int TESTING_H_count;
 
  #define expect(cond) \
    if (!(cond)) { \
-     puts("\nFailed at " HERE " " #cond " "); \
+     puts("\n  ├┬ Unexpected result at " HERE); \
+     printf("  │└─ `" #cond "` " ESCRED ESBLD " [NG]" ESCLR); \
      (*TESTING_H_failed)++; \
    }
 
  #define expecteq(lhs, rhs) \
    do { \
      if (eq((typeof(rhs))lhs, rhs)) break; \
-     printf("\nExpected "); \
+     puts("\n  ├┬ Expected equal at " HERE); \
+     printf("  │├─ " ESCGRN "Expected" ESCLR ": "); \
      printany((typeof(rhs))lhs); \
-     printf(" found "); \
+     putchar('\n'); \
+     printf("  │└─ " ESCRED "Actual" ESCLR ":   "); \
      printany(rhs); \
-     printf(" at " HERE); \
+     printf(ESCRED ESBLD " [NG]" ESCLR); \
      (*TESTING_H_failed)++; \
    } while (0)
 
  #define expectneq(lhs, rhs) \
    do { \
      if (!eq((typeof(rhs))lhs, rhs)) break; \
-     printf("\nUnexpected equality "); \
-     printf(#lhs); \
-     printf(" and "); \
-     printf(#rhs); \
-     printf(" at " HERE); \
+     size_t __llen = strlen(#lhs); \
+     size_t __rlen = strlen(#rhs); \
+     size_t __lpad = __llen > __rlen ? 0 : __rlen - __llen; \
+     size_t __rpad = __rlen > __llen ? 0 : __llen - __rlen; \
+     puts("\n  ├┬ Unexpected equality at " HERE); \
+     printf("  │├─ Left side:  `" #lhs "` ─"); \
+     for (size_t __i = 0; __i < __lpad; __i++) printf("─"); \
+     printf("┐\n"); \
+     printf("  │└─ Right side: `" #rhs "` ─"); \
+     for (size_t __i = 0; __i < __rpad; __i++) printf("─"); \
+     printf("┴─➤ "); \
+     printany(lhs); \
+     printf(ESCRED ESBLD " [NG]" ESCLR); \
      (*TESTING_H_failed)++; \
    } while (0)
 
  #define testing_unreachable \
    ({ \
-    puts(ESCRED "\nReached line " HERE ESCLR); \
+    puts("\n  ├┬ " ESCRED "Reached line " HERE ESCLR); \
+    printf("  │└─ " ESCRED "[NG]" ESCLR); \
     (*TESTING_H_failed)++; \
     (size_t)0; \
    })
