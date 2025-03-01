@@ -247,7 +247,7 @@ static void rpx_undfned(machine_t *ei) {
   disperr(__FUNCTION__, "%s: %c", codetomsg(ERR_UNKNOWN_CHAR), *ei->c.expr);
 }
 
-void (*eval_table['~' - ' ' + 1])(machine_t *) = {
+void (*const eval_table['~' - ' ' + 1])(machine_t *) = {
   rpx_space,   // ' '
   rpx_runlmd,  // '!'
   rpx_undfned, // '"'
