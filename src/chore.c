@@ -67,7 +67,7 @@ skipspcs(char const **restrict str, size_t len) {
  * @brief panic alloc
  * @param[in] sz Memory size
  */
-[[nodiscard, gnu::returns_nonnull]] void *palloc(size_t sz) {
+[[nodiscard("allocation"), gnu::returns_nonnull]] void *palloc(size_t sz) {
   return malloc(sz) orelse p$panic(ERR_ALLOCATION_FAILURE);
 }
 

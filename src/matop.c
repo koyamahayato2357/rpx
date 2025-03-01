@@ -4,13 +4,13 @@
 #include "error.h"
 #include "gene.h"
 
-[[nodiscard]] matrix_t NAN_matrix(size_t rows, size_t cols) {
+[[nodiscard("allocation")]] matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
   for (size_t i = 0; i < rows * cols; i++) result.matrix[i] = NAN;
   return result;
 }
 
-[[nodiscard]] matrix_t new_matrix(size_t rows, size_t cols) {
+[[nodiscard("allocation")]] matrix_t new_matrix(size_t rows, size_t cols) {
   // formatter broken...
   return (matrix_t
   ){.rows = rows, .cols = cols, .matrix = zalloc(complex, rows * cols)};
@@ -41,7 +41,7 @@ overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
  * @brief Add/Sub between matrices
  */
 #define MOPS(name, op) \
-  [[nodiscard, gnu::nonnull]] matrix_t m##name( \
+  [[nodiscard("allocation"), gnu::nonnull]] matrix_t m##name( \
     matrix_t const *lhs, matrix_t const *rhs \
   ) { \
     if (!mcheckdim(lhs, rhs)) \
@@ -64,7 +64,8 @@ APPLY_ADDSUB(MOPS)
 /**
  * @brief Mul between matrices
  */
-[[nodiscard]] matrix_t mmul(matrix_t const *lhs, matrix_t const *rhs) {
+[[nodiscard("allocation")]] matrix_t
+mmul(matrix_t const *lhs, matrix_t const *rhs) {
   if (lhs->rows != rhs->cols && lhs->cols != rhs->rows) [[clang::unlikely]]
     disperr(
       __FUNCTION__,
@@ -124,8 +125,8 @@ APPLY_ADDSUB(MOPS)
  * @param[in] A Matrix
  * @return Inverted A
  */
-[[nodiscard, gnu::nonnull]] matrix_t inverse_matrix(matrix_t const *restrict A
-) {
+[[nodiscard("allocation"), gnu::nonnull]] matrix_t
+inverse_matrix(matrix_t const *restrict A) {
   size_t dim = A->rows;
 
   if (A->rows != A->cols) [[clang::unlikely]] {
