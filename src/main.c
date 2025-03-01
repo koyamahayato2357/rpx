@@ -544,8 +544,7 @@ void print_matrix(matrix_t result) {
   case 'r':   // rand
     switch (*cmd) {
     case 's': // set seed
-      uint64_t seed = (uint64_t)eval_expr_real(cmd + 1).elem.real;
-      xorsh(SET, seed);
+      sxorsh((uint64_t)eval_expr_real(cmd + 1).elem.real);
       break;
     default:
     }

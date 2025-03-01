@@ -6,7 +6,6 @@ typedef enum {
   GEN,
 } rand_method_t;
 
-typedef uint64_t rand_fn_t(rand_method_t, ...);
-
-rand_fn_t xorsh;
+uint64_t xorsh();
 double xorsh_0_1();
+void sxorsh(uint64_t);

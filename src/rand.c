@@ -2,30 +2,25 @@
 #include <stdarg.h>
 #include <time.h>
 
-uint64_t xorsh(rand_method_t met, ...) {
-  static uint64_t state;
-  if (met == GEN) {
-    // generate rand
+thread_local uint64_t state;
+
+uint64_t xorsh() {
     uint64_t x = state;
     x ^= x << 13;
     x ^= x >> 7;
     x ^= x << 17;
     return state = x;
-  }
-  // set seed
-  va_list ap;
-  /* C23 does not require the second parameter for va_start. */
-  va_start(ap);
-  state = va_arg(ap, uint64_t);
-  va_end(ap);
-  return 0;
 }
 
 double xorsh_0_1() {
-  return (double)xorsh(GEN) / (double)~(uint64_t)0;
+  return (double)xorsh() / (double)~(uint64_t)0;
+}
+
+void sxorsh(uint64_t s) {
+  state = s;
 }
 
 [[gnu::constructor(101)]] void __init_xorsh() {
-  xorsh(SET, (uint64_t)clock());
-  xorsh(GEN);
+  sxorsh((uint64_t)clock());
+  xorsh();
 }
