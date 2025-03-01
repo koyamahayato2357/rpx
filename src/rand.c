@@ -3,6 +3,7 @@
 #include "mathdef.h"
 #include "testing.h"
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -31,7 +32,7 @@ void sxorsh(uint64_t s) {
 
 test (rand) {
   test_filter("all,rand") {
-    constexpr size_t N = 10000;
+    constexpr size_t N = 10'000;
     srand((unsigned)clock());
 
     unsigned rand_arr[N];
