@@ -79,9 +79,9 @@ extern int TESTING_H_count;
      typedef SIGNATURE signature sig_t; \
      sig_t data[] = __VA_ARGS__; \
      int failed = 0; \
-     int *TESTING_H_failed /* for expecteq */ = &failed; \
      for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); i++) { \
        sig_t *t = data + i; \
+       int *TESTING_H_failed /* for expecteq */ = &failed; \
        typeof(t->expected) r = DO_FN(fn, EXPAND signature); \
        expecteq(t->expected, r); \
      } \
@@ -145,7 +145,7 @@ extern int TESTING_H_count;
 #else
 // --gc-sections
  #define test(name) \
-   [[maybe_unused]] static void TESTING_H_dum##name(jmp_buf jb [[maybe_unused]])
+   [[maybe_unused]] static void TESTING_H_dum##name(int *TESTING_H_failed [[maybe_unused]])
  #define test_table(...)
  #define test_filter(filter)
  #define expect(cond)
