@@ -132,7 +132,9 @@ extern int TESTING_H_count;
     (size_t)0; \
    })
 #else
- #define test(name) void TESTING_H_dummy##name(jmp_buf jb [[maybe_unused]])
+// --gc-sections
+ #define test(name) \
+   [[maybe_unused]] static void TESTING_H_dum##name(jmp_buf jb [[maybe_unused]])
  #define test_table(...)
  #define test_filter(filter)
  #define expect(cond)
