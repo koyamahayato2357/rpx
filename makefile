@@ -108,7 +108,11 @@ SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 
--include $(DEPS)
+ifeq ($(MAKECMDGOALS),build)
+	-include $(DEPS)
+else ifeq ($(MAKECMDGOALS),run)
+	-include $(DEPS)
+endif
 
 # rules
 .PHONY: run analyze clean-all clean install doc test lint fmt help release log
