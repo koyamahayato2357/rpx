@@ -2,6 +2,7 @@
 
 #ifdef TEST_MODE
  #include "ansiesc.h"
+ #include "chore.h"
  #include "errcode.h"
  #include "gene.h"
  #include <stdio.h>
@@ -78,19 +79,14 @@ extern int TESTING_H_count;
      typedef SIGNATURE signature sig_t; \
      sig_t data[] = __VA_ARGS__; \
      int failed = 0; \
+     int *TESTING_H_failed /* for expecteq */ = &failed; \
      for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); i++) { \
        sig_t *t = data + i; \
        typeof(t->expected) r = DO_FN(fn, EXPAND signature); \
-       if (eq(r, t->expected)) continue; \
-       printf("\n  ├─ Test case %zu failed: expected ", i); \
-       printany(t->expected); \
-       printf(" found "); \
-       printany(r); \
-       printf(" " ESCRED ESBLD "[NG]" ESCLR); \
-       failed++; \
+       expecteq(t->expected, r); \
      } \
      if (failed) { \
-       printf("  └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
+       printf("\n  └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
        return; \
      } \
      puts(ESCGRN ESBLD "[OK]" ESCLR); \
