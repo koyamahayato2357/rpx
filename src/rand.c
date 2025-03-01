@@ -31,24 +31,26 @@ void sxorsh(uint64_t s) {
 
 test (rand) {
   test_filter("rand") {
+    constexpr size_t N = 10000;
     srand((unsigned)clock());
 
-    unsigned rand_arr[10'000];
-    unsigned xors_arr[10'000];
+    unsigned rand_arr[N];
+    unsigned xors_arr[N];
     double rand_av = 0;
     double xors_av = 0;
-    for (int i = 0; i < 10'000; i++) {
-      rand_arr[i] = (unsigned)rand();
-      xors_arr[i] = (unsigned)xorsh();
-      rand_av += rand_arr[i] / 10'000;
-      xors_av += xors_arr[i] / 10'000;
+    for (int i = 0; i < N; i++) {
+      rand_arr[i] = (unsigned _BitInt(31))rand();
+      xors_arr[i] = (unsigned _BitInt(31))xorsh();
+      rand_av += rand_arr[i] / N;
+      xors_av += xors_arr[i] / N;
     }
     double rand_vari = 0;
     double xors_vari = 0;
-    for (int i = 0; i < 10'000; i++) {
-      rand_vari += pow(rand_arr[i] - rand_av, 2) / 10'000;
-      xors_vari += pow(xors_arr[i] - xors_av, 2) / 10'000;
+    for (int i = 0; i < N; i++) {
+      rand_vari += pow(rand_arr[i] - rand_av, 2) / N;
+      xors_vari += pow(xors_arr[i] - xors_av, 2) / N;
     }
+    puts("");
     printf("rand: av %lf vari %lf\n", rand_av, rand_vari);
     printf("xors: av %lf vari %lf\n", xors_av, xors_vari);
   }
