@@ -36,7 +36,8 @@ extern int TESTING_H_count;
  #ifndef TEST_FILTER
   #define TEST_FILTER ""
  #endif
- #define test_filter(filter) if (strcmp(filter, TEST_FILTER) == 0)
+// zig style `--test-filter`
+ #define test_filter(filter) if (strstr(filter, TEST_FILTER))
 
  #define ARGS_0
  #define ARGS_1 t->a1
