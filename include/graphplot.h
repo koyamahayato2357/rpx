@@ -1,7 +1,7 @@
 #pragma once
 
 void init_plotconfig();
-bool ispointgraph(double, double, double, double);
+[[gnu::const]] bool ispointgraph(double, double, double, double);
 void plotexpr(char const *);
 void plotexpr_implicit(char const *);
 void set_pbounds(double const, double const, double const, double const);
