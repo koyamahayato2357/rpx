@@ -157,10 +157,6 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
   rtinfo_t info_c = get_rtinfo();
 
   for (;; expr++) {
-    if (isdigit(*expr)) {
-      (++rsp)->rtype = RTYPE_COMP;
-      rsp->elem.comp = strtod(expr, (char **)&expr);
-    }
     if (*expr == '[') {
       (++rsp)->rtype = RTYPE_MATR;
       expr++;
@@ -179,6 +175,10 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
     if (*expr == '\0') break;
 
     switch (*expr) {
+    case '0' ... '9':
+      (++rsp)->rtype = RTYPE_COMP;
+      rsp->elem.comp = strtod(expr, (char **)&expr);
+      break;
     case '(':
       *(long *)&(++rsp)->elem.real = rbp - operand_stack;
       rbp = rsp;
@@ -349,7 +349,6 @@ test (eval_expr_complex) {
   expecteq(8.0, resultm.matrix[1]);
   expecteq(10.0, resultm.matrix[2]);
   expecteq(12.0, resultm.matrix[3]);
-  free(resultm.matrix);
 
   // Test matrix multiplication
   char const *expr = "[2 1,2,3,4,][2 5,6,7,8,]*";
@@ -360,7 +359,6 @@ test (eval_expr_complex) {
   expecteq(22.0, resultm.matrix[1]);
   expecteq(43.0, resultm.matrix[2]);
   expecteq(50.0, resultm.matrix[3]);
-  free(resultm.matrix);
 
   // Test matrix inverse
   expr = "[2 1,2,3,4,]~";
@@ -371,7 +369,6 @@ test (eval_expr_complex) {
   expecteq(1.0, resultm.matrix[1]);
   expecteq(1.5, resultm.matrix[2]);
   expecteq(-0.5, resultm.matrix[3]);
-  free(resultm.matrix);
 
   // Scalar multiplication
   expr = "[3 5,6,7,] 5 *";
@@ -381,7 +378,6 @@ test (eval_expr_complex) {
   expecteq(25, resultm.matrix[0]);
   expecteq(30, resultm.matrix[1]);
   expecteq(35, resultm.matrix[2]);
-  free(resultm.matrix);
 }
 
 bench (eval_expr_complex) {
