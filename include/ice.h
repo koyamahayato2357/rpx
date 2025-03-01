@@ -12,6 +12,7 @@ typedef struct {
 
 extern ic_t ic_conf;
 
+// inspired by python
  #define ic(...) \
    ({ \
     __VA_OPT__(auto x = __VA_ARGS__;) \
