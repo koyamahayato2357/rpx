@@ -18,7 +18,7 @@
 - bash
 - git
 - make
-- clang
+- clang (>=19)
 - lld
 - coreutils
 ### Optional
