@@ -178,6 +178,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
     case '0' ... '9':
       (++rsp)->rtype = RTYPE_COMP;
       rsp->elem.comp = strtod(expr, (char **)&expr);
+      expr--;
       break;
     case '(':
       *(long *)&(++rsp)->elem.real = rbp - operand_stack;
