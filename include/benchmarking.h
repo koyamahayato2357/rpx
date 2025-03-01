@@ -39,6 +39,6 @@
 
  #define main main_
 #else
- #define bench(a)       [[maybe_unused]] static void BENCHMARKING_H_dummy##a()
- #define bench_cycle(a) [[maybe_unused]] static void BENCHMARKING_H_dummyc##a()
+ #define bench(a)       [[maybe_unused]] static void BENCHMARKING_H_dum##a()
+ #define bench_cycle(a) [[maybe_unused]] static void BENCHMARKING_H_dumc##a()
 #endif
