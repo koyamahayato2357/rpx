@@ -64,3 +64,11 @@ bench (rand) { // 0.83 ms
 bench (xorsh) { // 0.81 ms
   xorsh();
 }
+
+bench_cycle(rand) {
+  rand();
+}
+
+bench_cycle(xors) {
+  xorsh();
+}
