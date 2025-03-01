@@ -89,6 +89,10 @@ else ifneq ($(OPTLEVEL),0)
   LDFLAGS += $(OPTLDFLAGS)
 endif
 
+ifdef TEST_FILTER
+  CFLAGS += -DTEST_FILTER="\"$(TEST_FILTER)\""
+endif
+
 # generate output path
 GITBRANCH := $(shell git branch --show-current 2>/dev/null)
 SEED = $(CC)$(EXTRAFLAGS)$(CFLAGS)$(LDFLAGS)$(GITBRANCH)
