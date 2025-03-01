@@ -30,7 +30,7 @@ void sxorsh(uint64_t s) {
 }
 
 test (rand) {
-  test_filter("rand") {
+  test_filter("all,rand") {
     constexpr size_t N = 10000;
     srand((unsigned)clock());
 
