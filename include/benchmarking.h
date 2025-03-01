@@ -23,5 +23,5 @@
    void BENCHMARKING_H_bench##name()
  #define main main_
 #else
- #define bench(a) void BENCHMARKING_H_dummy##a()
+ #define bench(a) [[maybe_unused]] static void BENCHMARKING_H_dummy##a()
 #endif
