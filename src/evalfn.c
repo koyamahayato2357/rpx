@@ -134,7 +134,7 @@ static void rpx_intfn(machine_t *ei) {
 static void rpx_sysfn(machine_t *ei) {
   switch (*++ei->c.expr) {
   case 'a': // ANS
-    PUSH = ei->e.info.hist[ei->e.info.histi];
+    PUSH = ei->e.info.hist[lesser(ei->e.info.histi, BUFSIZE - 1)];
     break;
   case 'd': // display
     printany(ei->s.rsp->elem.real);
