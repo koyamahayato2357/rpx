@@ -87,8 +87,8 @@ test (deletes) {
  */
 bool findmove(char c, int dir, char *buf, char **cur) {
   char *old_cur = *cur;
-
-  *cur = $if(dir > 0) strchr(*cur, c) $else memrchr(buf, c, (size_t)(*cur - buf));
+  *cur
+    = $if(dir > 0) strchr(*cur, c) $else memrchr(buf, c, (size_t)(*cur - buf));
   if (*cur == nullptr) {
     *cur = old_cur;
     return false;
@@ -153,9 +153,9 @@ void bwdw(char *buf, char **cur) {
   for (; isspace(**cur); (*cur)--);
 
   int wasalnum = isalnum(**cur);
-  for (; !isspace(*(*cur - 1)) && *cur != buf
-         && !(isalnum(*(*cur - 1)) ^ wasalnum);
-       (*cur)--) { }
+  while (!isspace(*(*cur - 1)) && *cur != buf
+         && !(isalnum(*(*cur - 1)) ^ wasalnum))
+    (*cur)--;
 }
 
 test (bwdw) {
