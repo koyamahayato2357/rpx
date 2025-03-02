@@ -58,7 +58,7 @@ extern int TESTING_H_count;
 
  #define GET_M(_1, _2, _3, _4, _5, NAME, ...) NAME
 
- #define DO_FN(fn, ...) \
+ #define CALL(fn, ...) \
    fn(GET_M(__VA_ARGS__, ARGS_4, ARGS_3, ARGS_2, ARGS_1, ARGS_0))
 
  #define SIGNATURE(...) \
@@ -85,8 +85,7 @@ extern int TESTING_H_count;
      for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); i++) { \
        sig_t *t = data + i; \
        int *TESTING_H_failed /* for expecteq */ = &failed; \
-       typeof(t->expected) r = DO_FN(fn, EXPAND signature); \
-       expecteq(t->expected, r); \
+       expecteq(t->expected, CALL(fn, EXPAND signature)); \
      } \
      if (failed) { \
        printf("\n  └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
