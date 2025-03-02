@@ -7,11 +7,6 @@
 #include <stddef.h>
 
 #define overloadable [[clang::overloadable]]
-#define ASSUME_OVERLOADABLE_BGN \
-  _Pragma("clang attribute push(overloadable, apply_to = function)")
-
-#define ASSUME_OVERLOADABLE_END \
-  _Pragma("clang attribute pop(overloadable, apply_to = function)")
 
 #define DEF_GEN(T) \
   void printany(T); \

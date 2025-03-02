@@ -34,7 +34,7 @@ test_table(
 }
 )
 
-ASSUME_OVERLOADABLE_BGN
+#pragma clang attribute push(overloadable, apply_to = function)
 void printany(int x) {
   printf("%d", x);
 }
@@ -78,4 +78,4 @@ bool eq(char *x, char *y) {
 bool eq(void *x, void *y) {
   return x == y;
 }
-ASSUME_OVERLOADABLE_END
+#pragma clang attribute pop
