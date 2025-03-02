@@ -1,6 +1,11 @@
+/**
+ * @file include/evalfn.h
+ * @brief Define data types for evaluationg expressions in real number mode
+ */
+
 #pragma once
 #include "main.h"
-#include "sysconf.h"
+#include "rtconf.h"
 
 constexpr size_t ARGN = 8;
 

@@ -1,3 +1,8 @@
+/**
+ * @file src/rand.c
+ * @brief Define xorshift
+ */
+
 #include "rand.h"
 #include "benchmarking.h"
 #include "mathdef.h"

@@ -1,3 +1,7 @@
+/**
+ * @file src/testing.c
+ */
+
 #include "testing.h"
 
 #ifdef TEST_MODE

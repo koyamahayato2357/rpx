@@ -1,3 +1,8 @@
+/**
+ * @file include/testing.h
+ * @brief Define macros for testing
+ */
+
 #pragma once
 
 #ifdef TEST_MODE

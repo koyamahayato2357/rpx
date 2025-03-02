@@ -1,3 +1,8 @@
+/**
+ * @file src/chore.c
+ * @brief Define util functions
+ */
+
 #include "chore.h"
 #include "exproriented.h"
 #include "mathdef.h"

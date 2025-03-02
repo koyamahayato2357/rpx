@@ -1,3 +1,7 @@
+/**
+ * @file include/elemop.h
+ */
+
 #include "main.h"
 
 void elem_set(elem_t *, elem_t const *);

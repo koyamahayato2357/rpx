@@ -1,3 +1,8 @@
+/**
+ * @file src/rc.c
+ * @brief Define run commands processing functions
+ */
+
 #include "chore.h"
 #include "exproriented.h"
 #include "main.h"

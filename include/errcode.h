@@ -1,3 +1,8 @@
+/**
+ * @file include/errcode.h
+ * @brief Define error codes
+ */
+
 #pragma once
 #include <stdlib.h>
 

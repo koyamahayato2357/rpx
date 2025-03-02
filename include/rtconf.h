@@ -1,3 +1,8 @@
+/**
+ * @file include/rtconf.h
+ * @brief Define data types for runtime information
+ */
+
 #pragma once
 #include "chore.h"
 #include "main.h"

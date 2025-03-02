@@ -1,3 +1,8 @@
+/**
+ * @file include/ansiesc.h
+ * @brief Define escape sequence macros
+ */
+
 #pragma once
 
 #define ESCSI "\033["

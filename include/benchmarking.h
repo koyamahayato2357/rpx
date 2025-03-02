@@ -1,3 +1,8 @@
+/**
+ * @file include/benchmarking.h
+ * @brief Define macros for benchmarking
+ */
+
 #pragma once
 #ifdef BENCHMARK_MODE
  #include <stdio.h>

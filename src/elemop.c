@@ -1,3 +1,8 @@
+/**
+ * @file src/elemop.c
+ * @brief Define elem_t related functions
+ */
+
 #include "elemop.h"
 #include "chore.h"
 #include "errcode.h"

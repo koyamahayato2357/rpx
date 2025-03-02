@@ -1,3 +1,8 @@
+/**
+ * @file src/arthfn.c
+ * @brief Define arithmetic functions
+ */
+
 #include "arthfn.h"
 #include "mathdef.h"
 #include "testing.h"
@@ -35,6 +40,9 @@ test_table(
 }
 )
 
+/**
+ * The implementation uses tgamma, but tests show that accuracy is not a problem
+ */
 double permutation(double n, double r) {
   return tgamma(n + 1) / tgamma(n - r + 1);
 }

@@ -1,3 +1,7 @@
+/**
+ * @file include/editline.h
+ */
+
 #pragma once
 #include <stddef.h>
 

@@ -1,6 +1,11 @@
+/**
+ * @file src/graphplot.c
+ * @brief Define graph related functions
+ */
+
 #include "graphplot.h"
 #include "evalfn.h"
-#include "sysconf.h"
+#include "rtconf.h"
 #include "testing.h"
 #include <sys/ioctl.h>
 

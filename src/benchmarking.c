@@ -1,3 +1,7 @@
+/**
+ * @file src/benchmarking.c
+ */
+
 #include "benchmarking.h"
 
 #ifdef BENCHMARK_MODE

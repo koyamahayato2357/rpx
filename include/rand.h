@@ -1,3 +1,7 @@
+/**
+ * @file include/rand.h
+ */
+
 #pragma once
 #include <stdint.h>
 

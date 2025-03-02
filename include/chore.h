@@ -1,3 +1,8 @@
+/**
+ * @file include/chore.h
+ * @brief Define util macros
+ */
+
 #pragma once
 #include <dirent.h>
 #include <stdio.h>

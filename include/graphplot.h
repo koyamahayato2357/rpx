@@ -1,3 +1,7 @@
+/**
+ * @file include/graphplot.h
+ */
+
 #pragma once
 
 void init_plotconfig();

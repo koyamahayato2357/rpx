@@ -1,3 +1,8 @@
+/**
+ * @file src/gene.c
+ * @brief Define generic functions
+ */
+
 #include "gene.h"
 #include "mathdef.h"
 #include "testing.h"

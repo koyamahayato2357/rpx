@@ -1,3 +1,7 @@
+/**
+ * @file src/errcode.c
+ */
+
 #include "errcode.h"
 
 char const *codetomsg(int code) {

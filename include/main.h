@@ -1,4 +1,7 @@
-//! @file main.h
+/**
+ * @file include/main.h
+ * @brief Define macros and data types for evaluating expressions of complex number
+ */
 
 #pragma once
 #include "matop.h"

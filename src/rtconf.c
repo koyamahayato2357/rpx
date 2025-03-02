@@ -1,4 +1,8 @@
-#include "sysconf.h"
+/**
+ * @file src/rtconf.c
+ */
+
+#include "rtconf.h"
 
 plotcfg_t pcfg;
 rrtinfo_t info_r = (rrtinfo_t){.histi = ~0UL};

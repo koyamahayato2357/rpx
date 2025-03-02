@@ -1,3 +1,8 @@
+/**
+ * @file include/gene.h
+ * @brief Define macros for generic programming
+ */
+
 #pragma once
 #include <stddef.h>
 

@@ -1,3 +1,8 @@
+/**
+ * @file src/ansiesc.c
+ * @brief Test escape sequence macros
+ */
+
 #include <stdio.h>
 
 void putsequence(char *seq) {

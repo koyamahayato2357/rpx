@@ -1,3 +1,8 @@
+/**
+ * @file src/phyconst.c
+ * @brief Define physical constants
+ */
+
 #include "phyconst.h"
 #include "arthfn.h"
 #include "chore.h"

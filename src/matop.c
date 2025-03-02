@@ -1,3 +1,8 @@
+/**
+ * @file src/matop.c
+ * @brief Define matrix related functions
+ */
+
 #include "matop.h"
 #include "chore.h"
 #include "errcode.h"

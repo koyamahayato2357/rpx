@@ -1,4 +1,7 @@
-//! @file editline.c
+/**
+ * @file src/editline.c
+ * @brief Define `editline()`
+ */
 
 #include <stdio.h>
 #define __USE_GNU // for memrchr()

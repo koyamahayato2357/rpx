@@ -1,15 +1,13 @@
-//! @file main.c
+/**
+ * @file src/main.c
+ * @brief Define eval_expr_complex, proc_cmds
+ */
 
 /*
  * PUSH:      *++rsp = val;
  * POP:       val = *rsp--;
  * OVERWRITE: *rsp = val;
  * PREV BASE: val = *rbp;
- *
- * matrix_t:  complex *
- * BUFSIZE:   0x100
- * rtype_t:   enum {RTYPE_REAL, RTYPE_COMP, RTYPE_MATR, RTYPE_LAST}
- * result_t:  union {double, complex, matrix_t}
  */
 
 #include "main.h"

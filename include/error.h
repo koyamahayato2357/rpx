@@ -1,3 +1,7 @@
+/**
+ * @file include/error.h
+ */
+
 #pragma once
 #include "gene.h"
 #include <stdio.h>

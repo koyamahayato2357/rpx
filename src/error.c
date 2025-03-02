@@ -1,3 +1,7 @@
+/**
+ * @file src/error.c
+ */
+
 #include "chore.h"
 #include <stdarg.h>
 

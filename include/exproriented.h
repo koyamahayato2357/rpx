@@ -1,3 +1,8 @@
+/**
+ * @file include/exproriented.h
+ * @brief Define macros for expression oriented programming
+ */
+
 #pragma once
 #include "errcode.h"
 
