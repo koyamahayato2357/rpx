@@ -397,7 +397,7 @@ bench (eval_expr_complex) {
   eval_expr_complex("1 0 /");
 }
 
-bench(eval_matrix) {
+bench (eval_matrix) {
   eval_expr_complex("[2 1,2,3,4,][2 5,6,7,8,]+");
   eval_expr_complex("[3 4,1,4,6,5,7,3,6,7,]~");
   eval_expr_complex("[1 4,5,][2 6,7,]*");
