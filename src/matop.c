@@ -104,7 +104,7 @@ mmul(matrix_t const *lhs, matrix_t const *rhs) {
   size_t dim = A->rows;
   for (size_t i = 0; i < dim - 1; i++)
     for (size_t j = 0; j < dim - 1; j++) {
-      for (size_t k = 1; !A->matrix[dim * i + i]; k++) {
+      for (size_t k = 1; eq(0.0i, A->matrix[dim * i + i]); k++) {
         for (size_t l = i; l < dim; l++) {
           if (k >= dim) [[clang::unlikely]] // case of singular matrix
             return 0;
