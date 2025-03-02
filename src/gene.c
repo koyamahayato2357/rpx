@@ -29,46 +29,48 @@ test_table(
 }
 )
 
-overloadable void printany(int x) {
+ASSUME_OVERLOADABLE_BGN
+void printany(int x) {
   printf("%d", x);
 }
-overloadable void printany(size_t x) {
+void printany(size_t x) {
   printf("%zuUL", x);
 }
-overloadable void printany(double x) {
+void printany(double x) {
   printf("%lf", x);
 }
-overloadable void printany(char x) {
+void printany(char x) {
   printf("'%c'", x);
 }
-overloadable void printany(bool x) {
+void printany(bool x) {
   printf(x ? "true" : "false");
 }
-overloadable void printany(char *x) {
+void printany(char *x) {
   printf("\"%s\"", x);
 }
-overloadable void printany(void *x) {
+void printany(void *x) {
   printf("0x%p", x);
 }
 
-overloadable bool eq(int x, int y) {
+bool eq(int x, int y) {
   return x == y;
 }
-overloadable bool eq(size_t x, size_t y) {
+bool eq(size_t x, size_t y) {
   return x == y;
 }
-overloadable bool eq(double x, double y) {
+bool eq(double x, double y) {
   return double_eq(x, y);
 }
-overloadable bool eq(char x, char y) {
+bool eq(char x, char y) {
   return complex_eq(x, y);
 }
-overloadable bool eq(bool x, bool y) {
+bool eq(bool x, bool y) {
   return x == y;
 }
-overloadable bool eq(char *x, char *y) {
+bool eq(char *x, char *y) {
   return !strcmp(x, y);
 }
-overloadable bool eq(void *x, void *y) {
+bool eq(void *x, void *y) {
   return x == y;
 }
+ASSUME_OVERLOADABLE_END
