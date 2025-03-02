@@ -69,7 +69,6 @@ extern int TESTING_H_count;
 
 // if {a, b, c} is passed as a macro parameter, it becomes "{a", "b", "c}", so
 // it must be received as a variable length argument.
-// the max num of fn params is 4, but thats enough, right?
  #define test_table(name, fn, signature, ...) \
    [[gnu::constructor]] void TESTING_H_tabletester##name() { \
      TESTING_H_count++; \
