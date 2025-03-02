@@ -26,7 +26,7 @@ extern int TESTING_H_count;
        printf("\n  └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
        return; \
      } \
-     puts("=> "ESCGRN "[OK]" ESCLR); \
+     puts("=> " ESCGRN "[OK]" ESCLR); \
      TESTING_H_success++; \
    } \
    void TESTING_H_tester##name(int *TESTING_H_failed [[maybe_unused]])
@@ -117,16 +117,16 @@ extern int TESTING_H_count;
  #define expectneq(lhs, rhs) \
    do { \
      if (!eq((typeof(rhs))lhs, rhs)) break; \
-     size_t __llen = strlen(#lhs); \
-     size_t __rlen = strlen(#rhs); \
-     size_t __lpad = __llen > __rlen ? 0 : __rlen - __llen; \
-     size_t __rpad = __rlen > __llen ? 0 : __llen - __rlen; \
+     int __llen = (int)strlen(#lhs); \
+     int __rlen = (int)strlen(#rhs); \
+     int __lpad = bigger(0, __rlen - __llen); \
+     int __rpad = bigger(0, __llen - __rlen); \
      puts("\n  ├┬ Unexpected equality at " HERE); \
      printf("  │├─ Left side:  `" #lhs "` ─"); \
-     for (size_t __i = 0; __i < __lpad; __i++) printf("─"); \
+     for (int __i = 0; __i < __lpad; __i++) printf("─"); \
      printf("┐\n"); \
      printf("  │└─ Right side: `" #rhs "` ─"); \
-     for (size_t __i = 0; __i < __rpad; __i++) printf("─"); \
+     for (int __i = 0; __i < __rpad; __i++) printf("─"); \
      printf("┴─➤ "); \
      printany(lhs); \
      printf(ESCRED ESBLD " [NG]" ESCLR); \
@@ -143,7 +143,8 @@ extern int TESTING_H_count;
 #else
 // --gc-sections
  #define test(name) \
-   [[maybe_unused]] static void TESTING_H_dum##name(int *TESTING_H_failed [[maybe_unused]])
+   [[maybe_unused]] static void TESTING_H_dum##name(int *TESTING_H_failed \
+                                                    [[maybe_unused]])
  #define test_table(...)
  #define test_filter(filter)
  #define expect(cond)
