@@ -106,7 +106,7 @@ extern int TESTING_H_count;
  #define expecteq(expected, actual) \
    do { \
      typeof(actual) const lhs = expected; \
-     typeof(expected) const rhs = actual; \
+     auto const rhs = actual; \
      if (eq((typeof(rhs))lhs, rhs)) break; \
      puts("\n  ├┬ Expected equal at " HERE); \
      printf("  │├─ " ESCGRN "Expected" ESCLR ": "); \
@@ -121,7 +121,7 @@ extern int TESTING_H_count;
  #define expectneq(unexpected, actual) \
    do { \
      typeof(actual) const lhs = unexpected; \
-     typeof(unexpected) const rhs = actual; \
+     auto const rhs = actual; \
      if (!eq((typeof(rhs))lhs, rhs)) break; \
      int __llen = (int)strlen(#unexpected); \
      int __rlen = (int)strlen(#actual); \
