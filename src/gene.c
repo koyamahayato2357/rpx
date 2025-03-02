@@ -33,6 +33,16 @@ test_table(
     {false, INFINITY,        1e100},
 }
 )
+test_table(
+  complex_eq, complex_eq, (bool, complex, complex),
+  {
+    { true,                0,          0},
+    { true,           1 + 3i, 1.0 + 3.0i},
+    { true, 1.0 + 1e-10 + 3i,     1 + 3i},
+    {false,                0,          1},
+    {false,           3 + 5i,    -1 + 3i},
+}
+)
 
 #pragma clang attribute push(overloadable, apply_to = function)
 void printany(int x) {
