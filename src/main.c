@@ -146,8 +146,9 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
 
 /**
  * @brief Evaluate complex number expression
- * @param expr String of expression
+ * @param[in] expr String of expression
  * @return elem_t Expression evaluation result
+ * @warning Possible stack overflow with very long expressions
  */
 [[gnu::nonnull]] elem_t eval_expr_complex(char const *expr) {
   elem_t operand_stack[BUFSIZE] = {0};
@@ -461,7 +462,6 @@ void print_real(double result) {
 
 /**
  * @brief Output value of type complex
- * @param[in] result Output value
  */
 void print_complex(complex result) {
   printf("result: %lf + %lfi\n", creal(result), cimag(result));
@@ -469,7 +469,6 @@ void print_complex(complex result) {
 
 /**
  * @brief Output value of type complex in phasor view
- * @param[in] result Output value
  */
 void print_complex_polar(complex result) {
   complex res = result;
@@ -482,7 +481,6 @@ void print_complex_polar(complex result) {
 
 /**
  * @brief Output value of type matrix_t
- * @param[in] result Output value
  */
 void print_matrix(matrix_t result) {
   for (size_t i = 0; i < result.rows; i++) {

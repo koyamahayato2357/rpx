@@ -16,6 +16,7 @@ constexpr size_t BUFSIZE = 64;
   case cas: \
     var = fn(var); \
     break;
+// overwrite the top of the stack with the function in the parameter
 #define OVERWRITE_REAL(cas, fn) OVERWRITE(cas, ei->s.rsp->elem.real, fn)
 #define OVERWRITE_COMP(cas, fn) OVERWRITE(cas, rsp->elem.comp, fn)
 
