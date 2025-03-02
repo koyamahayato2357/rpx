@@ -1,7 +1,7 @@
 //! @file editline.c
 
 #include <stdio.h>
-#define __USE_GNU
+#define __USE_GNU // for memrchr()
 #include "ansiesc.h"
 #include "chore.h"
 #include "editline.h"
@@ -81,9 +81,10 @@ test (deletes) {
 /**
  * @brief Find character and move there
  * @param[in] c Character to look for
- * @param[in] dir Search direction
+ * @param[in] dir Search direction, >0: forward, <=0: backward
  * @param[in] buf Start of line
  * @param[in,out] cur Cursor pointer
+ * @return Found or not
  */
 bool findmove(char c, int dir, char *buf, char **cur) {
   char *old_cur = *cur;
@@ -304,21 +305,18 @@ void handle_txtobj(
  * @brief Insert a string at cursor position
  * @param[in] slen Number of characters in string to be inserted
  * @param[in] s String to be inserted
- * @param[in] curpos New cursor position
  * @param[in,out] cur Cursor pointer
  * @param[in,out] len End of line
  * @param[in] margin Number of characters can be added to the buffer
  */
-void inserts(
-  size_t slen, char const *s, int curpos, char **cur, char **len, size_t margin
-) {
+void
+inserts(size_t slen, char const *s, char **cur, char **len, size_t margin) {
   if (slen > margin) {
     disperr(__FUNCTION__, "buffer depreletion");
     abort();
   }
   if (*cur != *len) memmove(*cur + slen, *cur, (size_t)(*len - *cur));
   memcpy(*cur, s, slen);
-  *cur += curpos;
   *len += slen;
   **len = '\0';
 }
@@ -329,15 +327,15 @@ test (inserts) {
   char *cur = len - 1;
 
   char str1[] = "new string";
-  inserts(strlen(str1), str1, 0, &cur, &len, (size_t)(buf + 256 - len));
+  inserts(strlen(str1), str1, &cur, &len, (size_t)(buf + 256 - len));
   expecteq("sample textnew string.", (char *)buf);
   expecteq("new string.", cur);
   expecteq(strlen(buf), (size_t)(len - buf));
 
   char str2[] = "extra string";
-  inserts(strlen(str2), str2, 6, &cur, &len, (size_t)(buf + 256 - len));
+  inserts(strlen(str2), str2, &cur, &len, (size_t)(buf + 256 - len));
   expecteq("sample textextra stringnew string.", (char *)buf);
-  expecteq("stringnew string.", cur);
+  expecteq("extra stringnew string.", cur);
   expecteq(strlen(buf), (size_t)(len - buf));
 }
 
@@ -351,7 +349,8 @@ test (inserts) {
 void insbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
   case '(':
-    inserts(2, "()", 1, cur, len, (size_t)(buf + BUFSIZE - *len));
+    inserts(2, "()", cur, len, (size_t)(buf + BUFSIZE - *len));
+    (*cur)++;
     break;
 
   case ')':
@@ -359,7 +358,8 @@ void insbind(char c, char *buf, char **cur, char **len) {
     break;
 
   case '[':
-    inserts(2, "[]", 1, cur, len, (size_t)(buf + BUFSIZE - *len));
+    inserts(2, "[]", cur, len, (size_t)(buf + BUFSIZE - *len));
+    (*cur)++;
     break;
 
   case ']': {
