@@ -154,12 +154,25 @@ extern int TESTING_H_count;
 #else
 // --gc-sections
  #define test(name) \
-   [[maybe_unused]] static void TESTING_H_dum##name(int *TESTING_H_failed \
-                                                    [[maybe_unused]])
+   [[maybe_unused]] static void TESTING_H_dum##name(int *TESTING_H_failed)
  #define test_table(...)
  #define test_filter(filter)
- #define expect(cond)
- #define expecteq(lhs, rhs)
- #define expectneq(lhs, rhs)
- #define testing_unreachable
+ #define expect(cond) \
+   do { \
+     _ = cond; \
+     _ = TESTING_H_failed; \
+   } while (0)
+ #define expecteq(lhs, rhs) \
+   do { \
+     _ = lhs; \
+     _ = rhs; \
+     _ = TESTING_H_failed; \
+   } while (0)
+ #define expectneq(lhs, rhs) \
+   do { \
+     _ = lhs; \
+     _ = rhs; \
+     _ = TESTING_H_failed; \
+   } while (0)
+ #define testing_unreachable _ = TESTING_H_failed
 #endif
