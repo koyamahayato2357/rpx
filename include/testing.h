@@ -34,7 +34,7 @@ extern int TESTING_H_count;
      puts("=> " ESCGRN "[OK]" ESCLR); \
      TESTING_H_success++; \
    } \
-   void TESTING_H_tester##name(int *TESTING_H_failed [[maybe_unused]])
+   void TESTING_H_tester##name(int *TESTING_H_failed)
 
  #ifdef TEST_FILTER
   #define test_filter(filter) if (strstr(filter, TEST_FILTER))
