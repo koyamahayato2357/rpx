@@ -281,7 +281,6 @@ void handle_txtobj(
     *begin = cur + 1;
     break;
   default:
-    disperr(__FUNCTION__, "unknown char: %c", txtobj);
     *begin = nullptr;
     *end = nullptr;
     break;
