@@ -33,7 +33,7 @@ overloadable void printany(int x) {
   printf("%d", x);
 }
 overloadable void printany(size_t x) {
-  printf("%zu", x);
+  printf("%zuUL", x);
 }
 overloadable void printany(double x) {
   printf("%lf", x);
@@ -48,7 +48,7 @@ overloadable void printany(char *x) {
   printf("\"%s\"", x);
 }
 overloadable void printany(void *x) {
-  printf("%p", x);
+  printf("0x%p", x);
 }
 
 overloadable bool eq(int x, int y) {
