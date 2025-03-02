@@ -26,7 +26,6 @@
 - clang-format
 - clang-tidy
 - doxygen
-- zig
 
 ## Installation
 ```
