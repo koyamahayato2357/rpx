@@ -16,27 +16,25 @@ extern int TESTING_H_count;
    void TESTING_H_tester##name(int *); \
    [[gnu::constructor]] void TESTING_H_testrunner##name() { \
      TESTING_H_count++; \
-     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8; \
      printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "..."); \
      fflush(stdout); \
+     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8; \
      for (int i = 0; i < TESTING_H_COL; i++) putchar('\t'); \
-     printf(ESTHN "=> "); \
      int failed = 0; \
      TESTING_H_tester##name(&failed); \
      if (failed) { \
        printf("\n  └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
        return; \
      } \
-     puts(ESCGRN "[OK]" ESCLR); \
+     puts("=> "ESCGRN "[OK]" ESCLR); \
      TESTING_H_success++; \
    } \
    void TESTING_H_tester##name(int *TESTING_H_failed [[maybe_unused]])
 
- #ifndef TEST_FILTER
-  #define test_filter(filter) if (0)
- #else
-  // zig style `--test-filter`
+ #ifdef TEST_FILTER
   #define test_filter(filter) if (strstr(filter, TEST_FILTER))
+ #else
+  #define test_filter(filter) if (0)
  #endif
 
  #define ARGS_0
