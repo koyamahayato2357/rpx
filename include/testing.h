@@ -99,11 +99,10 @@ extern int TESTING_H_count;
 
  #define expect(cond) \
    do { \
-     if (!(cond)) { \
-       puts("\n  ├┬ Unexpected result at " HERE); \
-       printf("  │└─ `" #cond "` " ESCRED ESBLD " [NG]" ESCLR); \
-       (*TESTING_H_failed)++; \
-     } \
+     if (cond) break; \
+     puts("\n  ├┬ Unexpected result at " HERE); \
+     printf("  │└─ `" #cond "` " ESCRED ESBLD " [NG]" ESCLR); \
+     (*TESTING_H_failed)++; \
    } while (0)
 
  #define expecteq(expected, actual) \
