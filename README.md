@@ -18,7 +18,8 @@
 - bash
 - git
 - make
-- clang (>=19)
+- clang
++ `>=19` for c2y support (c23 is old)
 - lld
 - coreutils
 ### Optional
