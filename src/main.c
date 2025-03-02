@@ -484,16 +484,12 @@ void print_complex_polar(complex result) {
  */
 void print_matrix(matrix_t result) {
   for (size_t i = 0; i < result.rows; i++) {
-    for (size_t j = 0; j < result.cols; j++)
-      if (cimag(result.matrix[result.cols * i + j]) == 0)
-        printf("\t%lf", creal(result.matrix[result.cols * i + j]));
-      else {
-        printf(
-          "\t%lf + %lfi",
-          creal(result.matrix[result.cols * i + j]),
-          cimag(result.matrix[result.cols * i + j])
-        );
-      }
+    for (size_t j = 0; j < result.cols; j++) {
+      complex res = result.matrix[result.cols * i + j];
+      putchar('\t');
+      if (cimag(res) == 0) printf("%lf", creal(res));
+      else printf("%lf + %lfi", creal(res), cimag(res));
+    }
 
     putchar('\n');
   }
