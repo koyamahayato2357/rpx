@@ -398,6 +398,15 @@ bench (eval_expr_complex) {
   eval_expr_complex("1 0 /");
 }
 
+bench(eval_matrix) {
+  eval_expr_complex("[2 1,2,3,4,][2 5,6,7,8,]+");
+  eval_expr_complex("[3 4,1,4,6,5,7,3,6,7,]~");
+  eval_expr_complex("[1 4,5,][2 6,7,]*");
+  eval_expr_complex("[2 7,6,5,4,] 6 *");
+  eval_expr_complex("[2 9,0,5,1,] 4 ^");
+  eval_expr_complex("[2 5,4,3,2,][2 4,8,2,1,]/");
+}
+
 /**
  * @brief Output elem_t in appropriate format
  * @param[in] elem Output comtent
