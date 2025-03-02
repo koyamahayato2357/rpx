@@ -95,14 +95,18 @@ extern int TESTING_H_count;
  #define main main_
 
  #define expect(cond) \
-   if (!(cond)) { \
-     puts("\n  ├┬ Unexpected result at " HERE); \
-     printf("  │└─ `" #cond "` " ESCRED ESBLD " [NG]" ESCLR); \
-     (*TESTING_H_failed)++; \
-   }
-
- #define expecteq(lhs, rhs) \
    do { \
+     if (!(cond)) { \
+       puts("\n  ├┬ Unexpected result at " HERE); \
+       printf("  │└─ `" #cond "` " ESCRED ESBLD " [NG]" ESCLR); \
+       (*TESTING_H_failed)++; \
+     } \
+   } while (0)
+
+ #define expecteq(expected, actual) \
+   do { \
+     auto const lhs = expected; \
+     auto const rhs = actual; \
      if (eq((typeof(rhs))lhs, rhs)) break; \
      puts("\n  ├┬ Expected equal at " HERE); \
      printf("  │├─ " ESCGRN "Expected" ESCLR ": "); \
@@ -114,18 +118,20 @@ extern int TESTING_H_count;
      (*TESTING_H_failed)++; \
    } while (0)
 
- #define expectneq(lhs, rhs) \
+ #define expectneq(unexpected, actual) \
    do { \
+     auto const lhs = unexpected; \
+     auto const rhs = actual; \
      if (!eq((typeof(rhs))lhs, rhs)) break; \
-     int __llen = (int)strlen(#lhs); \
-     int __rlen = (int)strlen(#rhs); \
+     int __llen = (int)strlen(#unexpected); \
+     int __rlen = (int)strlen(#actual); \
      int __lpad = bigger(0, __rlen - __llen); \
      int __rpad = bigger(0, __llen - __rlen); \
      puts("\n  ├┬ Unexpected equality at " HERE); \
-     printf("  │├─ Left side:  `" #lhs "` ─"); \
+     printf("  │├─ Left side:  `" #unexpected "` ─"); \
      for (int __i = 0; __i < __lpad; __i++) printf("─"); \
      printf("┐\n"); \
-     printf("  │└─ Right side: `" #rhs "` ─"); \
+     printf("  │└─ Right side: `" #actual "` ─"); \
      for (int __i = 0; __i < __rpad; __i++) printf("─"); \
      printf("┴─➤ "); \
      printany(lhs); \
