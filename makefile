@@ -206,3 +206,4 @@ llmfile:
 	echo $(wildcard $(LIST_FILES)) | sed 's/ /\n/g' > $(LLMFILE)
 	echo >> $(LLMFILE)
 	head -n 9999 $(LIST_FILES) >> $(LLMFILE)
+	@echo "Generated $(LLMFILE)"
