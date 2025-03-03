@@ -57,7 +57,7 @@ OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination 
               -fuse-ld=lld -Wl,--gc-sections,--icf=all -s
 DEBUGFLAGS := -g3
 ASMFLAGS := -S -masm=intel
-DEPFLAGS = -MM -MP -MF $(DEPDIR)/$*.d
+DEPFLAGS = -MMD -MP -MT $(TARGETDIR)/$*.o -MF $(DEPDIR)/$*.d
 
 # Enables macro in the source
 CFLAGS += -DVERSION=\"$(shell git describe --tags --always 2>/dev/null || echo "unknown")\"
@@ -109,9 +109,9 @@ OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 
 ifeq ($(MAKECMDGOALS),build)
-	-include $(DEPS)
+  -include $(DEPS)
 else ifeq ($(MAKECMDGOALS),run)
-	-include $(DEPS)
+  -include $(DEPS)
 endif
 
 # rules
@@ -129,7 +129,7 @@ $(TARGETDIR)/%.o: $(SRCDIR)/%.c $(DEPDIR)/%.d | $(TARGETDIR)/
 	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -c -o $@
 
 $(DEPDIR)/%.d: $(SRCDIR)/%.c | $(DEPDIR)/
-	$(CC) $< -I$(INCDIR) $(CFLAGS) $(DEPFLAGS)
+	$(CC) $< -I$(INCDIR) $(CFLAGS) $(DEPFLAGS) -c -o /dev/null
 
 %/:
 	mkdir -p $@
