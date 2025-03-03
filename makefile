@@ -210,4 +210,5 @@ REAL_PATH_FILES_IN_DIRS := $(foreach f,$(SORTED_FILES_IN_DIRS),$(shell find $(DI
 llmfile: # for the LLM to read
 	echo $(LIST_FILES) | sed 's/ /\n/g' > $(LLMFILE)
 	echo >> $(LLMFILE) # newline
+	# `head` automatically inserts the file name at the start of the file
 	head -n 9999 $(FILES) $(REAL_PATH_FILES_IN_DIRS) >> $(LLMFILE)
