@@ -3,11 +3,12 @@
  */
 
 #ifdef TEST_MODE
-int main() {
-}
-#include "testing.h"
 int TEST_success;
 int TEST_count;
+int main() {
+  return TEST_count - TEST_success;
+}
+ #include "testing.h"
 [[gnu::destructor]] void TEST_report_test_result() {
   printf("\n" ESCBLU "Passed" ESCLR ": %d/%d\n", TEST_success, TEST_count);
 }
