@@ -156,8 +156,9 @@ clean-all:
 clean:
 	rm -rf $(OUTDIR)
 
-install: $(TARGET) | $(PREFIX)/bin/
+install: $(TARGET) | $(PREFIX)/bin/ ~/.config/$(PROJECT_NAME)/
 	cp $^ $(PREFIX)/bin/
+	cp example/* ~/.config/$(PROJECT_NAME)/
 
 uninstall:
 	rm $(PREFIX)/bin/$(PROJECT_NAME)
