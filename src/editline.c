@@ -19,6 +19,7 @@
 
 #define getchar() ((char)getchar())
 
+// getchar() becomes like getch() in MSVC
 void enable_rawmode(struct termios *orig_termios) {
   struct termios raw;
   tcgetattr(STDIN_FILENO, orig_termios);
@@ -230,16 +231,16 @@ void handle_es(char key, char *buf, char **cur, char **len) {
     memmove(*cur, *cur + 1, (size_t)(*len - *cur - 1));
     (*len)--;
     break;
-  case 'C':
+  case 'C': // right arrow
     movecur(1, buf, cur, *len);
     break;
-  case 'D':
+  case 'D': // left arrow
     movecur(-1, buf, cur, *len);
     break;
-  case 'F':
+  case 'F': // END
     *cur = *len;
     break;
-  case 'H':
+  case 'H': // HOME
     *cur = buf;
     break;
   default:
@@ -351,7 +352,7 @@ test (inserts) {
  */
 void insbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
-  case '(':
+  case '(': // autopair
     inserts(2, "()", cur, len, (size_t)(buf + BUFSIZE - *len));
     (*cur)++;
     break;
@@ -360,7 +361,7 @@ void insbind(char c, char *buf, char **cur, char **len) {
     *cur = 1 + (strchr(*cur, ')') ?: p$(goto dflt));
     break;
 
-  case '[':
+  case '[': // autopair
     inserts(2, "[]", cur, len, (size_t)(buf + BUFSIZE - *len));
     (*cur)++;
     break;
@@ -384,6 +385,7 @@ auto handle_printable = insbind;
  * @param[in] buf Start of line
  * @param[in,out] cur Cursor pointer
  * @param[in,out] len End of line
+ * @see `$ vim -c ":h *{char}*<CR>"`
  */
 void nrmbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
@@ -483,7 +485,6 @@ bool editline(int sz, char *buf) {
   char *len = buf;
 
   struct termios orig_termios ondrop(disable_rawmode);
-  // getchar() becomes like getch() in MSVC
   enable_rawmode(&orig_termios);
 
   for (char c = getchar();; c = getchar()) {
