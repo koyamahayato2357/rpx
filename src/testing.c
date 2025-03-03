@@ -6,6 +6,7 @@
 int TEST_success;
 int TEST_count;
 int main() {
+  // pre-commit: make test || exit 1
   return TEST_count - TEST_success;
 }
  #include "testing.h"
