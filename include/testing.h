@@ -13,8 +13,8 @@
  #include <stdio.h>
  #include <string.h>
 
-extern int TESTING_H_success;
-extern int TESTING_H_count;
+extern int TEST_success;
+extern int TEST_count;
 
  #define TEST_HEADER " ■ " ESCBLU "Testing " ESCLR
  #define ALIGN_COL(name) \
@@ -27,21 +27,21 @@ extern int TESTING_H_count;
 
 // zig style testing syntax
  #define test(name) \
-   void TESTING_H_tester##name(int *); \
-   [[gnu::constructor]] void TESTING_H_testrunner##name() { \
-     TESTING_H_count++; \
+   void TEST_test##name(int *); \
+   [[gnu::constructor]] void TEST_run##name() { \
+     TEST_count++; \
      printf(TEST_HEADER ESBLD #name ESCLR "..."); \
      int failed = 0; \
-     TESTING_H_tester##name(&failed); \
+     TEST_test##name(&failed); \
      if (failed) { \
        PRINT_FAILED(failed); \
        return; \
      } \
      ALIGN_COL(name); \
      PRINT_SUCCESS; \
-     TESTING_H_success++; \
+     TEST_success++; \
    } \
-   void TESTING_H_tester##name(int *TESTING_H_failed)
+   void TEST_test##name(int *TEST_failed)
 
  #ifdef TEST_FILTER
   #define test_filter(filter) if (strstr(filter, TEST_FILTER))
@@ -75,15 +75,15 @@ extern int TESTING_H_count;
 // if {a, b, c} is passed as a macro parameter, it becomes "{a", "b", "c}", so
 // it must be received as a variable length argument.
  #define test_table(name, fn, signature, ...) \
-   [[gnu::constructor]] void TESTING_H_tabletester##name() { \
-     TESTING_H_count++; \
+   [[gnu::constructor]] void TEST_tabletest##name() { \
+     TEST_count++; \
      printf(TEST_HEADER ESBLD #name ESCLR "..."); \
      int failed = 0; \
      typedef SIGNATURE signature sig_t; \
      sig_t data[] = __VA_ARGS__; \
      for (size_t i = 0; i < sizeof data / sizeof *data; i++) { \
        sig_t *t = data + i; \
-       int *TESTING_H_failed /* for expecteq */ = &failed; \
+       int *TEST_failed /* for expecteq */ = &failed; \
        expecteq(t->expected, CALL(fn, EXPAND signature)); \
      } \
      if (failed) { \
@@ -92,18 +92,18 @@ extern int TESTING_H_count;
      } \
      ALIGN_COL(name); \
      PRINT_SUCCESS; \
-     TESTING_H_success++; \
+     TEST_success++; \
    }
 
 // disable main function somewhere
- #define main TESTING_H_dummymain
+ #define main TEST_dummymain
 
  #define expect(cond) \
    do { \
      if (cond) break; \
      puts("\n ├┬ Unexpected result at " HERE); \
      printf(" │└─ `" #cond "` " ESCRED ESBLD " [NG]" ESCLR); \
-     (*TESTING_H_failed)++; \
+     (*TEST_failed)++; \
    } while (0)
 
  #define expecteq(expected, actual) \
@@ -118,7 +118,7 @@ extern int TESTING_H_count;
      printf(" │└─ " ESCRED "Actual" ESCLR ":   "); \
      printany(rhs); \
      printf(ESCRED ESBLD " [NG]" ESCLR); \
-     (*TESTING_H_failed)++; \
+     (*TEST_failed)++; \
    } while (0)
 
  #define expectneq(unexpected, actual) \
@@ -139,38 +139,38 @@ extern int TESTING_H_count;
      printf("┴─➤ "); \
      printany(lhs); \
      PRINT_SUCCESS; \
-     (*TESTING_H_failed)++; \
+     (*TEST_failed)++; \
    } while (0)
 
  #define testing_unreachable \
    ({ \
     puts("\n ├┬ " ESCRED "Reached line " HERE ESCLR); \
     printf(" │└─ " ESCRED "[NG]" ESCLR); \
-    (*TESTING_H_failed)++; \
+    (*TEST_failed)++; \
     (size_t)0; \
    })
 #else
 // --gc-sections
  #define test(name) \
-   [[maybe_unused]] static void TESTING_H_dum##name(int *TESTING_H_failed)
+   [[maybe_unused]] static void TEST_dum##name(int *TEST_failed)
  #define test_table(...)
  #define test_filter(filter)
  #define expect(cond) \
    do { \
      _ = cond; \
-     _ = TESTING_H_failed; \
+     _ = TEST_failed; \
    } while (0)
  #define expecteq(lhs, rhs) \
    do { \
      _ = lhs; \
      _ = rhs; \
-     _ = TESTING_H_failed; \
+     _ = TEST_failed; \
    } while (0)
  #define expectneq(lhs, rhs) \
    do { \
      _ = lhs; \
      _ = rhs; \
-     _ = TESTING_H_failed; \
+     _ = TEST_failed; \
    } while (0)
- #define testing_unreachable _ = TESTING_H_failed
+ #define testing_unreachable _ = TEST_failed
 #endif
