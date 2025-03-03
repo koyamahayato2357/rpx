@@ -10,3 +10,4 @@ default.profraw
 zig-out
 repomix-output.txt
 .repomixignore
+llmfile.txt

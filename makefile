@@ -115,7 +115,7 @@ else ifeq ($(MAKECMDGOALS),run)
 endif
 
 # rules
-.PHONY: run analyze clean-all clean install doc test lint fmt help release log
+.PHONY: run analyze clean-all clean install doc test lint fmt help release log llmfile
 .DEFAULT_GOAL := build
 
 build: $(TARGET)
@@ -199,3 +199,10 @@ release:
 	$(MAKE) run TYPE=test OPTLEVEL=3
 	$(MAKE) lint
 	$(MAKE) OPTLEVEL=3
+
+LLMFILE ?= llmfile.txt
+LIST_FILES ?= README.md makefile include/* src/*
+llmfile:
+	echo $(wildcard $(LIST_FILES)) | sed 's/ /\n/g' > $(LLMFILE)
+	echo >> $(LLMFILE)
+	head -n 9999 $(LIST_FILES) >> $(LLMFILE)
