@@ -8,6 +8,4 @@ doc/latex
 default.profraw
 .zig-cache
 zig-out
-repomix-output.txt
-.repomixignore
 llmfile.txt
