@@ -44,6 +44,7 @@
 
  #define main BENCHMARKING_H_dummymain
 #else
+// --gc-sections
  #define bench(a)       [[maybe_unused]] static void BENCHMARKING_H_dum##a()
  #define bench_cycle(a) [[maybe_unused]] static void BENCHMARKING_H_dumc##a()
 #endif
