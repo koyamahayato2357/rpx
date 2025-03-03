@@ -55,16 +55,16 @@ extern int TEST_count;
  #define GETM(_1, _2, _3, _4, _5, NAME, ...) NAME
 // function parameter
  #define PARAM0
- #define PARAM1 t->a1
- #define PARAM2 PARAM1, t->a2
- #define PARAM3 PARAM2, t->a3
- #define PARAM4 PARAM3, t->a4
+ #define PARAM1 t->p1
+ #define PARAM2 PARAM1, t->p2
+ #define PARAM3 PARAM2, t->p3
+ #define PARAM4 PARAM3, t->p4
 // define struct member
  #define STMEM1(_1)                 _1 expected;
- #define STMEM2(_1, _2)             STMEM1(_1) _2 a1;
- #define STMEM3(_1, _2, _3)         STMEM2(_1, _2) _3 a2;
- #define STMEM4(_1, _2, _3, _4)     STMEM3(_1, _2, _3) _4 a3;
- #define STMEM5(_1, _2, _3, _4, _5) STMEM4(_1, _2, _3, _4) _5 a4;
+ #define STMEM2(_1, _2)             STMEM1(_1) _2 p1;
+ #define STMEM3(_1, _2, _3)         STMEM2(_1, _2) _3 p2;
+ #define STMEM4(_1, _2, _3, _4)     STMEM3(_1, _2, _3) _4 p3;
+ #define STMEM5(_1, _2, _3, _4, _5) STMEM4(_1, _2, _3, _4) _5 p4;
 
  #define CALL(fn, ...) \
    fn(GETM(__VA_ARGS__, PARAM4, PARAM3, PARAM2, PARAM1, PARAM0))
