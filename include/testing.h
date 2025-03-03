@@ -95,7 +95,7 @@ extern int TESTING_H_count;
    }
 
 // disable main function somewhere
- #define main main_
+ #define main TESTING_H_dummymain
 
  #define expect(cond) \
    do { \
