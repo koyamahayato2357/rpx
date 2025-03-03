@@ -16,19 +16,26 @@
 extern int TESTING_H_success;
 extern int TESTING_H_count;
 
+ #define TESTNAME_PREFIX " ■ " ESCBLU "Testing " ESCLR
+ #define TESTNAME_SUFFIX "..."
+ #define ALIGN_COL(name) \
+   do { \
+     int col = 4 - (strlen(#name) + 6) / 8; \
+     for (int i = 0; i < col; i++) putchar('\t'); \
+   } while (0)
+
 // zig style testing syntax
  #define test(name) \
    void TESTING_H_tester##name(int *); \
    [[gnu::constructor]] void TESTING_H_testrunner##name() { \
      TESTING_H_count++; \
-     printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "..."); \
+     printf(TESTNAME_PREFIX ESBLD #name ESCLR TESTNAME_SUFFIX); \
      fflush(stdout); \
-     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8; \
-     for (int i = 0; i < TESTING_H_COL; i++) putchar('\t'); \
+     ALIGN_COL(name); \
      int failed = 0; \
      TESTING_H_tester##name(&failed); \
      if (failed) { \
-       printf("\n  └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
+       printf("\n └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
        return; \
      } \
      puts("=> " ESCGRN "[OK]" ESCLR); \
@@ -72,11 +79,9 @@ extern int TESTING_H_count;
  #define test_table(name, fn, signature, ...) \
    [[gnu::constructor]] void TESTING_H_tabletester##name() { \
      TESTING_H_count++; \
-     printf(ESCBLU "Testing " ESCLR ESBLD #name ESCLR "..."); \
-     int TESTING_H_COL = 3 - (strlen(#name) + 3) / 8; \
-     for (int TESTING_H_i = 0; TESTING_H_i < TESTING_H_COL; TESTING_H_i++) \
-       putchar('\t'); \
-     printf(ESTHN "=> "); \
+     printf(TESTNAME_PREFIX ESBLD #name ESCLR TESTNAME_SUFFIX); \
+     ALIGN_COL(name); \
+     printf("=> " ESCLR); \
      fflush(stdout); \
      typedef SIGNATURE signature sig_t; \
      sig_t data[] = __VA_ARGS__; \
@@ -87,10 +92,10 @@ extern int TESTING_H_count;
        expecteq(t->expected, CALL(fn, EXPAND signature)); \
      } \
      if (failed) { \
-       printf("\n  └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
+       printf("\n └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
        return; \
      } \
-     puts(ESCGRN ESBLD "[OK]" ESCLR); \
+     puts(ESCGRN "[OK]" ESCLR); \
      TESTING_H_success++; \
    }
 
@@ -100,8 +105,8 @@ extern int TESTING_H_count;
  #define expect(cond) \
    do { \
      if (cond) break; \
-     puts("\n  ├┬ Unexpected result at " HERE); \
-     printf("  │└─ `" #cond "` " ESCRED ESBLD " [NG]" ESCLR); \
+     puts("\n ├┬ Unexpected result at " HERE); \
+     printf(" │└─ `" #cond "` " ESCRED ESBLD " [NG]" ESCLR); \
      (*TESTING_H_failed)++; \
    } while (0)
 
@@ -110,11 +115,11 @@ extern int TESTING_H_count;
      typeof(actual) const lhs = expected; \
      auto const rhs = actual; \
      if (eq((typeof(rhs))lhs, rhs)) break; \
-     puts("\n  ├┬ Expected equal at " HERE); \
-     printf("  │├─ " ESCGRN "Expected" ESCLR ": "); \
+     puts("\n ├┬ Expected equal at " HERE); \
+     printf(" │├─ " ESCGRN "Expected" ESCLR ": "); \
      printany((typeof(rhs))lhs); \
      putchar('\n'); \
-     printf("  │└─ " ESCRED "Actual" ESCLR ":   "); \
+     printf(" │└─ " ESCRED "Actual" ESCLR ":   "); \
      printany(rhs); \
      printf(ESCRED ESBLD " [NG]" ESCLR); \
      (*TESTING_H_failed)++; \
@@ -129,11 +134,11 @@ extern int TESTING_H_count;
      int __rlen = (int)strlen(#actual); \
      int __lpad = bigger(0, __rlen - __llen); \
      int __rpad = bigger(0, __llen - __rlen); \
-     puts("\n  ├┬ Unexpected equality at " HERE); \
-     printf("  │├─ Left side:  `" #unexpected "` ─"); \
+     puts("\n ├┬ Unexpected equality at " HERE); \
+     printf(" │├─ Left side:  `" #unexpected "` ─"); \
      for (int __i = 0; __i < __lpad; __i++) printf("─"); \
-     printf("┐\n"); \
-     printf("  │└─ Right side: `" #actual "` ─"); \
+     puts("┐"); \
+     printf(" │└─ Right side: `" #actual "` ─"); \
      for (int __i = 0; __i < __rpad; __i++) printf("─"); \
      printf("┴─➤ "); \
      printany(lhs); \
@@ -143,8 +148,8 @@ extern int TESTING_H_count;
 
  #define testing_unreachable \
    ({ \
-    puts("\n  ├┬ " ESCRED "Reached line " HERE ESCLR); \
-    printf("  │└─ " ESCRED "[NG]" ESCLR); \
+    puts("\n ├┬ " ESCRED "Reached line " HERE ESCLR); \
+    printf(" │└─ " ESCRED "[NG]" ESCLR); \
     (*TESTING_H_failed)++; \
     (size_t)0; \
    })
