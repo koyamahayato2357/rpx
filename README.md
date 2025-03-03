@@ -43,7 +43,7 @@ RPX (RPN eXtended) is a powerful calculator that uses Reverse Polish Notation (R
 - Low keystrokes
 
 ## Modes of Operation
-RPX offers four modes of operation:
+RPX offers two modes of operation:
 
 1. **Real Number Mode** (default)
    - Supports floating-point operations and transcendental functions
