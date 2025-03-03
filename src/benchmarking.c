@@ -2,14 +2,12 @@
  * @file src/benchmarking.c
  */
 
-#include "benchmarking.h"
-
 #ifdef BENCHMARK_MODE
- #undef main
 int main() {
 }
- #define main main_
 #else
+ #include "benchmarking.h"
+
 bench (example) {
   int volatile a = 0;
   for (int i = 0; i < 100; i++)
