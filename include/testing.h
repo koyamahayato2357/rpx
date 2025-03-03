@@ -16,29 +16,29 @@
 extern int TESTING_H_success;
 extern int TESTING_H_count;
 
- #define TESTNAME_PREFIX " ■ " ESCBLU "Testing " ESCLR
- #define TESTNAME_SUFFIX "..."
+ #define TEST_HEADER " ■ " ESCBLU "Testing " ESCLR
  #define ALIGN_COL(name) \
    do { \
-     int col = 4 - (strlen(#name) + 6) / 8; \
+     int col = 4 - ((int)strlen(#name) + 6) / 8; \
      for (int i = 0; i < col; i++) putchar('\t'); \
    } while (0)
+ #define PRINT_FAILED(cnt) printf("\n └" ESCRED ESBLD "[NG:%d]\n" ESCLR, cnt)
+ #define PRINT_SUCCESS     puts("=> " ESCGRN "[OK]" ESCLR)
 
 // zig style testing syntax
  #define test(name) \
    void TESTING_H_tester##name(int *); \
    [[gnu::constructor]] void TESTING_H_testrunner##name() { \
      TESTING_H_count++; \
-     printf(TESTNAME_PREFIX ESBLD #name ESCLR TESTNAME_SUFFIX); \
-     fflush(stdout); \
-     ALIGN_COL(name); \
+     printf(TEST_HEADER ESBLD #name ESCLR "..."); \
      int failed = 0; \
      TESTING_H_tester##name(&failed); \
      if (failed) { \
-       printf("\n └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
+       PRINT_FAILED(failed); \
        return; \
      } \
-     puts("=> " ESCGRN "[OK]" ESCLR); \
+     ALIGN_COL(name); \
+     PRINT_SUCCESS; \
      TESTING_H_success++; \
    } \
    void TESTING_H_tester##name(int *TESTING_H_failed)
@@ -48,6 +48,8 @@ extern int TESTING_H_count;
  #else
   #define test_filter(filter) if (0)
  #endif
+
+ #define GET_M(_1, _2, _3, _4, _5, NAME, ...) NAME
 
  #define ARGS_0
  #define ARGS_1 t->a1
@@ -61,41 +63,35 @@ extern int TESTING_H_count;
  #define MEM_DEF_4(_1, _2, _3, _4)     MEM_DEF_3(_1, _2, _3) _4 a3;
  #define MEM_DEF_5(_1, _2, _3, _4, _5) MEM_DEF_4(_1, _2, _3, _4) _5 a4;
 
- #define EXPAND(...) __VA_ARGS__
-
- #define GET_M(_1, _2, _3, _4, _5, NAME, ...) NAME
-
  #define CALL(fn, ...) \
    fn(GET_M(__VA_ARGS__, ARGS_4, ARGS_3, ARGS_2, ARGS_1, ARGS_0))
-
  #define SIGNATURE(...) \
    struct { \
      GET_M(__VA_ARGS__, MEM_DEF_5, MEM_DEF_4, MEM_DEF_3, MEM_DEF_2, MEM_DEF_1) \
      (__VA_ARGS__) \
    }
+ #define EXPAND(...) __VA_ARGS__
 
 // if {a, b, c} is passed as a macro parameter, it becomes "{a", "b", "c}", so
 // it must be received as a variable length argument.
  #define test_table(name, fn, signature, ...) \
    [[gnu::constructor]] void TESTING_H_tabletester##name() { \
      TESTING_H_count++; \
-     printf(TESTNAME_PREFIX ESBLD #name ESCLR TESTNAME_SUFFIX); \
-     ALIGN_COL(name); \
-     printf("=> " ESCLR); \
-     fflush(stdout); \
+     printf(TEST_HEADER ESBLD #name ESCLR "..."); \
+     int failed = 0; \
      typedef SIGNATURE signature sig_t; \
      sig_t data[] = __VA_ARGS__; \
-     int failed = 0; \
-     for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); i++) { \
+     for (size_t i = 0; i < sizeof data / sizeof *data; i++) { \
        sig_t *t = data + i; \
        int *TESTING_H_failed /* for expecteq */ = &failed; \
        expecteq(t->expected, CALL(fn, EXPAND signature)); \
      } \
      if (failed) { \
-       printf("\n └" ESCRED ESBLD "[NG:%d]\n" ESCLR, failed); \
+       PRINT_FAILED(failed); \
        return; \
      } \
-     puts(ESCGRN "[OK]" ESCLR); \
+     ALIGN_COL(name); \
+     PRINT_SUCCESS; \
      TESTING_H_success++; \
    }
 
@@ -142,7 +138,7 @@ extern int TESTING_H_count;
      for (int __i = 0; __i < __rpad; __i++) printf("─"); \
      printf("┴─➤ "); \
      printany(lhs); \
-     printf(ESCRED ESBLD " [NG]" ESCLR); \
+     PRINT_SUCCESS; \
      (*TESTING_H_failed)++; \
    } while (0)
 
