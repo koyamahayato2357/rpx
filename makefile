@@ -201,9 +201,14 @@ release:
 	$(MAKE) OPTLEVEL=3
 
 LLMFILE ?= llmfile.txt
-LIST_FILES ?= README.md makefile include/* src/*
-llmfile:
-	echo $(wildcard $(LIST_FILES)) | sed 's/ /\n/g' > $(LLMFILE)
-	echo >> $(LLMFILE)
-	head -n 9999 $(LIST_FILES) >> $(LLMFILE)
+FILES ?= README.md makefile
+DIRS ?= include src
+FILES_IN_DIRS := $(wildcard $(addsuffix /*, $(DIRS)))
+LIST_FILES ?= $(FILES) $(FILES_IN_DIRS)
+SORTED_FILES_IN_DIRS := $(sort $(notdir $(basename $(FILES_IN_DIRS))))
+REAL_PATH_FILES_IN_DIRS := $(foreach f,$(SORTED_FILES_IN_DIRS),$(shell find $(DIRS) -name $f.?))
+llmfile: # for the LLM to read
+	echo $(LIST_FILES) | sed 's/ /\n/g' > $(LLMFILE)
+	echo >> $(LLMFILE) # newline
+	head -n 9999 $(FILES) $(REAL_PATH_FILES_IN_DIRS) >> $(LLMFILE)
 	@echo "Generated $(LLMFILE)"
