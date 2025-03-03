@@ -14,27 +14,22 @@ int TEST_count;
 [[gnu::destructor]] void TEST_report_test_result() {
   printf("\n" ESCBLU "Passed" ESCLR ": %d/%d\n", TEST_success, TEST_count);
 }
+
+test(name) {
+  test_filter("testing test") {
+    expect(false);
+    expect(1 + 1 == 1);
+    expect(1 + 1 == 2);
+
+    expecteq(3, 3);
+    expecteq(5, 3);
+    expecteq(3, 10);
+
+    expectneq(1, 10);
+    expectneq(10, 10);
+
+    testing_unreachable;
+  }
+}
+
 #endif
-
-/* usage */
-/*
-
-double av(int a, int b) {
-  return (a + b) / 2.0;
-}
-
-test (av_test) {
-  expect(av(1, 1) == 1.0);
-  expecteq(2.0, av(3, 1));
-  expectneq(8, av(3, 9));
-}
-
-test_table(
-  av_test_table, av, (double, int, int),
-  {
-    {2.5, 3, 2},
-    {3.5, 3, 4},
-    {4.5, 1, 8}
-}
-)
-*/

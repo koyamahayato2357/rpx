@@ -1,6 +1,9 @@
 /**
  * @file include/testing.h
  * @brief Define macros for testing
+ * @note Tests not in the test_filter block are always executed
+ *
+ * expect(preprocessor == romantic); // => [OK]
  */
 
 #pragma once
@@ -49,26 +52,26 @@ extern int TEST_count;
   #define test_filter(filter) if (0)
  #endif
 
- #define GET_M(_1, _2, _3, _4, _5, NAME, ...) NAME
-
- #define ARGS_0
- #define ARGS_1 t->a1
- #define ARGS_2 ARGS_1, t->a2
- #define ARGS_3 ARGS_2, t->a3
- #define ARGS_4 ARGS_3, t->a4
-
- #define MEM_DEF_1(_1)                 _1 expected;
- #define MEM_DEF_2(_1, _2)             MEM_DEF_1(_1) _2 a1;
- #define MEM_DEF_3(_1, _2, _3)         MEM_DEF_2(_1, _2) _3 a2;
- #define MEM_DEF_4(_1, _2, _3, _4)     MEM_DEF_3(_1, _2, _3) _4 a3;
- #define MEM_DEF_5(_1, _2, _3, _4, _5) MEM_DEF_4(_1, _2, _3, _4) _5 a4;
+ #define GETM(_1, _2, _3, _4, _5, NAME, ...) NAME
+// function parameter
+ #define PARAM0
+ #define PARAM1 t->a1
+ #define PARAM2 PARAM1, t->a2
+ #define PARAM3 PARAM2, t->a3
+ #define PARAM4 PARAM3, t->a4
+// define struct member
+ #define STMEM1(_1)                 _1 expected;
+ #define STMEM2(_1, _2)             STMEM1(_1) _2 a1;
+ #define STMEM3(_1, _2, _3)         STMEM2(_1, _2) _3 a2;
+ #define STMEM4(_1, _2, _3, _4)     STMEM3(_1, _2, _3) _4 a3;
+ #define STMEM5(_1, _2, _3, _4, _5) STMEM4(_1, _2, _3, _4) _5 a4;
 
  #define CALL(fn, ...) \
-   fn(GET_M(__VA_ARGS__, ARGS_4, ARGS_3, ARGS_2, ARGS_1, ARGS_0))
+   fn(GETM(__VA_ARGS__, PARAM4, PARAM3, PARAM2, PARAM1, PARAM0))
  #define SIGNATURE(...) \
    struct { \
-     GET_M(__VA_ARGS__, MEM_DEF_5, MEM_DEF_4, MEM_DEF_3, MEM_DEF_2, MEM_DEF_1) \
-     (__VA_ARGS__) \
+     /* higher-order macro lol */ \
+     GETM(__VA_ARGS__, STMEM5, STMEM4, STMEM3, STMEM2, STMEM1)(__VA_ARGS__) \
    }
  #define EXPAND(...) __VA_ARGS__
 
@@ -138,14 +141,14 @@ extern int TEST_count;
      for (int __i = 0; __i < __rpad; __i++) printf("─"); \
      printf("┴─➤ "); \
      printany(lhs); \
-     PRINT_SUCCESS; \
+     printf(ESCRED ESBLD " [NG]" ESCLR); \
      (*TEST_failed)++; \
    } while (0)
 
  #define testing_unreachable \
    ({ \
     puts("\n ├┬ " ESCRED "Reached line " HERE ESCLR); \
-    printf(" │└─ " ESCRED "[NG]" ESCLR); \
+    printf(" │└─ " ESCRED ESBLD "[NG]" ESCLR); \
     (*TEST_failed)++; \
     (size_t)0; \
    })
