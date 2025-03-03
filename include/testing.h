@@ -110,10 +110,10 @@ extern int TEST_count;
    do { \
      typeof(actual) const lhs = expected; \
      auto const rhs = actual; \
-     if (eq((typeof(rhs))lhs, rhs)) break; \
+     if (eq(lhs, rhs)) break; \
      puts("\n ├┬ Expected equal at " HERE); \
      printf(" │├─ " ESCGRN "Expected" ESCLR ": "); \
-     printany((typeof(rhs))lhs); \
+     printany(lhs); \
      putchar('\n'); \
      printf(" │└─ " ESCRED "Actual" ESCLR ":   "); \
      printany(rhs); \
@@ -125,7 +125,7 @@ extern int TEST_count;
    do { \
      typeof(actual) const lhs = unexpected; \
      auto const rhs = actual; \
-     if (!eq((typeof(rhs))lhs, rhs)) break; \
+     if (!eq(lhs, rhs)) break; \
      int __llen = (int)strlen(#unexpected); \
      int __rlen = (int)strlen(#actual); \
      int __lpad = bigger(0, __rlen - __llen); \
