@@ -31,7 +31,9 @@ overloadable void printany(struct winsize ws) {
   _ = ws;
 }
 #define ST_WS(r, c, x, y) \
-  {.ws_row = r, .ws_col = c, .ws_xpixel = x, .ws_ypixel = y}
+  (struct winsize) { \
+    .ws_row = r, .ws_col = c, .ws_xpixel = x, .ws_ypixel = y \
+  }
 
 test (get_winsz) { expectneq(ST_WS(0, 0, 0, 0), get_winsz()); }
 
