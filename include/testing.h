@@ -66,7 +66,7 @@ extern int TEST_count;
 
  #define CALL(fn, ...) \
    fn(GETM(__VA_ARGS__, PARAM4, PARAM3, PARAM2, PARAM1, PARAM0))
- #define SIGNATURE(...) \
+ #define STDEF(...) \
    struct { \
      GETM(__VA_ARGS__, STMEM5, STMEM4, STMEM3, STMEM2, STMEM1)(__VA_ARGS__) \
    }
@@ -79,7 +79,7 @@ extern int TEST_count;
      TEST_count++; \
      printf(TEST_HEADER ESBLD #name ESCLR "..."); \
      int failed = 0; \
-     typedef SIGNATURE signature S; \
+     typedef STDEF signature S; \
      S data[] = __VA_ARGS__; \
      for (size_t i = 0; i < sizeof data / sizeof(S); i++) { \
        S *t = data + i; \
