@@ -5,6 +5,7 @@
 
 #pragma once
 #ifdef BENCHMARK_MODE
+ #include "ansiesc.h"
  #include <stdio.h>
  #include <time.h>
 
