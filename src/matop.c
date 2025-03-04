@@ -4,6 +4,7 @@
  */
 
 #include "matop.h"
+#include "benchmarking.h"
 #include "chore.h"
 #include "errcode.h"
 #include "error.h"
@@ -46,11 +47,13 @@ overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
  * @brief Add/Sub between matrices
  */
 #define MOPS(name, op) \
-  matrix_t m##name(matrix_t const *lhs, matrix_t const *rhs) { \
+  matrix_t m##name( \
+    matrix_t const *restrict lhs, matrix_t const *restrict rhs \
+  ) { \
     if (!mcheckdim(lhs, rhs)) \
       disperr( \
         __FUNCTION__, \
-        "%s: %dx%d && %dx%d", \
+        "%s: %zux%zu && %zux%zu", \
         codetomsg(ERR_DIMENTION_MISMATCH), \
         lhs->rows, \
         lhs->cols, \
@@ -67,11 +70,11 @@ APPLY_ADDSUB(MOPS)
 /**
  * @brief Mul between matrices
  */
-matrix_t mmul(matrix_t const *lhs, matrix_t const *rhs) {
+matrix_t mmul(matrix_t const *restrict lhs, matrix_t const *restrict rhs) {
   if (lhs->rows != rhs->cols && lhs->cols != rhs->rows) [[clang::unlikely]]
     disperr(
       __FUNCTION__,
-      "%s: %dx%d && %dx%d",
+      "%s: %zux%zu && %zux%zu",
       codetomsg(ERR_DIMENTION_MISMATCH),
       lhs->rows,
       lhs->cols,
@@ -92,6 +95,7 @@ matrix_t mmul(matrix_t const *lhs, matrix_t const *rhs) {
 
 /**
  * @brief Calculate determinant
+ * @note No benefit of vectorization in the current implementation
  */
 double det(matrix_t const *restrict A) {
   if (A->rows != A->cols) [[clang::unlikely]]
@@ -120,6 +124,18 @@ double det(matrix_t const *restrict A) {
 
   for (size_t i = 0; i < dim; i++) result *= A->matrix[dim * i + i];
   return result;
+}
+
+// for vectorization benchmarking
+bench (det2x2) {
+  complex m[] = {3, 5, 2, 7};
+  matrix_t A = {.rows = 2, .cols = 2, .matrix = m};
+  det(&A);
+}
+bench (det3x3) {
+  complex m[] = {3, 5, 2, 7, 6, 1, 9, 6};
+  matrix_t A = {.rows = 3, .cols = 3, .matrix = m};
+  det(&A);
 }
 
 /**
