@@ -23,6 +23,18 @@ struct winsize get_winsz() {
   return w;
 }
 
+overloadable bool eq(struct winsize l, struct winsize r) {
+  return l.ws_col == r.ws_col && l.ws_row == r.ws_row
+      && l.ws_xpixel == r.ws_xpixel && l.ws_ypixel == r.ws_ypixel;
+}
+overloadable void printany(struct winsize ws) {
+  _ = ws;
+}
+#define ST_WS(r, c, x, y) \
+  {.ws_row = r, .ws_col = c, .ws_xpixel = x, .ws_ypixel = y}
+
+test (get_winsz) { expectneq(ST_WS(0, 0, 0, 0), get_winsz()); }
+
 /**
  * @brief Check if the decimal part is 0
  * @param[in] arg Checked double number
