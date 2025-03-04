@@ -193,7 +193,7 @@ info: $(TARGET)
 help:
 	@echo "release build: make release"
 	@echo "debug build: make"
-	@echo ""
+	@echo "test: make run T=test"
 	@echo 'build files: .build/HASH/{target,dep}/*'
 
 release:
