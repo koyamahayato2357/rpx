@@ -21,7 +21,7 @@ constexpr size_t ALPN = 'z' - 'a' + 1;
 #define drop             ondrop(free_cl)
 #define dropfile         ondrop(fclose_cl)
 #define dropdir          ondrop(closedir_cl)
-#define _                auto CAT(_DISCARD_, __COUNTER__) [[maybe_unused]]
+#define _                auto CAT(_DISCARD_, __COUNTER__) [[gnu::unused]]
 
 // zig style alloc()
 #define zalloc(T, size) ((T *)palloc(size * sizeof(T)))
@@ -35,10 +35,10 @@ constexpr size_t ALPN = 'z' - 'a' + 1;
 
 struct winsize get_winsz();
 [[gnu::const]] bool isint(double);
-overloadable void skipspcs(char const **);
-overloadable void skipspcs(char const **, size_t);
-void skip_untilcomma(char const **);
-void *palloc(size_t);
-void free_cl(void *);
-void fclose_cl(FILE **);
-void closedir_cl(DIR **);
+[[gnu::nonnull]] overloadable void skipspcs(char const **);
+[[gnu::nonnull]] overloadable void skipspcs(char const **, size_t);
+[[gnu::nonnull]] void skip_untilcomma(char const **);
+[[gnu::returns_nonnull, nodiscard("allocation")]] void *palloc(size_t);
+[[gnu::nonnull]] void free_cl(void *);
+[[gnu::nonnull]] void fclose_cl(FILE **);
+[[gnu::nonnull]] void closedir_cl(DIR **);

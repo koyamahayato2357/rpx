@@ -63,11 +63,10 @@ test_table(
 /**
  * @brief Skip pointer to first non-white-space char
  */
-[[gnu::nonnull]] overloadable void skipspcs(char const **restrict str) {
+overloadable void skipspcs(char const **restrict str) {
   [[clang::always_inline]] skipspcs(str, ~0UL);
 }
-[[gnu::nonnull]] overloadable void
-skipspcs(char const **restrict str, size_t len) {
+overloadable void skipspcs(char const **restrict str, size_t len) {
   for (size_t i = 0; i < len && isspace(**str); i++, (*str)++);
 }
 
@@ -75,7 +74,7 @@ skipspcs(char const **restrict str, size_t len) {
  * @brief Skip pointer to the char following the comma
  * @param[in,out] s String pointer
  */
-[[gnu::nonnull]] void skip_untilcomma(char const **restrict s) {
+void skip_untilcomma(char const **restrict s) {
   *s = strchr(*s, ',') orelse * s + strlen(*s) - 1;
   (*s)++;
 }
@@ -85,19 +84,19 @@ skipspcs(char const **restrict str, size_t len) {
  * @param[in] sz Memory size
  * @warning Unrecoverable
  */
-[[nodiscard("allocation"), gnu::returns_nonnull]] void *palloc(size_t sz) {
+void *palloc(size_t sz) {
   return malloc(sz) orelse p$panic(ERR_ALLOCATION_FAILURE);
 }
 
 /**
  * @brief free for drop
  */
-[[gnu::nonnull]] void free_cl(void *p) {
+void free_cl(void *p) {
   free(*(void **)p);
 }
-[[gnu::nonnull]] void fclose_cl(FILE **fp) {
+void fclose_cl(FILE **fp) {
   fclose(*fp);
 }
-[[gnu::nonnull]] void closedir_cl(DIR **fp) {
+void closedir_cl(DIR **fp) {
   closedir(*fp);
 }

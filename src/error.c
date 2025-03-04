@@ -5,7 +5,7 @@
 #include "chore.h"
 #include <stdarg.h>
 
-[[gnu::format(printf, 3, 4)]] overloadable void
+overloadable void
 disperr(FILE *fp, char const *funcname, char const *errmsgfmt, ...) {
   va_list ap;
   va_start(ap);
@@ -26,8 +26,7 @@ disperr(FILE *fp, char const *funcname, char const *errmsgfmt, ...) {
   va_end(ap);
 }
 
-[[gnu::format(printf, 2, 3)]] overloadable void
-disperr(char const *funcname, char const *errmsgfmt, ...) {
+overloadable void disperr(char const *funcname, char const *errmsgfmt, ...) {
   va_list ap;
   va_start(ap);
   disperr(stderr, funcname, errmsgfmt, ap);

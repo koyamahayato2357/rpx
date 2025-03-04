@@ -22,11 +22,11 @@
 test (in_expr) {
   int i = 0;
   for (;;) {
-    int j [[maybe_unused]] = $if(i == 1) 1 $else $break;
+    int j [[gnu::unused]] = $if(i == 1) 1 $else $break;
     testing_unreachable;
   }
   for (int i = 0; i < 5; i++) {
-    int j [[maybe_unused]] = $continue;
+    int j [[gnu::unused]] = $continue;
     testing_unreachable;
   }
 }
@@ -56,7 +56,7 @@ test (multi_statement) {
     int i = 9;
     i - 1;
   }) $else({
-    int i [[maybe_unused]] = a;
+    int i [[gnu::unused]] = a;
     a;
   });
   expecteq(a, 2);

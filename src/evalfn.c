@@ -354,12 +354,12 @@ void (*get_eval_table(char c))(machine_t *) {
   return eval_table[c - ' '];
 }
 
-[[gnu::nonnull]] void rpx_eval(machine_t *restrict ei) {
+void rpx_eval(machine_t *restrict ei) {
   for (; *ei->c.expr && ei->e.iscontinue; ei->c.expr++) [[clang::likely]]
     get_eval_table (*ei->c.expr)(ei);
 }
 
-[[gnu::nonnull]] void init_evalinfo(machine_t *restrict ret) {
+void init_evalinfo(machine_t *restrict ret) {
   ret->s.rbp = ret->s.rsp = ret->s.payload;
   ret->e.info = get_rrtinfo();
   ret->e.iscontinue = true;
@@ -373,7 +373,7 @@ void (*get_eval_table(char c))(machine_t *) {
  * @param a_expr String of expression
  * @return Expression evaluation result
  */
-[[gnu::nonnull]] elem_t eval_expr_real(char const *restrict a_expr) {
+elem_t eval_expr_real(char const *restrict a_expr) {
   machine_t ei;
   init_evalinfo(&ei);
   ei.c.expr = a_expr;

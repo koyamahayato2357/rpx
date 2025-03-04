@@ -9,27 +9,27 @@
 #include "error.h"
 #include "gene.h"
 
-[[nodiscard("allocation")]] matrix_t NAN_matrix(size_t rows, size_t cols) {
+matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
   for (size_t i = 0; i < rows * cols; i++) result.matrix[i] = NAN;
   return result;
 }
 
-[[nodiscard("allocation")]] matrix_t new_matrix(size_t rows, size_t cols) {
+matrix_t new_matrix(size_t rows, size_t cols) {
   // formatter broken...
   return (matrix_t
   ){.rows = rows, .cols = cols, .matrix = zalloc(complex, rows * cols)};
 }
 
-[[gnu::nonnull]] void free_matr(matrix_t *restrict x) {
+void free_matr(matrix_t *restrict x) {
   free(x->matrix);
 }
 
-[[gnu::nonnull]] bool mcheckdim(matrix_t const *lhs, matrix_t const *rhs) {
+bool mcheckdim(matrix_t const *lhs, matrix_t const *rhs) {
   return lhs->rows == rhs->rows && lhs->cols == rhs->cols;
 }
 
-[[gnu::nonnull]] bool meq(matrix_t const *lhs, matrix_t const *rhs) {
+bool meq(matrix_t const *lhs, matrix_t const *rhs) {
   if (!mcheckdim(lhs, rhs)) return false;
 
   for (size_t i = 0; i < lhs->cols * lhs->rows; i++)
@@ -46,9 +46,7 @@ overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
  * @brief Add/Sub between matrices
  */
 #define MOPS(name, op) \
-  [[nodiscard("allocation"), gnu::nonnull]] matrix_t m##name( \
-    matrix_t const *lhs, matrix_t const *rhs \
-  ) { \
+  matrix_t m##name(matrix_t const *lhs, matrix_t const *rhs) { \
     if (!mcheckdim(lhs, rhs)) \
       disperr( \
         __FUNCTION__, \
@@ -69,8 +67,7 @@ APPLY_ADDSUB(MOPS)
 /**
  * @brief Mul between matrices
  */
-[[nodiscard("allocation")]] matrix_t
-mmul(matrix_t const *lhs, matrix_t const *rhs) {
+matrix_t mmul(matrix_t const *lhs, matrix_t const *rhs) {
   if (lhs->rows != rhs->cols && lhs->cols != rhs->rows) [[clang::unlikely]]
     disperr(
       __FUNCTION__,
@@ -96,7 +93,7 @@ mmul(matrix_t const *lhs, matrix_t const *rhs) {
 /**
  * @brief Calculate determinant
  */
-[[gnu::nonnull]] double det(matrix_t const *restrict A) {
+double det(matrix_t const *restrict A) {
   if (A->rows != A->cols) [[clang::unlikely]]
     disperr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
 
@@ -130,8 +127,7 @@ mmul(matrix_t const *lhs, matrix_t const *rhs) {
  * @param[in] A Matrix
  * @return Inverted A
  */
-[[nodiscard("allocation"), gnu::nonnull]] matrix_t
-inverse_matrix(matrix_t const *restrict A) {
+matrix_t inverse_matrix(matrix_t const *restrict A) {
   size_t dim = A->rows;
 
   if (A->rows != A->cols) [[clang::unlikely]] {
@@ -194,6 +190,6 @@ inverse_matrix(matrix_t const *restrict A) {
  * @param[in,out] lhs Matrix
  * @param[in] rhs Scalar
  */
-[[gnu::nonnull]] void smul(matrix_t *restrict lhs, complex rhs) {
+void smul(matrix_t *restrict lhs, complex rhs) {
   for (size_t i = 0; i < lhs->rows * lhs->cols; i++) lhs->matrix[i] *= rhs;
 }

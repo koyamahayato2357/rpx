@@ -45,6 +45,6 @@ typedef struct {
   dump_t d;
 } machine_t;
 
-elem_t eval_expr_real(char const *);
-void rpx_eval(machine_t *);
-void init_evalinfo(machine_t *);
+[[gnu::nonnull]] elem_t eval_expr_real(char const *);
+[[gnu::nonnull]] void rpx_eval(machine_t *);
+[[gnu::nonnull]] void init_evalinfo(machine_t *);

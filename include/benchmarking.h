@@ -47,6 +47,6 @@
  #define main BENCH_dummymain
 #else
 // --gc-sections
- #define bench(a)       [[maybe_unused]] static void BENCH_dum##a()
- #define bench_cycle(a) [[maybe_unused]] static void BENCH_dumc##a()
+ #define bench(a)       [[gnu::unused]] static void BENCH_dum##a()
+ #define bench_cycle(a) [[gnu::unused]] static void BENCH_dumc##a()
 #endif

@@ -152,7 +152,7 @@ extern int TEST_count;
 #else
 // --gc-sections
  #define test(name) \
-   [[maybe_unused]] static void TEST_dum##name(int *TEST_failed)
+   [[gnu::unused]] static void TEST_dum##name(int *TEST_failed)
  #define test_table(...)
  #define test_filter(filter)
  #define expect(cond) \

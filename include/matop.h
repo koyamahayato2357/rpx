@@ -20,13 +20,23 @@ typedef struct {
   matrix matrix;
 } matrix_t;
 
-matrix_t new_matrix(size_t, size_t);
-void free_matr(matrix_t *restrict);
-bool meq(matrix_t const *, matrix_t const *);
-matrix_t madd(matrix_t const *, matrix_t const *);
-matrix_t msub(matrix_t const *, matrix_t const *);
-matrix_t mmul(matrix_t const *, matrix_t const *);
-double det(matrix_t const *);
-matrix_t inverse_matrix(matrix_t const *);
-void smul(matrix_t *, complex);
+[[nodiscard("allocation")]] matrix_t new_matrix(size_t, size_t);
+[[gnu::nonnull]] void free_matr(matrix_t *restrict);
+[[gnu::nonnull]] bool meq(matrix_t const *, matrix_t const *);
+
+[[nodiscard("allocation"), gnu::nonnull]] matrix_t
+madd(matrix_t const *, matrix_t const *);
+
+[[nodiscard("allocation"), gnu::nonnull]] matrix_t
+msub(matrix_t const *, matrix_t const *);
+
+[[nodiscard("allocation"), gnu::nonnull]] matrix_t
+mmul(matrix_t const *, matrix_t const *);
+
+[[gnu::nonnull]] double det(matrix_t const *);
+
+[[nodiscard("allocation"), gnu::nonnull]] matrix_t
+inverse_matrix(matrix_t const *);
+
+[[gnu::nonnull]] void smul(matrix_t *, complex);
 overloadable bool eq(matrix_t const *, matrix_t const *);
