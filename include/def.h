@@ -18,18 +18,18 @@
 #define EVAL3(...) EVAL4(EVAL4(EVAL4(EVAL4(__VA_ARGS__))))
 #define EVAL4(...) EXPAND(EXPAND(EXPAND(EXPAND(__VA_ARGS__))))
 
-#define PRIMITIVE_CAT(a, b) a##b
-#define CAT(a, b)           PRIMITIVE_CAT(a, b)
+#define PRIM_CAT(a, b) a##b
+#define CAT(a, b)      PRIM_CAT(a, b)
 
-#define PRIMITIVE_CAR(first, ...) first
-#define PRIMITIVE_CDR(first, ...) __VA_ARGS__
+#define PRIM_CAR(first, ...) first
+#define PRIM_CDR(first, ...) __VA_ARGS__
 
-#define CAR(...) PRIMITIVE_CAR(__VA_ARGS__)
-#define CDR(...) PRIMITIVE_CDR(__VA_ARGS__)
+#define CAR(...) PRIM_CAR(__VA_ARGS__)
+#define CDR(...) PRIM_CDR(__VA_ARGS__)
 
 #define CHECK(x) CAR(CDR(x, 0))
 
-#define NOT(x) CHECK(PRIMITIVE_CAT(NOT_, x))
+#define NOT(x) CHECK(PRIM_CAT(NOT_, x))
 #define NOT_0  _, 1
 
 #define BOOL(x) NOT(NOT(x))
