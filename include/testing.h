@@ -70,7 +70,6 @@ extern int TEST_count;
    struct { \
      GETM(__VA_ARGS__, STMEM5, STMEM4, STMEM3, STMEM2, STMEM1)(__VA_ARGS__) \
    }
- #define EXPAND(...) __VA_ARGS__
 
 // if {a, b, c} is passed as a macro parameter, it becomes "{a", "b", "c}", so
 // it must be received as a variable length argument.
