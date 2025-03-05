@@ -50,25 +50,19 @@ extern int TEST_count;
   #define test_filter(filter) if (0)
  #endif
 
- #define GETM(_1, _2, _3, _4, _5, NAME, ...) NAME
-// function parameter
- #define PARAM0
- #define PARAM1 t->p1
- #define PARAM2 PARAM1, t->p2
- #define PARAM3 PARAM2, t->p3
- #define PARAM4 PARAM3, t->p4
-// define struct member
- #define STMEM1(_1)                 _1 expected;
- #define STMEM2(_1, _2)             STMEM1(_1) _2 p1;
- #define STMEM3(_1, _2, _3)         STMEM2(_1, _2) _3 p2;
- #define STMEM4(_1, _2, _3, _4)     STMEM3(_1, _2, _3) _4 p3;
- #define STMEM5(_1, _2, _3, _4, _5) STMEM4(_1, _2, _3, _4) _5 p4;
+ #define PMAP(tok, _, ...) \
+   t->p##tok __VA_OPT__(, DEFER(_PMAP)()(tok##0, __VA_ARGS__))
+ #define _PMAP() PMAP
 
- #define CALL(fn, ...) \
-   fn(GETM(__VA_ARGS__, PARAM4, PARAM3, PARAM2, PARAM1, PARAM0))
+ #define SMAP(tok, _1, ...) \
+   _1 p##tok; \
+   __VA_OPT__(DEFER(_SMAP)()(tok##0, __VA_ARGS__))
+ #define _SMAP() SMAP
+
+ #define CALL(fn, ...) fn(EVAL(PMAP(00, __VA_ARGS__)))
  #define STDEF(...) \
    struct { \
-     GETM(__VA_ARGS__, STMEM5, STMEM4, STMEM3, STMEM2, STMEM1)(__VA_ARGS__) \
+     EVAL(SMAP(0, __VA_ARGS__)) \
    }
 
 // if {a, b, c} is passed as a macro parameter, it becomes "{a", "b", "c}", so
@@ -83,7 +77,7 @@ extern int TEST_count;
      for (size_t i = 0; i < sizeof data / sizeof(S); i++) { \
        S *t = data + i; \
        int *TEST_failed /* for expecteq */ = &failed; \
-       expecteq(t->expected, CALL(fn, EXPAND signature)); \
+       expecteq(t->p0, CALL(fn, CDR(EXPAND signature))); \
      } \
      if (failed) { \
        PRINT_FAILED(failed); \
