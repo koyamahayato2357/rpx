@@ -54,7 +54,7 @@ void printany(size_t x) {
 void printany(double x) {
   printf("%lf", x);
 }
-void printany(char const *x) {
+void printany(char *x) {
   printf("%s", x);
 }
 void printany(char x) {
@@ -89,7 +89,7 @@ bool eq(double x, double y) {
 bool eq(complex x, complex y) {
   return complex_eq(x, y);
 }
-bool eq(char const *x, char const *y) {
+bool eq(char *x, char *y) {
   return !strcmp(x, y);
 }
 #pragma clang attribute pop

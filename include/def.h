@@ -33,3 +33,8 @@
 #define NOT_0  _, 1
 
 #define BOOL(x) NOT(NOT(x))
+
+#define PRIM_MAP(M, first, ...) \
+  M(first) __VA_OPT__(DEFER(_MAP)()(M, __VA_ARGS__))
+#define _MAP()   PRIM_MAP
+#define MAP(...) EVAL(PRIM_MAP(__VA_ARGS__))
