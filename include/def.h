@@ -21,11 +21,15 @@
 #define PRIMITIVE_CAT(a, b) a##b
 #define CAT(a, b)           PRIMITIVE_CAT(a, b)
 
-#define SECOND(_1, _2, ...) _2
+#define PRIMITIVE_CAR(first, ...) first
+#define PRIMITIVE_CDR(first, ...) __VA_ARGS__
 
-#define CHECK(...) SECOND(__VA_ARGS__, 0, )
+#define CAR(...) PRIMITIVE_CAR(__VA_ARGS__)
+#define CDR(...) PRIMITIVE_CDR(__VA_ARGS__)
+
+#define CHECK(x) CAR(CDR(x, 0))
 
 #define NOT(x) CHECK(PRIMITIVE_CAT(NOT_, x))
-#define NOT_0  _, 1,
+#define NOT_0  _, 1
 
 #define BOOL(x) NOT(NOT(x))
