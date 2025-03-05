@@ -506,7 +506,7 @@ bool editline(int sz, char *buf) {
       handle_printable(c, buf, &cur, &len);
       break;
     }
-    printf(ESEL(2) "\r%s\033[%ldG", buf, cur - buf + 1);
+    PRINT(ESEL(2) "\r", buf, "\033[", (int)(cur - buf + 1), "G");
   }
   putchar('\n');
 

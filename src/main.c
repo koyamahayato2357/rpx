@@ -456,7 +456,7 @@ overloadable bool eq(elem_t lhs, elem_t rhs) {
  * @param[in] result Output value
  */
 void print_real(double result) {
-  if (isint(result)) printf("result: %lld\n", (long long)result);
+  if (isint(result)) PRINT("result: ", (long)result, "\n");
   else printf("result: %lf\n", result);
 }
 

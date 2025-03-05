@@ -63,29 +63,33 @@ void printany(bool x) {
 void printany(char *x) {
   printf("%s", x);
 }
+void printany(long x) {
+  printf("%ld", x);
+}
+void printany(long long x) {
+  printf("%lld", x);
+}
 void printany(void *x) {
   printf("0x%p", x);
 }
 
-bool eq(int x, int y) {
-  return x == y;
-}
-bool eq(size_t x, size_t y) {
-  return x == y;
-}
+#define EQ_DIRECTLY(T) \
+  bool eq(T x, T y) { \
+    return x == y; \
+  }
+EQ_DIRECTLY(int)
+EQ_DIRECTLY(size_t)
+EQ_DIRECTLY(char)
+EQ_DIRECTLY(bool)
+EQ_DIRECTLY(void *)
+
 bool eq(double x, double y) {
   return double_eq(x, y);
 }
-bool eq(char x, char y) {
+bool eq(complex x, complex y) {
   return complex_eq(x, y);
-}
-bool eq(bool x, bool y) {
-  return x == y;
 }
 bool eq(char *x, char *y) {
   return !strcmp(x, y);
-}
-bool eq(void *x, void *y) {
-  return x == y;
 }
 #pragma clang attribute pop

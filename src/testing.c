@@ -11,7 +11,7 @@ int main() {
 }
  #include "testing.h"
 [[gnu::destructor]] void TEST_report_test_result() {
-  printf("\n" ESCBLU "Passed" ESCLR ": %d/%d\n", TEST_success, TEST_count);
+  PRINT("\n" ESCBLU "Passed" ESCLR ": ", TEST_success, "/", TEST_count, "\n");
 }
 
 test (testing_test) {
