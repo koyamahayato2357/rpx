@@ -17,8 +17,7 @@
   M(bool) M(char) M(int) M(size_t) M(long) M(long long) M(double)
 #define APPLY_POINTER_TYPES(M) \
   M(bool *) \
-  M(char *) M(int *) M(size_t *) M(void *) M(long *) M(long long *) \
-    M(double *)
+  M(char *) M(int *) M(size_t *) M(void *) M(long *) M(long long *) M(double *)
 #define APPLY_ADDSUB(M) M(add, +) M(sub, -)
 #define APPLY_ARTHM(M)  APPLY_ADDSUB(M) M(mul, *) M(div, /)
 #define APPLY_LTGT(M)   M(lt, <) M(gt, >)
