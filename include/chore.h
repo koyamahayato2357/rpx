@@ -4,16 +4,13 @@
  */
 
 #pragma once
+#include "def.h"
 #include <dirent.h>
 #include <stdio.h>
 
 constexpr size_t ALPN = 'z' - 'a' + 1;
 
-#define CAT(a, b)        CAT2(a, b)
-#define CAT2(a, b)       a##b
-#define TOSTR(x)         #x
-#define TO2STR(x)        TOSTR(x)
-#define HERE             __FILE__ ":" TO2STR(__LINE__)
+#define HERE             __FILE__ ":" TOSTR(__LINE__)
 #define lesser(lhs, rhs) ((lhs) < (rhs) ? (lhs) : (rhs))
 #define bigger(lhs, rhs) ((lhs) > (rhs) ? (lhs) : (rhs))
 #define overloadable     [[clang::overloadable]]

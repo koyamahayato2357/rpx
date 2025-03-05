@@ -49,19 +49,19 @@ void printany(int x) {
   printf("%d", x);
 }
 void printany(size_t x) {
-  printf("%zuUL", x);
+  printf("%zu", x);
 }
 void printany(double x) {
   printf("%lf", x);
 }
 void printany(char x) {
-  printf("'%c'", x);
+  printf("%c", x);
 }
 void printany(bool x) {
-  printf(x ? "true" : "false");
+  printf(x ? "`true`" : "`false`");
 }
 void printany(char *x) {
-  printf("\"%s\"", x);
+  printf("%s", x);
 }
 void printany(void *x) {
   printf("0x%p", x);

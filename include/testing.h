@@ -23,7 +23,7 @@ extern int TEST_count;
      int col = 4 - ((int)strlen(#name) + 6) / 8; \
      for (int i = 0; i < col; i++) putchar('\t'); \
    } while (0)
- #define PRINT_FAILED(cnt) printf("\n └" ESCRED ESBLD "[NG:%d]\n" ESCLR, cnt)
+ #define PRINT_FAILED(cnt) PRINT("\n └" ESCRED ESBLD "[NG:", cnt, "]\n" ESCLR)
  #define PRINT_SUCCESS     puts("=> " ESCGRN "[OK]" ESCLR)
 
 // zig style testing syntax
@@ -112,12 +112,10 @@ extern int TEST_count;
      auto const rhs = actual; \
      if (eq(lhs, rhs)) break; \
      puts("\n ├┬ Expected equal at " HERE); \
-     printf(" │├─ " ESCGRN "Expected" ESCLR ": "); \
-     printany(lhs); \
-     putchar('\n'); \
-     printf(" │└─ " ESCRED "Actual" ESCLR ":   "); \
-     printany(rhs); \
-     printf(ESCRED ESBLD " [NG]" ESCLR); \
+     PRINT(" │├─ " ESCGRN "Expected" ESCLR ": ", lhs, "\n"); \
+     PRINT( \
+       " │└─ " ESCRED "Actual" ESCLR ":   ", rhs, ESCRED ESBLD " [NG]" ESCLR \
+     ); \
      (*TEST_failed)++; \
    } while (0)
 
@@ -136,9 +134,7 @@ extern int TEST_count;
      puts("┐"); \
      printf(" │└─ Right side: `" #actual "` ─"); \
      for (int __i = 0; __i < __rpad; __i++) printf("─"); \
-     printf("┴─➤ "); \
-     printany(lhs); \
-     printf(ESCRED ESBLD " [NG]" ESCLR); \
+     PRINT("┴─➤ ", lhs, ESCRED ESBLD " [NG]" ESCLR); \
      (*TEST_failed)++; \
    } while (0)
 
