@@ -1,3 +1,9 @@
+/**
+ * @file include/def.h
+ */
+
+#pragma once
+
 #define _TOSTR(x) #x
 #define TOSTR(x)  _TOSTR(x)
 
