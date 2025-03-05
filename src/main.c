@@ -457,14 +457,14 @@ overloadable bool eq(elem_t lhs, elem_t rhs) {
  */
 void print_real(double result) {
   if (isint(result)) PRINT("result: ", (long)result, "\n");
-  else printf("result: %lf\n", result);
+  else PRINT("result: ", result, "\n");
 }
 
 /**
  * @brief Output value of type complex
  */
 void print_complex(complex result) {
-  printf("result: %lf + %lfi\n", creal(result), cimag(result));
+  PRINT("result: ", creal(result), " + ", cimag(result), "i\n");
 }
 
 /**
@@ -474,8 +474,8 @@ void print_complex_polar(complex result) {
   complex res = result;
   if (isnan(creal(res)) || isnan(cimag(res))) return;
 
-  printf(
-    "result: %lf \\phasor %lf\n", cabs(res), atan2(cimag(res), creal(res))
+  PRINT(
+    "result: ", cabs(res), " \\phasor ", atan2(cimag(res), creal(res)), "\n"
   );
 }
 
@@ -487,17 +487,16 @@ void print_matrix(matrix_t result) {
     for (size_t j = 0; j < result.cols; j++) {
       complex res = result.matrix[result.cols * i + j];
       putchar('\t');
-      if (cimag(res) == 0) printf("%lf", creal(res));
-      else printf("%lf + %lfi", creal(res), cimag(res));
+      if (cimag(res) == 0) PRINT(creal(res));
+      else PRINT(creal(res), " + ", cimag(res), "i");
     }
 
     putchar('\n');
   }
 }
 
-[[gnu::nonnull]] void print_lambda(char const *restrict result) {
-  printf("result: ");
-  puts(result);
+[[gnu::nonnull]] void print_lambda(char const *result) {
+  PRINT("result: ", result, "\n");
 }
 
 /**
