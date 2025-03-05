@@ -22,7 +22,8 @@
 #define CAT(a, b)           PRIMITIVE_CAT(a, b)
 
 #define SECOND(_1, _2, ...) _2
-#define CHECK(...)          SECOND(__VA_ARGS__, 0, )
+
+#define CHECK(...) SECOND(__VA_ARGS__, 0, )
 
 #define NOT(x) CHECK(PRIMITIVE_CAT(NOT_, x))
 #define NOT_0  _, 1,
