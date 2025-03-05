@@ -77,7 +77,7 @@ extern int TEST_count;
      for (size_t i = 0; i < sizeof data / sizeof(S); i++) { \
        S *t = data + i; \
        int *TEST_failed /* for expecteq */ = &failed; \
-       expecteq(t->p0, CALL(fn, CDR(EXPAND signature))); \
+       expecteq(t->p0, CALL(fn, CDR signature)); \
      } \
      if (failed) { \
        PRINT_FAILED(failed); \
