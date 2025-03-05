@@ -16,13 +16,14 @@
 
 #define TYPES bool, char, int, size_t, long, long long, double
 
-#define APPLY_TYPES(M) MAP(M, TYPES)
+#define PRIM_TYPES void *
 
 #define APPLY_ADDSUB(M) M(add, +) M(sub, -)
 #define APPLY_ARTHM(M)  APPLY_ADDSUB(M) M(mul, *) M(div, /)
 #define APPLY_LTGT(M)   M(lt, <) M(gt, >)
 
-APPLY_TYPES(DEF_GEN)
+MAP(DEF_GEN, TYPES)
+MAP(DEF_PRIM, PRIM_TYPES)
 
 #define _PRINTREC1(first, ...) \
   printany(first); \
