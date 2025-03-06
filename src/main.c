@@ -31,6 +31,7 @@
 #include <string.h>
 
 auto eval_f = eval_expr_real;
+auto print_complex = print_complex_complex;
 
 int main(int argc, char const **argv) {
   init_plotconfig();
@@ -463,7 +464,7 @@ void print_real(double result) {
 /**
  * @brief Output value of type complex
  */
-void print_complex(complex result) {
+void print_complex_complex(complex result) {
   PRINT("result: ", creal(result), " + ", cimag(result), "i\n");
 }
 
@@ -516,6 +517,11 @@ void print_matrix(matrix_t result) {
     case 'p': // plotcfg explicit implicit
       pcfg.plotexpr = pcfg.plotexpr == plotexpr ? plotexpr_implicit : plotexpr;
       set_plotcfg(pcfg);
+      break;
+    case 'P': // print_complex
+      print_complex = print_complex == print_complex_complex
+                      ? print_complex_polar
+                      : print_complex_complex;
       break;
     default:
       [[clang::unlikely]];
