@@ -109,9 +109,9 @@ OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 
 ifeq ($(MAKECMDGOALS),build)
-  -include $(DEPS)
+  -include $(wildcard $(DEPS))
 else ifeq ($(MAKECMDGOALS),run)
-  -include $(DEPS)
+  -include $(wildcard $(DEPS))
 endif
 
 # rules
@@ -125,11 +125,10 @@ $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) $(EXTRALDFLAGS) $^ -o $@
 
 # compile
-$(TARGETDIR)/%.o: $(SRCDIR)/%.c $(DEPDIR)/%.d | $(TARGETDIR)/
-	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) -c -o $@
+$(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR)/ $(DEPDIR)/
+	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -c -o $@
 
-$(DEPDIR)/%.d: $(SRCDIR)/%.c | $(DEPDIR)/
-	$(CC) $< -I$(INCDIR) $(CFLAGS) $(DEPFLAGS) -c -o /dev/null
+$(DEPS):
 
 %/:
 	mkdir -p $@
