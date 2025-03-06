@@ -88,7 +88,7 @@ DEF_MULTI(todeg, 180 / M_PI)
 
 #define DEF_TWOCHARFN(name, c1, f1, c2, f2, c3, f3) \
   static void rpx_##name(machine_t *ei) { \
-    switch (*++ei->c.expr) { \
+    switch (*++ei->c.rip) { \
       OVERWRITE_REAL(c1, f1) \
       OVERWRITE_REAL(c2, f2) \
       OVERWRITE_REAL(c3, f3) \
@@ -106,18 +106,18 @@ static void rpx_logbase(machine_t *ei) {
 }
 
 static void rpx_const(machine_t *ei) {
-  PUSH = SET_REAL(get_const(*++ei->c.expr));
+  PUSH = SET_REAL(get_const(*++ei->c.rip));
 }
 
 static void rpx_parse(machine_t *ei) {
   char *next = nullptr;
-  PUSH = SET_REAL(strtod(ei->c.expr, &next));
-  ei->c.expr = next - 1;
+  PUSH = SET_REAL(strtod(ei->c.rip, &next));
+  ei->c.rip = next - 1;
 }
 
 static void rpx_space(machine_t *ei) {
-  skipspcs(&ei->c.expr);
-  ei->c.expr--;
+  skipspcs(&ei->c.rip);
+  ei->c.rip--;
 }
 
 #define CASE_TWOARGFN(c, f) \
@@ -126,7 +126,7 @@ static void rpx_space(machine_t *ei) {
     ei->s.rsp->elem.real = f(ei->s.rsp->elem.real, x); \
   } break;
 static void rpx_intfn(machine_t *ei) {
-  switch (*++ei->c.expr) {
+  switch (*++ei->c.rip) {
     CASE_TWOARGFN('g', gcd)
     CASE_TWOARGFN('l', lcm)
     CASE_TWOARGFN('p', permutation)
@@ -137,7 +137,7 @@ static void rpx_intfn(machine_t *ei) {
 }
 
 static void rpx_sysfn(machine_t *ei) {
-  switch (*++ei->c.expr) {
+  switch (*++ei->c.rip) {
   case 'a': // ANS
     PUSH = ei->e.info.hist[lesser(ei->e.info.histi, BUFSIZE - 1)];
     break;
@@ -169,19 +169,19 @@ static void rpx_sysfn(machine_t *ei) {
 }
 
 static real_t handle_function_args(machine_t *ei) {
-  char argnum = *ei->c.expr - '0';
+  char argnum = *ei->c.rip - '0';
   if (ei->d.argc[ei->d.argci] < argnum) ei->d.argc[ei->d.argci] = argnum;
   return ei->e.args[8 - argnum];
 }
 
 static void rpx_lregs(machine_t *ei) {
-  *++ei->s.rsp = (isdigit(*++ei->c.expr)) ? handle_function_args(ei)
-               : (islower(*ei->c.expr))   ? ei->e.info.reg[*ei->c.expr - 'a']
-                                        : *(real_t *)$panic(ERR_CHAR_NOT_FOUND);
+  *++ei->s.rsp = (isdigit(*++ei->c.rip)) ? handle_function_args(ei)
+               : (islower(*ei->c.rip))   ? ei->e.info.reg[*ei->c.rip - 'a']
+                                       : *(real_t *)$panic(ERR_CHAR_NOT_FOUND);
 }
 
 static void rpx_wregs(machine_t *ei) {
-  ei->e.info.reg[*++ei->c.expr - 'a'] = *ei->s.rsp;
+  ei->e.info.reg[*++ei->c.rip - 'a'] = *ei->s.rsp;
 }
 
 static void rpx_end(machine_t *ei) {
@@ -201,16 +201,16 @@ static void rpx_grpend(machine_t *ei) {
 }
 
 static void rpx_lmdbgn(machine_t *ei) {
-  ei->c.expr++;
+  ei->c.rip++;
   size_t i = 0;
-  for (int nest = 1; *ei->c.expr; i++)
-    if (ei->c.expr[i] == '{') nest++;
-    else if (ei->c.expr[i] == '}' && !--nest) break;
+  for (int nest = 1; *ei->c.rip; i++)
+    if (ei->c.rip[i] == '{') nest++;
+    else if (ei->c.rip[i] == '}' && !--nest) break;
 
   *++ei->s.rsp = SET_LAMB(zalloc(char, i + 1));
-  memcpy(ei->s.rsp->elem.lamb, ei->c.expr, i);
+  memcpy(ei->s.rsp->elem.lamb, ei->c.rip, i);
   ei->s.rsp->elem.lamb[i] = '\0';
-  ei->c.expr += i;
+  ei->c.rip += i;
 }
 
 static void rpx_lmdend(machine_t *ei) {
@@ -234,12 +234,12 @@ static void ret_fn(machine_t *ei) {
 }
 
 static void rpx_runlmd(machine_t *ei) {
-  char const *temp = ei->c.expr;
-  _ drop = ei->c.expr = ei->s.rsp->elem.lamb;
+  char const *temp = ei->c.rip;
+  _ drop = ei->c.expr = ei->c.rip = ei->s.rsp->elem.lamb;
   call_fn(ei);
   rpx_eval(ei);
   ret_fn(ei);
-  ei->c.expr = temp;
+  ei->c.rip = temp;
 }
 
 static void rpx_cond(machine_t *ei) {
@@ -249,7 +249,13 @@ static void rpx_cond(machine_t *ei) {
 }
 
 static void rpx_undfned(machine_t *ei) {
-  disperr(__FUNCTION__, "%s: %c", codetomsg(ERR_UNKNOWN_CHAR), *ei->c.expr);
+  disperr(
+    __FUNCTION__,
+    "%s: %c at col %zu",
+    codetomsg(ERR_UNKNOWN_CHAR),
+    *ei->c.rip,
+    ei->c.rip - ei->c.expr
+  );
 }
 
 void (*const eval_table['~' - ' ' + 1])(machine_t *) = {
@@ -355,8 +361,8 @@ void (*get_eval_table(char c))(machine_t *) {
 }
 
 void rpx_eval(machine_t *restrict ei) {
-  for (; *ei->c.expr && ei->e.iscontinue; ei->c.expr++) [[clang::likely]]
-    get_eval_table (*ei->c.expr)(ei);
+  for (; *ei->c.rip && ei->e.iscontinue; ei->c.rip++) [[clang::likely]]
+    get_eval_table (*ei->c.rip)(ei);
 }
 
 void init_evalinfo(machine_t *restrict ret) {
@@ -376,7 +382,7 @@ void init_evalinfo(machine_t *restrict ret) {
 elem_t eval_expr_real(char const *restrict a_expr) {
   machine_t ei;
   init_evalinfo(&ei);
-  ei.c.expr = a_expr;
+  ei.c.expr = ei.c.rip = a_expr;
   rpx_eval(&ei);
   if (++ei.e.info.histi < BUFSIZE) ei.e.info.hist[ei.e.info.histi] = *ei.s.rsp;
   set_rrtinfo(ei.e.info);

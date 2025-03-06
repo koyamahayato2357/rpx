@@ -52,19 +52,19 @@ extern int TEST_count;
 
 // generate function parameter
  #define PMAP(tok, _, ...) \
-   t->p##tok __VA_OPT__(, DEFER(_PMAP)()(tok##0, __VA_ARGS__))
+   t->tok __VA_OPT__(, DEFER(_PMAP)()(tok##0, __VA_ARGS__))
  #define _PMAP() PMAP
 
 // generate struct member
  #define SMAP(tok, _1, ...) \
-   _1 p##tok; \
+   _1 tok; \
    __VA_OPT__(DEFER(_SMAP)()(tok##0, __VA_ARGS__))
  #define _SMAP() SMAP
 
- #define CALL(fn, ...) fn(EVAL(PMAP(00, __VA_ARGS__)))
+ #define CALL(fn, ...) fn(EVAL(PMAP(p0, __VA_ARGS__)))
  #define STDEF(...) \
    struct { \
-     EVAL(SMAP(0, __VA_ARGS__)) \
+     EVAL(SMAP(p, __VA_ARGS__)) \
    }
 
 // if {a, b, c} is passed as a macro parameter, it becomes "{a", "b", "c}", so
@@ -79,7 +79,7 @@ extern int TEST_count;
      for (size_t i = 0; i < sizeof data / sizeof(S); i++) { \
        S *t = data + i; \
        int *TEST_failed /* for expecteq */ = &failed; \
-       expecteq(t->p0, CALL(fn, CDR signature)); \
+       expecteq(t->p, CALL(fn, CDR signature)); \
      } \
      if (failed) { \
        PRINT_FAILED(failed); \
