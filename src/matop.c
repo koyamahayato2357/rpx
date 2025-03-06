@@ -50,16 +50,18 @@ overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
   matrix_t m##name( \
     matrix_t const *restrict lhs, matrix_t const *restrict rhs \
   ) { \
-    if (!mcheckdim(lhs, rhs)) \
+    if (!mcheckdim(lhs, rhs)) { \
       disperr( \
         __FUNCTION__, \
-        "%s: %zux%zu && %zux%zu", \
+        "%s: %zux%zu vs %zux%zu", \
         codetomsg(ERR_DIMENTION_MISMATCH), \
         lhs->rows, \
         lhs->cols, \
         rhs->rows, \
         rhs->cols \
       ); \
+      return NAN_matrix(lhs->rows, lhs->cols); \
+    } \
     matrix_t result = new_matrix(lhs->rows, lhs->cols); \
     for (size_t i = 0; i < lhs->rows * lhs->cols; i++) \
       result.matrix[i] = lhs->matrix[i] op rhs->matrix[i]; \
@@ -71,16 +73,18 @@ APPLY_ADDSUB(MOPS)
  * @brief Mul between matrices
  */
 matrix_t mmul(matrix_t const *restrict lhs, matrix_t const *restrict rhs) {
-  if (lhs->rows != rhs->cols && lhs->cols != rhs->rows) [[clang::unlikely]]
+  if (lhs->rows != rhs->cols && lhs->cols != rhs->rows) [[clang::unlikely]] {
     disperr(
       __FUNCTION__,
-      "%s: %zux%zu && %zux%zu",
+      "%s: %zux%zu vs %zux%zu",
       codetomsg(ERR_DIMENTION_MISMATCH),
       lhs->rows,
       lhs->cols,
       rhs->rows,
       rhs->cols
     );
+    return NAN_matrix(lhs->rows, lhs->cols);
+  }
 
   matrix_t result = new_matrix(lhs->rows, rhs->cols);
 
@@ -98,8 +102,10 @@ matrix_t mmul(matrix_t const *restrict lhs, matrix_t const *restrict rhs) {
  * @note No benefit of vectorization in the current implementation
  */
 double det(matrix_t const *restrict A) {
-  if (A->rows != A->cols) [[clang::unlikely]]
+  if (A->rows != A->cols) [[clang::unlikely]] {
     disperr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
+    return 0;
+  }
 
   double result = 1;
   size_t dim = A->rows;
@@ -189,7 +195,7 @@ matrix_t inverse_matrix(matrix_t const *restrict A) {
   // A->matrix to unit matrix
   for (size_t i = 0; i < dim; i++)
     for (size_t j = 0; j < dim; j++) {
-      if (A->matrix[i * dim + i] == 0) [[clang::unlikely]] {
+      if (eq(fabs(A->matrix[i * dim + i]), 0.0)) [[clang::unlikely]] {
         free(result.matrix);
         disperr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
         return *A;
