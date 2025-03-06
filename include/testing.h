@@ -50,10 +50,12 @@ extern int TEST_count;
   #define test_filter(filter) if (0)
  #endif
 
+// generate function parameter
  #define PMAP(tok, _, ...) \
    t->p##tok __VA_OPT__(, DEFER(_PMAP)()(tok##0, __VA_ARGS__))
  #define _PMAP() PMAP
 
+// generate struct member
  #define SMAP(tok, _1, ...) \
    _1 p##tok; \
    __VA_OPT__(DEFER(_SMAP)()(tok##0, __VA_ARGS__))
