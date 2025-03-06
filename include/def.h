@@ -21,8 +21,8 @@
 #define PRIM_CAT(a, b) a##b
 #define CAT(a, b)      PRIM_CAT(a, b)
 
-#define PRIM_CAR(first, ...) first
-#define PRIM_CDR(first, ...) __VA_ARGS__
+#define PRIM_CAR(_1, ...) _1
+#define PRIM_CDR(_1, ...) __VA_ARGS__
 
 #define CAR(...) PRIM_CAR(__VA_ARGS__)
 #define CDR(...) PRIM_CDR(__VA_ARGS__)
@@ -34,7 +34,7 @@
 
 #define BOOL(x) NOT(NOT(x))
 
-#define PRIM_MAP(M, first, ...) \
-  M(first) __VA_OPT__(DEFER(_MAP)()(M, __VA_ARGS__))
+#define PRIM_MAP(M, _1, ...) M(_1) __VA_OPT__(DEFER(_MAP)()(M, __VA_ARGS__))
+
 #define _MAP()   PRIM_MAP
 #define MAP(...) EVAL(PRIM_MAP(__VA_ARGS__))
