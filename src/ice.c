@@ -2,6 +2,8 @@
  * @file src/ice.c
  */
 
+#include <stdio.h>
+
 #ifndef NDEBUG
  #include "ice.h"
 
