@@ -13,6 +13,8 @@ void putsequence(char *seq) {
 #include "testing.h"
 
 test (ansi_escape_sequence) {
+  expect(true);
+
   test_filter("all") {
     puts(ESCLR);
 

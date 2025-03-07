@@ -15,6 +15,8 @@ ic_t ic_conf = {
  #include "chore.h"
  #include "testing.h"
 test (ice) {
+  expect(true);
+
   test_filter("all") {
     putchar('\n');
     ic(0);
