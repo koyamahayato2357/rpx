@@ -2,32 +2,55 @@ const std = @import("std");
 const allocor = std.heap.page_allocator;
 const srcdir: []const u8 = "src";
 const incdir: []const u8 = "include";
-const cflags: []const []const u8 = &[_][]const u8{
-    "-std=c23",
+const cflags_default: []const []const u8 = &[_][]const u8{
+    "-std=c2y",
     "-Wall",
     "-Wextra",
     "-Werror",
+    "-Wimplicit-fallthrough",
+    "-Wbitwise-instead-of-logical",
+    "-Wconversion",
+    "-Wdangling",
+    "-Wdeprecated",
+    "-Wdocumentation",
+    "-Wmicrosoft",
+    "-Wswitch-enum",
+    "-Wswitch-default",
+    "-Wtype-limits",
+    "-Wunreachable-code-aggressive",
+    "-Wpedantic",
+    "-Wdocumentation-pedantic",
+    "-Wno-dollar-in-identifier-extension",
+    "-Wno-gnu",
 };
 
 pub fn build(b: *std.Build) void {
+    var cflags = std.ArrayList([]const u8).init(std.heap.page_allocator);
+    defer cflags.deinit();
+    cflags.appendSlice(cflags_default) catch unreachable;
+
+    const targ = b.standardTargetOptions(.{});
     const opti = b.standardOptimizeOption(.{});
     const exe = b.addExecutable(.{
-        .name = std.fs.path.basename(b.build_root.path.?),
-        .target = b.host,
-        .use_lld = true,
+        .name = "rpx",
         .optimize = opti,
+        .target = targ,
+        .use_lld = true,
+        .use_llvm = true,
     });
+
     exe.addIncludePath(b.path(incdir));
     exe.linkLibC();
 
+    // build type settings
     const build_type: []const u8 = b.option([]const u8, "T", "Build type") orelse "";
     if (std.mem.eql(u8, build_type, "test")) {
-        exe.defineCMacro("TEST_MODE", null);
+        exe.root_module.addCMacro("TEST_MODE", "");
     } else if (std.mem.eql(u8, build_type, "bench")) {
-        exe.defineCMacro("BENCHMARK_MODE", null);
+        exe.root_module.addCMacro("BENCHMARK_MODE", "");
     }
 
-    addSourceFromDir(exe, srcdir);
+    addSourceFromDir(exe, b.path(srcdir), cflags.items);
 
     b.installArtifact(exe);
 
@@ -36,16 +59,19 @@ pub fn build(b: *std.Build) void {
     run_step.dependOn(&run_exe.step);
 }
 
-fn addSourceFromDir(exe: *std.Build.Step.Compile, dir: []const u8) void {
-    var diren = std.fs.cwd().openDir(dir, .{ .iterate = true }) catch unreachable;
+fn addSourceFromDir(exe: *std.Build.Step.Compile, dir: std.Build.LazyPath, cflags: []const []const u8) void {
+    var diren = std.fs.cwd().openDir(dir.src_path.sub_path, .{ .iterate = true }) catch unreachable;
     defer diren.close();
+    var files = std.ArrayList([]const u8).init(std.heap.page_allocator);
     var srcs = diren.iterate();
-    while (srcs.next() catch unreachable) |src| {
-        if (!std.mem.eql(u8, std.fs.path.extension(src.name), ".c"))
-            break;
+    while (srcs.next() catch unreachable) |src|
+        if (std.mem.eql(u8, std.fs.path.extension(src.name), ".c"))
+            files.append(src.name) catch unreachable;
 
-        const path: []const []const u8 = &[_][]const u8{ srcdir, src.name };
-        // .file = srcdir ++ src.name
-        exe.addCSourceFile(.{ .file = .{ .cwd_relative = std.fs.path.join(allocor, path) catch unreachable }, .flags = cflags });
-    }
+    exe.addCSourceFiles(.{
+        .files = files.items, // memory leak 🤣🤣🤣
+        .flags = cflags,
+        .language = .c,
+        .root = dir,
+    });
 }
