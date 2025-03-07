@@ -5,10 +5,10 @@
  */
 
 #pragma once
+#include "chore.h"
 
 #ifdef TEST_MODE
  #include "ansiesc.h"
- #include "chore.h"
  #include "errcode.h"
  #include "gene.h"
  #include <stdio.h>
