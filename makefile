@@ -109,13 +109,13 @@ OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 
 ifeq ($(MAKECMDGOALS),build)
-  -include $(wildcard $(DEPS))
+  include $(wildcard $(DEPS))
 else ifeq ($(MAKECMDGOALS),run)
-  -include $(wildcard $(DEPS))
+  include $(wildcard $(DEPS))
 endif
 
 # rules
-.PHONY: run analyze clean-all clean install doc test lint fmt help release log llmfile
+.PHONY: run build clean-all clean install doc test lint fmt help release log llmfile
 .DEFAULT_GOAL := build
 
 build: $(TARGET)
