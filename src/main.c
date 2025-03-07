@@ -3,13 +3,6 @@
  * @brief Define eval_expr_complex, proc_cmds
  */
 
-/*
- * PUSH:      *++rsp = val;
- * POP:       val = *rsp--;
- * OVERWRITE: *rsp = val;
- * PREV BASE: val = *rbp;
- */
-
 #include "main.h"
 #include "arthfn.h"
 #include "benchmarking.h"
