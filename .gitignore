@@ -9,5 +9,3 @@ default.profraw
 .zig-cache
 zig-out
 llmfile.txt
-.tup
-tupfile
