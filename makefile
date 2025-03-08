@@ -218,3 +218,9 @@ $(LLMFILE): $(LIST_FILES) # for the LLM to read
 	head -n 9999 $^ >> $@
 
 llmfile: $(LLMFILE)
+
+compile_commands.json: $(SRCS)
+	$(MAKE) clean
+	bear -- $(MAKE) build
+
+compiledb: compile_commands.json
