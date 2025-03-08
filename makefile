@@ -130,8 +130,7 @@ $(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR)/ $(DEPDIR)/
 
 $(DEPS):
 
-%/:
-	mkdir -p $@
+%/: ; mkdir -p $@
 
 # e.g.) run with valgrind
 # make run RUNNER=valgrind
@@ -144,11 +143,9 @@ run: $(TARGET)
 run-%: $(TARGET)
 	$* $<
 
-test:
-	$(MAKE) run TYPE=test
+test: ; $(MAKE) run TYPE=test
 
-clean-all:
-	rm -rf $(BUILDDIR)
+clean-all: ; rm -rf $(BUILDDIR)
 
 # e.g.) remove test build for opt level 3
 # make clean OPTLEVEL=3 TYPE=test
@@ -166,11 +163,9 @@ uninstall:
 doc: doc/Doxyfile
 	doxygen $<
 
-fmt:
-	clang-format -i $(SRCS) $(INCDIR)/*.h
+fmt: ; clang-format -i $(SRCS) $(INCDIR)/*.h
 
-lint:
-	clang-tidy $(SRCS) -- $(CFLAGS)
+lint: ; clang-tidy $(SRCS) -- $(CFLAGS)
 
 %.s: %.c
 	$(CC) $< $(ASMFLAGS) $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -o $@
