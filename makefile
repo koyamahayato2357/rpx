@@ -198,10 +198,15 @@ info: $(TARGET)
 	@size $(TARGET)
 
 help:
-	@echo "release build: make release"
-	@echo "debug build: make"
-	@echo "test: make run T=test"
-	@echo 'build files: .build/HASH/{target,dep}/*'
+	@echo "TYPE=[test|bench]"
+	@echo "ASAN=[address|alignment|...]"
+	@echo "OPTLEVEL=[0-3|g] (default: g)"
+	@echo
+	@echo "$ make          : debug build"
+	@echo "$ make test     : run test"
+	@echo "$ make run OL=3 : release build"
+	@echo
+	@echo "build files: .build/HASH/{target,dep,asm}/*"
 
 release:
 	$(MAKE) run TYPE=test OPTLEVEL=3
