@@ -35,7 +35,7 @@ ifneq ($(CCACHE),) # if CCACHE is enabled
   CC := $(CCACHE) $(CC)
 endif
 
-PROJECT_NAME := $(notdir $(shell pwd))
+PROJECT_NAME := $(notdir $(CURDIR))
 SRCDIR := src
 INCDIR := include
 BUILDDIR := .build
