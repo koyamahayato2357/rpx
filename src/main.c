@@ -507,7 +507,7 @@ void printMatrix(matrix_t result) {
       eval_f = eval_f == evalExprReal ? evalExprComplex : evalExprReal;
       break;
     case 'p': // plotcfg explicit implicit
-      pcfg.plotExpr = pcfg.plotExpr == plotexpr ? plotexprImplicit : plotexpr;
+      pcfg.plotexpr = pcfg.plotexpr == plotexpr ? plotexprImplicit : plotexpr;
       setPlotCfg(pcfg);
       break;
     case 'P': // print_complex
@@ -532,7 +532,7 @@ void printMatrix(matrix_t result) {
       break;
     }
 
-    pcfg.plotExpr(cmd);
+    pcfg.plotexpr(cmd);
     strncpy(pcfg.prevexpr, cmd, buf_size);
     setPlotCfg(pcfg);
     break;
