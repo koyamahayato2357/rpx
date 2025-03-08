@@ -76,7 +76,7 @@ test (deletes) {
   char str[] = "sample text.";
   char *len = str + strlen(str);
   char *begin = str;
-  char *end = str + 7;
+  char const *end = str + 7;
 
   deletes(begin, end, &len);
   expecteq("text.", (char *)str);
@@ -122,13 +122,13 @@ test (findmove) {
  * @param[in,out] cur Cursor pointer
  * @param[in] len End of line
  */
-void fwdw(char **cur, char *len) {
+void fwdw(char **cur, char const *len) {
   if (*cur >= len) return;
 
   int wasalnum = isalnum(**cur);
   int wasspace = isspace(**cur);
   (*cur)++;
-  for (; !isspace(**cur) ^ wasspace && *cur != len
+  for (; (!isspace(**cur) ^ wasspace) && *cur != len
          && !(isalnum(**cur) ^ wasalnum);
        (*cur)++);
 
@@ -151,7 +151,7 @@ test (fwdw) {
  * @param[in] buf Start of line
  * @param[in,out] cur Cursor pointer
  */
-void bwdw(char *buf, char **cur) {
+void bwdw(char const *buf, char **cur) {
   if (buf >= *cur) return;
 
   (*cur)--;
@@ -330,14 +330,14 @@ test (inserts) {
   char *len = buf + strlen(buf);
   char *cur = len - 1;
 
-  char str1[] = "new string";
-  inserts(strlen(str1), str1, &cur, &len, (size_t)(buf + 256 - len));
+  char const *str = "new string";
+  inserts(strlen(str), str, &cur, &len, (size_t)(buf + 256 - len));
   expecteq("sample textnew string.", (char *)buf);
   expecteq("new string.", cur);
   expecteq(strlen(buf), (size_t)(len - buf));
 
-  char str2[] = "extra string";
-  inserts(strlen(str2), str2, &cur, &len, (size_t)(buf + 256 - len));
+  str = "extra string";
+  inserts(strlen(str), str, &cur, &len, (size_t)(buf + 256 - len));
   expecteq("sample textextra stringnew string.", (char *)buf);
   expecteq("extra stringnew string.", cur);
   expecteq(strlen(buf), (size_t)(len - buf));
@@ -488,7 +488,7 @@ bool editline(int sz, char *buf) {
   enable_rawmode(&orig_termios);
 
   for (char c = getchar();; c = getchar()) {
-    if ((ctrl_d = c == CTRL_D) || c == '\n' || buf + sz < len) break;
+    if ((ctrl_d = (c == CTRL_D)) || c == '\n' || buf + sz < len) break;
 
     switch (c) {
     case ES:
