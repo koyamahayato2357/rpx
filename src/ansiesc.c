@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-void putsequence(char *seq) {
+void putsequence(char const *seq) {
   fputs(seq, stdout);
 }
 

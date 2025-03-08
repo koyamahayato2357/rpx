@@ -56,4 +56,4 @@
 #define ESSCP       ESCSI "s"
 #define ESRCP       ESCSI "u"
 
-void putsequence(char *);
+void putsequence(char const *);
