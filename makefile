@@ -113,9 +113,7 @@ OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 ASMS = $(patsubst $(SRCDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
 
-ifeq ($(MAKECMDGOALS),build)
-  include $(wildcard $(DEPS))
-else ifeq ($(MAKECMDGOALS),run)
+ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
   include $(wildcard $(DEPS))
 endif
 
