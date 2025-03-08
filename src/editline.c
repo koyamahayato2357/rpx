@@ -3,21 +3,26 @@
  * @brief Define `editline()`
  */
 
-#include <stdio.h>
-#define __USE_GNU // for memrchr()
+#include "editline.h"
 #include "ansiesc.h"
 #include "chore.h"
-#include "editline.h"
 #include "error.h"
 #include "exproriented.h"
 #include "main.h"
 #include "testing.h"
 #include <ctype.h>
+#include <stdio.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
 
 #define getchar() ((char)getchar())
+
+static char *memrchr(char *s, int c, size_t n) {
+  size_t i = n;
+  for (; 0 < i && s[i] != c; i--);
+  return $if(i != 0) s + i $else $if(*s == c) s $else nullptr;
+}
 
 // getchar() becomes like getch() in MSVC
 static void enableRawMode(struct termios *orig_termios) {
