@@ -28,8 +28,8 @@ extern int TEST_count;
 
 // zig style testing syntax
  #define test(name) \
-   void TEST_test##name(int *); \
-   [[gnu::constructor]] void TEST_run##name() { \
+   static void TEST_test##name(int *); \
+   [[gnu::constructor]] static void TEST_run##name() { \
      TEST_count++; \
      printf(TEST_HEADER ESBLD #name ESCLR "..."); \
      int failed = 0; \
@@ -42,7 +42,7 @@ extern int TEST_count;
      PRINT_SUCCESS; \
      TEST_success++; \
    } \
-   void TEST_test##name(int *TEST_failed)
+   static void TEST_test##name(int *TEST_failed)
 
  #ifdef TEST_FILTER
   #define test_filter(filter) if (strstr(filter, TEST_FILTER))
@@ -70,7 +70,7 @@ extern int TEST_count;
 // if {a, b, c} is passed as a macro parameter, it becomes "{a", "b", "c}", so
 // it must be received as a variable length argument.
  #define test_table(name, fn, signature, ...) \
-   [[gnu::constructor]] void TEST_tabletest##name() { \
+   [[gnu::constructor]] static void TEST_tabletest##name() { \
      TEST_count++; \
      printf(TEST_HEADER ESBLD #name ESCLR "..."); \
      int failed = 0; \

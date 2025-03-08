@@ -16,8 +16,8 @@
  #define BENCH_HEADER " ■ " ESCBLU "Benchmarking " ESCLR
 
  #define bench(name) \
-   void BENCH_bench##name(); \
-   [[gnu::constructor]] void BENCH_run##name() { \
+   static void BENCH_bench##name(); \
+   [[gnu::constructor]] static void BENCH_run##name() { \
      printf(BENCH_HEADER ESBLD #name ESCLR "..."); \
      double duration = 0; \
      for (int i = 0; i < REPEAT; i++) { \
@@ -28,11 +28,11 @@
      } \
      printf(" => %.6f microsecs\n", duration / REPEAT); \
    } \
-   void BENCH_bench##name()
+   static void BENCH_bench##name()
 
  #define bench_cycle(name) \
-   void BENCH_benchcycle##name(); \
-   [[gnu::constructor]] void BENCH_runcycle##name() { \
+   static void BENCH_benchcycle##name(); \
+   [[gnu::constructor]] static void BENCH_runcycle##name() { \
      printf(BENCH_HEADER ESBLD #name ESCLR "..."); \
      double cycle = 0; \
      for (int i = 0; i < REPEAT; i++) { \
@@ -43,7 +43,7 @@
      } \
      printf(" => %.6f cycle\n", cycle / REPEAT); \
    } \
-   void BENCH_benchcycle##name()
+   static void BENCH_benchcycle##name()
 
  #define main BENCH_dummymain
 #else
