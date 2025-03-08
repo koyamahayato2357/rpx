@@ -233,3 +233,8 @@ compile_commands.json: $(SRCS)
 	bear -- $(MAKE)
 
 compiledb: compile_commands.json
+
+coverage:
+	$(MAKE) TYPE=test OPTLEVEL=0 EXTRAFLAGS="-fprofile-arcs -ftest-coverage" EXTRALDFLAGS="--coverage"
+	lcov -d . -c -o $(BUILDDIR)/coverage.info --gcov-tool $(CURDIR)/tool/llvm-cov.sh
+	genhtml coverage.info --output-directory $(BUILDDIR)/coverage_report
