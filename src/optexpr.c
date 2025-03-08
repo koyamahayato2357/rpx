@@ -3,6 +3,7 @@
  */
 
 #include "optexpr.h"
+#include "testing.h"
 #include "chore.h"
 #include <ctype.h>
 #include <string.h>
@@ -23,4 +24,13 @@ static void rm_exprspcs(char **expr) {
 void optexpr(char *arg_expr) {
   char *expr = arg_expr;
   rm_exprspcs(&expr);
+}
+
+test(optexpr) {
+  char str1[] = "4   5   6   +";
+  optexpr(str1);
+  expecteq("4 5 6+", (char *)str1);
+  char str2[] = "(1 s 2 ^) (1 c 2 ^) +";
+  optexpr(str2);
+  expecteq("(1s2^)(1c2^)+", (char *)str2);
 }
