@@ -42,7 +42,7 @@ BUILDDIR := .build
 PREFIX ?= /usr/local
 
 # compiler flags
-CFLAGS := -std=c2y -I$(INCDIR) -Wtautological-compare -Wextra -Wall \
+CFLAGS := -std=c2y -I$(INCDIR) -Wtautological-compare -Wextra -Wall -Werror \
           -Wimplicit-fallthrough -Wbitwise-instead-of-logical -O$(OPTLEVEL) \
 		  -Wconversion -Wdangling -Wdeprecated -Wdocumentation -Wmicrosoft \
 		  -Wswitch-enum -Wswitch-default -Wtype-limits -Wunreachable-code-aggressive \
@@ -201,7 +201,7 @@ release:
 	$(MAKE) OPTLEVEL=3
 
 LLMFILE ?= llmfile.txt
-FILES ?= README.md makefile
+FILES ?= README.md makefile build.zig
 DIRS ?= include src
 FILES_IN_DIRS := $(wildcard $(addsuffix /*, $(DIRS)))
 SORTED_FILES_IN_DIRS := $(sort $(notdir $(basename $(FILES_IN_DIRS))))
