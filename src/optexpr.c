@@ -8,7 +8,7 @@
 #include <string.h>
 
 void rm_exprspcs(char **expr) {
-  char *start = *expr;
+  char const *start = *expr;
   for (; **expr != '\0'; (*expr)++) {
     if (isspace(**expr)) { // skip unnecessary spaces
       char *dstptr = *expr;

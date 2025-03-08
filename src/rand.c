@@ -32,7 +32,7 @@ void sxorsh(uint64_t s) {
 
 [[gnu::constructor(101)]] void __init_xorsh() {
   sxorsh((uint64_t)clock());
-  xorsh();
+  _ = xorsh();
 }
 
 test (rand) {
@@ -65,17 +65,17 @@ test (rand) {
 }
 
 bench (rand) { // 0.83 ms
-  rand();
+  _ = rand();
 }
 
 bench (xorsh) { // 0.81 ms
-  xorsh();
+  _ = xorsh();
 }
 
 bench_cycle(rand) {
-  rand();
+  _ = rand();
 }
 
 bench_cycle(xors) {
-  xorsh();
+  _ = xorsh();
 }

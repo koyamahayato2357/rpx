@@ -26,13 +26,13 @@ void load_initscript(char const *path) {
 
   set_configpath(path, BUFSIZE, configpath);
 
-  DIR *dp dropdir = opendir(configpath) ?: p$return();
-
   size_t const configpathlen = strlen(configpath);
   char fname[BUFSIZE];
   strncpy(fname, configpath, configpathlen);
 
-  for (struct dirent *entry; (entry = readdir(dp));) {
+  DIR *dp dropdir = opendir(configpath) ?: p$return();
+
+  for (struct dirent const *entry; (entry = readdir(dp));) {
     if (entry->d_name[0] == '.') continue; // ignore hidden files
     strncpy(fname + configpathlen, entry->d_name, BUFSIZE - configpathlen);
     FILE *fp dropfile = fopen(fname, "r");
