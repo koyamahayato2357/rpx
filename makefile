@@ -66,8 +66,6 @@ ifeq ($(TYPE),test)
   CFLAGS += -DTEST_MODE
 else ifeq ($(TYPE),bench)
   CFLAGS += -DBENCHMARK_MODE
-else ifeq ($(TYPE),asm)
-  CFLAGS += $(ASMFLAGS)
 endif
 
 ifeq ($(OPTLEVEL),g)
