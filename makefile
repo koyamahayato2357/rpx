@@ -35,15 +35,23 @@ BUILDDIR := .build
 PREFIX ?= /usr/local
 
 # compiler flags
-CFLAGS := -std=c2y -I$(INCDIR) -Wtautological-compare -Wextra -Wall -Werror \
-          -Wimplicit-fallthrough -Wbitwise-instead-of-logical -O$(OPTLEVEL) \
-		  -Wconversion -Wdangling -Wdeprecated -Wdocumentation -Wmicrosoft \
-		  -Wswitch-enum -Wswitch-default -Wtype-limits -Wunreachable-code-aggressive \
-		  -fPIE -fno-plt -Wsign-compare -Wpedantic -Wdocumentation-pedantic \
-		  -Wno-dollar-in-identifier-extension -Wno-gnu
+CFLAGS := -std=c2y -I$(INCDIR) -O$(OPTLEVEL)
+
+WARNFLAGS := tautological-compare extra all error implicit-fallthrough \
+			 bitwise-instead-of-logical conversion dangling deprecated \
+			 documentation microsoft switch-enum switch-default type-limits \
+			 unreachable-code-aggressive sign-compare pedantic documentation-pedantic
+WARNNOFLAGS = dollar-in-identifier-extension gnu
+SECURITYFLAGS = PIE no-plt
+
+CFLAGS += $(addprefix -W, $(WARNFLAGS)) \
+		  $(addprefix -Wno-, $(WARNNOFLAGS)) \
+		  $(addprefix -f, $(SECURITYFLAGS))
+
 OPTFLAGS := -ffast-math -fno-finite-math-only -DNDEBUG -faddrsig -march=native \
            -mtune=native -funroll-loops -fomit-frame-pointer -fdata-sections   \
-           -fforce-emit-vtables -ffunction-sections -fmodules
+           -fforce-emit-vtables -ffunction-sections
+
 # linker flags
 LDFLAGS := -lm -Wl,-z,noexecstack,-z,relro,-z,now -pie
 OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination \
@@ -120,7 +128,7 @@ ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
 endif
 
 # rules
-.PHONY: run asm clean-all clean install doc test lint fmt help log llmfile compiledb
+.PHONY: run asm clean-all clean install doc test lint fmt help log llmfile compiledb coverage
 .DEFAULT_GOAL := $(TARGET)
 
 # link
