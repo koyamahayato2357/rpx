@@ -225,6 +225,6 @@ llmfile: $(LLMFILE)
 
 compile_commands.json: $(SRCS)
 	$(MAKE) clean
-	bear -- $(MAKE) build
+	bear -- $(MAKE)
 
 compiledb: compile_commands.json
