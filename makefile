@@ -47,7 +47,7 @@ OPTFLAGS := -ffast-math -fno-finite-math-only -DNDEBUG -faddrsig -march=native \
 # linker flags
 LDFLAGS := -lm -Wl,-z,noexecstack,-z,relro,-z,now -pie
 OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination \
-              -fuse-ld=lld -Wl,--gc-sections,--icf=all -s -mllvm -polly
+              -fuse-ld=lld -Wl,--gc-sections,--icf=all -s
 DEBUGFLAGS := -gfull -fstandalone-debug -ftrivial-auto-var-init=pattern -fstack-protector-all
 ASMFLAGS := -S -masm=intel
 DEPFLAGS = -MMD -MP -MT $(TARGETDIR)/$*.o -MF $(DEPDIR)/$*.d
