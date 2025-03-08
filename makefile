@@ -71,6 +71,9 @@ endif
 
 ifdef LLVM
   ASMFLAGS += -emit-llvm
+  ASMEXT := ll
+else
+  ASMEXT := s
 endif
 
 ifeq ($(TYPE),test)
@@ -100,6 +103,7 @@ HASH := $(shell echo '$(SEED)' | md5sum | cut -d' ' -f1)
 OUTDIR := $(BUILDDIR)/$(HASH)
 TARGETDIR := $(OUTDIR)/target
 DEPDIR := $(OUTDIR)/dep
+ASMDIR := $(OUTDIR)/asm
 
 TARGET := $(TARGETDIR)/$(PROJECT_NAME)
 
@@ -107,6 +111,7 @@ TARGET := $(TARGETDIR)/$(PROJECT_NAME)
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
+ASMS = $(patsubst $(SRCDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
 
 ifeq ($(MAKECMDGOALS),build)
   include $(wildcard $(DEPS))
@@ -145,6 +150,11 @@ run-%: $(TARGET)
 
 test: ; $(MAKE) run TYPE=test
 
+asm: $(ASMS)
+
+$(ASMDIR)/%.$(ASMEXT): $(SRCDIR)/%.c | $(ASMDIR)/
+	$(CC) $< $(ASMFLAGS) $(CFLAGS) $(EXTRAFLAGS) -o $@
+
 clean-all: ; rm -rf $(BUILDDIR)
 
 # e.g.) remove test build for opt level 3
@@ -168,9 +178,6 @@ doc: doc/Doxyfile
 fmt: ; clang-format -i $(SRCS) $(INCDIR)/*.h
 
 lint: ; clang-tidy $(SRCS) -- $(CFLAGS)
-
-%.s: %.c
-	$(CC) $< $(ASMFLAGS) $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -o $@
 
 FP ?= /dev/stdout
 log:
