@@ -39,16 +39,16 @@ CFLAGS := -std=c2y -I$(INCDIR) -Wtautological-compare -Wextra -Wall -Werror \
           -Wimplicit-fallthrough -Wbitwise-instead-of-logical -O$(OPTLEVEL) \
 		  -Wconversion -Wdangling -Wdeprecated -Wdocumentation -Wmicrosoft \
 		  -Wswitch-enum -Wswitch-default -Wtype-limits -Wunreachable-code-aggressive \
-		  -Wpedantic -Wdocumentation-pedantic \
+		  -fPIE -fno-plt -Wsign-compare -Wpedantic -Wdocumentation-pedantic \
 		  -Wno-dollar-in-identifier-extension -Wno-gnu
 OPTFLAGS := -ffast-math -fno-finite-math-only -DNDEBUG -faddrsig -march=native \
            -mtune=native -funroll-loops -fomit-frame-pointer -fdata-sections   \
-           -fforce-emit-vtables -ffunction-sections
+           -fforce-emit-vtables -ffunction-sections -fmodules
 # linker flags
-LDFLAGS := -lm
+LDFLAGS := -lm -Wl,-z,noexecstack,-z,relro,-z,now -pie
 OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination \
-              -fuse-ld=lld -Wl,--gc-sections,--icf=all -s
-DEBUGFLAGS := -g3
+              -fuse-ld=lld -Wl,--gc-sections,--icf=all -s -mllvm -polly
+DEBUGFLAGS := -gfull -fstandalone-debug -ftrivial-auto-var-init=pattern -fstack-protector-all
 ASMFLAGS := -S -masm=intel
 DEPFLAGS = -MMD -MP -MT $(TARGETDIR)/$*.o -MF $(DEPDIR)/$*.d
 
