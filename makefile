@@ -150,7 +150,9 @@ clean-all: ; rm -rf $(BUILDDIR)
 # e.g.) remove test build for opt level 3
 # make clean OPTLEVEL=3 TYPE=test
 clean:
+ifneq ($(OUTDIR),)
 	rm -rf $(OUTDIR)
+endif
 
 install: $(TARGET) | $(PREFIX)/bin/ ~/.config/$(PROJECT_NAME)/
 	cp $^ $(PREFIX)/bin/
