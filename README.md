@@ -29,8 +29,15 @@
 - doxygen
 
 ## Installation
+### use make
 ```
 $ sudo make install
+$ make install PREFIX=~/.local # local install
+```
+### use zig
+```
+$ sudo zig build -p /usr/local
+$ zig build -p ~/.local # local install
 ```
 
 ## Introduction
