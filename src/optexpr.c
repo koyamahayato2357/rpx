@@ -3,8 +3,8 @@
  */
 
 #include "optexpr.h"
-#include "testing.h"
 #include "chore.h"
+#include "testing.h"
 #include <ctype.h>
 #include <string.h>
 
@@ -26,7 +26,7 @@ void optexpr(char *arg_expr) {
   rm_exprspcs(&expr);
 }
 
-test(optexpr) {
+test (optexpr) {
   char str1[] = "4   5   6   +";
   optexpr(str1);
   expecteq("4 5 6+", (char *)str1);
