@@ -1,10 +1,3 @@
-# TYPE = test                      Enables tests
-# TYPE = bench                     Enables benchmarks
-# TYPE = asm                       Generates assembly
-# OPTLEVEL = [0-3|g]               Sets optimization/debug
-# LOGLEVEL = [1| ]                 Enables logging
-# ASAN = [0|address|alignment|...] Enables specified sanitizer
-
 MAKEFLAGS += -j$(shell nproc)
 
 # Alias
@@ -106,26 +99,22 @@ OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 ASMS = $(patsubst $(SRCDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
 
-# e.g.)
-# $ make asm OL=3
-# $ # edit asm files...
-# $ make BUILD_FROM_ASM=1 OL=3
-ifdef BUILD_FROM_ASM
-  ifdef LLVM
-    SRCPAT = $(ASMDIR)/%.ll
-  else
-    SRCPAT = $(ASMDIR)/%.s
-  endif
-  CFLAGS =
-else
-  SRCPAT = $(SRCDIR)/%.c
-endif
-
 ifdef LLVM
   ASMFLAGS += -emit-llvm
   ASMEXT := ll
 else
   ASMEXT := s
+endif
+
+# e.g.)
+# $ make asm OL=3
+# $ # edit asm files...
+# $ make BUILD_FROM_ASM=1 OL=3
+ifdef BUILD_FROM_ASM
+  SRCPAT = $(ASMDIR)/%.$(ASMEXT)
+  CFLAGS =
+else
+  SRCPAT = $(SRCDIR)/%.c
 endif
 
 ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
@@ -191,7 +180,10 @@ doc/Doxyfile:
 
 fmt: ; clang-format -i $(SRCS) $(INCDIR)/*.h
 
-lint: ; clang-tidy $(SRCS) -- $(CFLAGS)
+lint:
+	clang-tidy $(SRCS) -- $(CFLAGS)
+	cppcheck $(SRCS) --enable=all -I$(INCDIR)
+	scan-build $(MAKE)
 
 FP ?= /dev/stdout
 log:
