@@ -2,6 +2,8 @@
  * @file src/testing.c
  */
 
+#include <stdio.h>
+
 #ifdef TEST_MODE
 int TEST_success;
 int TEST_count;
