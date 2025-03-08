@@ -69,7 +69,7 @@ test (movecur) {
 [[gnu::nonnull]] static void deletes(char *begin, char const *end, char **len) {
   memcpy(begin, end, (size_t)(*len - end));
   *len -= end - begin;
-  **len = '\0';
+  if (*len) **len = '\0';
 }
 
 test (deletes) {
@@ -452,7 +452,7 @@ static void nrmbind(char c, char *buf, char **cur, char **len) {
     if (!dst || !src) break;
     deletes(dst, src, len);
     *cur = dst;
-    **len = '\0';
+    if (*len) **len = '\0';
   } break;
   case 'C':
     handle_printable = insbind;
