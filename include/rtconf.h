@@ -19,25 +19,25 @@ typedef struct {
   double dx; // increase in x per square
   double dy; // increase in y per square
 
-  char prevexpr[BUFSIZE];
+  char prevexpr[buf_size];
   void (*plotexpr)(char const *);
 } plotcfg_t /* plot config */;
 
 typedef struct {
-  real_t hist[BUFSIZE];
+  real_t hist[buf_size];
   size_t histi;
-  real_t reg[ALPN];
+  real_t reg[alpha_n];
 } rrtinfo_t /* runtime info */;
 
 typedef struct {
-  elem_t hist[BUFSIZE];
+  elem_t hist[buf_size];
   size_t histi;
-  elem_t reg[ALPN];
+  elem_t reg[alpha_n];
 } rtinfo_t /* runtime info */;
 
-plotcfg_t get_plotcfg();
-void set_plotcfg(plotcfg_t);
-rtinfo_t get_rtinfo();
-rrtinfo_t get_rrtinfo();
-void set_rtinfo(rtinfo_t);
-void set_rrtinfo(rrtinfo_t);
+plotcfg_t getPlotCfg();
+void setPlotCfg(plotcfg_t);
+rtinfo_t getRuntimeInfo();
+rrtinfo_t getRRuntimeInfo();
+void setRuntimeInfo(rtinfo_t);
+void setRRuntimeInfo(rrtinfo_t);

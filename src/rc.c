@@ -10,9 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-[[gnu::nonnull(3)]] static void set_configpath(
-  char const *specified_cfgpath, size_t len, char *restrict cfgpath
-) {
+[[gnu::nonnull(3)]] static void
+setCfgPath(char const *specified_cfgpath, size_t len, char *restrict cfgpath) {
   char const *configdir = specified_cfgpath ?: "/.config/rpx/";
   char const *homedir = getenv("HOME") ?: ".";
   size_t const hdlen = strlen(homedir);
@@ -21,21 +20,21 @@
   strncpy(cfgpath + hdlen, configdir, len - hdlen);
 }
 
-void load_initscript(char const *path) {
-  char configpath[BUFSIZE];
+void loadInitScript(char const *path) {
+  char configpath[buf_size];
 
-  set_configpath(path, BUFSIZE, configpath);
+  setCfgPath(path, buf_size, configpath);
 
   size_t const configpathlen = strlen(configpath);
-  char fname[BUFSIZE];
+  char fname[buf_size];
   strncpy(fname, configpath, configpathlen);
 
   DIR *dp dropdir = opendir(configpath) ?: p$return();
 
   for (struct dirent const *entry; (entry = readdir(dp));) {
     if (entry->d_name[0] == '.') continue; // ignore hidden files
-    strncpy(fname + configpathlen, entry->d_name, BUFSIZE - configpathlen);
+    strncpy(fname + configpathlen, entry->d_name, buf_size - configpathlen);
     FILE *fp dropfile = fopen(fname, "r");
-    reader_loop(fp);
+    readerLoop(fp);
   }
 }

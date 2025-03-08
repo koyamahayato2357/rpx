@@ -10,28 +10,28 @@
 #include "error.h"
 #include "gene.h"
 
-static matrix_t NAN_matrix(size_t rows, size_t cols) {
-  matrix_t result = new_matrix(rows, cols);
+static matrix_t nanMatrix(size_t rows, size_t cols) {
+  matrix_t result = newMatrix(rows, cols);
   for (size_t i = 0; i < rows * cols; i++) result.matrix[i] = NAN;
   return result;
 }
 
-matrix_t new_matrix(size_t rows, size_t cols) {
+matrix_t newMatrix(size_t rows, size_t cols) {
   // formatter broken...
   return (matrix_t
   ){.rows = rows, .cols = cols, .matrix = zalloc(complex, rows * cols)};
 }
 
-void free_matr(matrix_t *restrict x) {
+void freeMatr(matrix_t *restrict x) {
   free(x->matrix);
 }
 
-static bool mcheckdim(matrix_t const *lhs, matrix_t const *rhs) {
+static bool mCheckDim(matrix_t const *lhs, matrix_t const *rhs) {
   return lhs->rows == rhs->rows && lhs->cols == rhs->cols;
 }
 
-bool meq(matrix_t const *lhs, matrix_t const *rhs) {
-  if (!mcheckdim(lhs, rhs)) return false;
+bool mEq(matrix_t const *lhs, matrix_t const *rhs) {
+  if (!mCheckDim(lhs, rhs)) return false;
 
   for (size_t i = 0; i < lhs->cols * lhs->rows; i++)
     if (!eq(lhs->matrix[i], rhs->matrix[i])) return false;
@@ -40,7 +40,7 @@ bool meq(matrix_t const *lhs, matrix_t const *rhs) {
 }
 
 overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
-  return meq(lhs, rhs);
+  return mEq(lhs, rhs);
 }
 
 /**
@@ -50,8 +50,8 @@ overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
   matrix_t m##name( \
     matrix_t const *restrict lhs, matrix_t const *restrict rhs \
   ) { \
-    if (!mcheckdim(lhs, rhs)) { \
-      disperr( \
+    if (!mCheckDim(lhs, rhs)) { \
+      dispErr( \
         __FUNCTION__, \
         "%s: %zux%zu vs %zux%zu", \
         codetomsg(ERR_DIMENTION_MISMATCH), \
@@ -60,9 +60,9 @@ overloadable bool eq(matrix_t const *lhs, matrix_t const *rhs) {
         rhs->rows, \
         rhs->cols \
       ); \
-      return NAN_matrix(lhs->rows, lhs->cols); \
+      return nanMatrix(lhs->rows, lhs->cols); \
     } \
-    matrix_t result = new_matrix(lhs->rows, lhs->cols); \
+    matrix_t result = newMatrix(lhs->rows, lhs->cols); \
     for (size_t i = 0; i < lhs->rows * lhs->cols; i++) \
       result.matrix[i] = lhs->matrix[i] op rhs->matrix[i]; \
     return result; \
@@ -72,9 +72,9 @@ APPLY_ADDSUB(MOPS)
 /**
  * @brief Mul between matrices
  */
-matrix_t mmul(matrix_t const *restrict lhs, matrix_t const *restrict rhs) {
+matrix_t mMul(matrix_t const *restrict lhs, matrix_t const *restrict rhs) {
   if (lhs->rows != rhs->cols && lhs->cols != rhs->rows) [[clang::unlikely]] {
-    disperr(
+    dispErr(
       __FUNCTION__,
       "%s: %zux%zu vs %zux%zu",
       codetomsg(ERR_DIMENTION_MISMATCH),
@@ -83,10 +83,10 @@ matrix_t mmul(matrix_t const *restrict lhs, matrix_t const *restrict rhs) {
       rhs->rows,
       rhs->cols
     );
-    return NAN_matrix(lhs->rows, lhs->cols);
+    return nanMatrix(lhs->rows, lhs->cols);
   }
 
-  matrix_t result = new_matrix(lhs->rows, rhs->cols);
+  matrix_t result = newMatrix(lhs->rows, rhs->cols);
 
   for (size_t i = 0; i < lhs->rows; i++)
     for (size_t j = 0; j < rhs->cols; j++)
@@ -101,81 +101,81 @@ matrix_t mmul(matrix_t const *restrict lhs, matrix_t const *restrict rhs) {
  * @brief Calculate determinant
  * @note No benefit of vectorization in the current implementation
  */
-static double det(matrix_t const *restrict A) {
-  if (A->rows != A->cols) [[clang::unlikely]] {
-    disperr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
+static double det(matrix_t const *restrict a) {
+  if (a->rows != a->cols) [[clang::unlikely]] {
+    dispErr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
     return 0;
   }
 
   double result = 1;
-  size_t dim = A->rows;
+  size_t dim = a->rows;
   for (size_t i = 0; i < dim - 1; i++)
     for (size_t j = 0; j < dim - 1; j++) {
-      for (size_t k = 1; eq(0.0i, A->matrix[dim * i + i]); k++) {
+      for (size_t k = 1; eq(0.0i, a->matrix[dim * i + i]); k++) {
         for (size_t l = i; l < dim; l++) {
           if (k >= dim) [[clang::unlikely]] // case of singular matrix
             return 0;
 
-          double temp = creal(A->matrix[dim * i + l]);
-          A->matrix[dim * i + l] = A->matrix[dim * (i + k) + l];
-          A->matrix[dim * (i + k) + l] = -temp;
+          double temp = creal(a->matrix[dim * i + l]);
+          a->matrix[dim * i + l] = a->matrix[dim * (i + k) + l];
+          a->matrix[dim * (i + k) + l] = -temp;
         }
       }
       // elimination
       double temp
-        = creal(A->matrix[dim * (j + 1) + i] / A->matrix[dim * i + i]);
+        = creal(a->matrix[dim * (j + 1) + i] / a->matrix[dim * i + i]);
       for (size_t k = i; k < dim; k++)
-        A->matrix[dim * (j + 1) + k] -= temp * A->matrix[dim * i + k];
+        a->matrix[dim * (j + 1) + k] -= temp * a->matrix[dim * i + k];
     }
 
-  for (size_t i = 0; i < dim; i++) result *= A->matrix[dim * i + i];
+  for (size_t i = 0; i < dim; i++) result *= a->matrix[dim * i + i];
   return result;
 }
 
 // for vectorization benchmarking
 bench (det2x2) {
   complex m[] = {3, 5, 2, 7};
-  matrix_t A = {.rows = 2, .cols = 2, .matrix = m};
-  det(&A);
+  matrix_t a = {.rows = 2, .cols = 2, .matrix = m};
+  det(&a);
 }
 bench (det3x3) {
   complex m[] = {3, 5, 2, 7, 6, 1, 9, 6};
-  matrix_t A = {.rows = 3, .cols = 3, .matrix = m};
-  det(&A);
+  matrix_t a = {.rows = 3, .cols = 3, .matrix = m};
+  det(&a);
 }
 
 /**
  * @brief Calculate inverse matrix with Gaussian elimination
- * @param[in] A Matrix
+ * @param[in] a Matrix
  * @return Inverted A
  */
-matrix_t inverse_matrix(matrix_t const *restrict A) {
-  size_t dim = A->rows;
+matrix_t inverseMatrix(matrix_t const *restrict a) {
+  size_t dim = a->rows;
 
-  if (A->rows != A->cols) [[clang::unlikely]] {
-    disperr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
-    return *A;
+  if (a->rows != a->cols) [[clang::unlikely]] {
+    dispErr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
+    return *a;
   }
 
-  matrix_t result = new_matrix(dim, dim);
+  matrix_t result = newMatrix(dim, dim);
 
   for (size_t i = 0; i < dim; i++) result.matrix[i * dim + i] = 1;
 
   // to diagonal matrix
   for (size_t i = 0; i < dim; i++) {
-    if (A->matrix[i * dim + i] == 0) {
+    if (a->matrix[i * dim + i] == 0) {
       size_t j;
-      for (j = (i + 1) % dim; A->matrix[j * dim + i] == 0; j = (j + 1) % dim)
+      for (j = (i + 1) % dim; a->matrix[j * dim + i] == 0; j = (j + 1) % dim)
         if (j == i) [[clang::unlikely]] {
           free(result.matrix);
-          disperr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
-          return *A;
+          dispErr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
+          return *a;
         }
 
       for (size_t k = 0; k < dim; k++) {
-        complex temp = A->matrix[i * dim + k];
-        A->matrix[i * dim + k] = A->matrix[j * dim + k];
-        A->matrix[j * dim + k] = -temp;
+        complex temp = a->matrix[i * dim + k];
+        a->matrix[i * dim + k] = a->matrix[j * dim + k];
+        a->matrix[j * dim + k] = -temp;
         temp = result.matrix[i * dim + k];
         result.matrix[i * dim + k] = result.matrix[j * dim + k];
         result.matrix[j * dim + k] = -temp;
@@ -183,10 +183,10 @@ matrix_t inverse_matrix(matrix_t const *restrict A) {
     }
 
     for (size_t j = (i + 1) % dim; j != i; j = (j + 1) % dim) {
-      complex coef = A->matrix[j * dim + i] / A->matrix[i * dim + i];
+      complex coef = a->matrix[j * dim + i] / a->matrix[i * dim + i];
       for (size_t k = 0; k < dim; k++) {
         size_t id = (k + i) % dim;
-        A->matrix[j * dim + id] -= coef * A->matrix[i * dim + id];
+        a->matrix[j * dim + id] -= coef * a->matrix[i * dim + id];
         result.matrix[j * dim + id] -= coef * result.matrix[i * dim + id];
       }
     }
@@ -195,13 +195,13 @@ matrix_t inverse_matrix(matrix_t const *restrict A) {
   // A->matrix to unit matrix
   for (size_t i = 0; i < dim; i++)
     for (size_t j = 0; j < dim; j++) {
-      if (eq(fabs(A->matrix[i * dim + i]), 0.0)) [[clang::unlikely]] {
+      if (eq(fabs(a->matrix[i * dim + i]), 0.0)) [[clang::unlikely]] {
         free(result.matrix);
-        disperr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
-        return *A;
+        dispErr(__FUNCTION__, "%s", codetomsg(ERR_IRREGULAR_MATRIX));
+        return *a;
       }
 
-      result.matrix[i * dim + j] /= A->matrix[i * dim + i];
+      result.matrix[i * dim + j] /= a->matrix[i * dim + i];
     }
 
   return result;

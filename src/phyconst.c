@@ -4,18 +4,17 @@
  */
 
 #include "phyconst.h"
-#include "arthfn.h"
 #include "chore.h"
 #include "mathdef.h"
 #include "testing.h"
 #include <ctype.h>
 
-constexpr static double const consts[ALPN * 2] = {
+constexpr static double const consts[alpha_n * 2] = {
   0,               // A
   0,               // B
   0,               // C
   0,               // D
-  M_E,             // E Eular's number
+  euler,           // E Euler's number
   96485.33212331,  // F Faraday constant
   6.6743015e-11,   // G
   0,               // H
@@ -26,7 +25,7 @@ constexpr static double const consts[ALPN * 2] = {
   0,               // M
   0,               // N
   0,               // O
-  M_PI,            // P pie
+  pi,              // P pie
   0,               // Q
   8.3144626181532, // R gas constant
   0,               // S
@@ -66,19 +65,19 @@ constexpr static double const consts[ALPN * 2] = {
   0,               // z
 };
 
-double get_const(char idx) {
+double getConst(char idx) {
   if (!isalpha(idx)) return NAN;
   [[clang::likely]];
   return consts[idx - 'A' - (idx >= 'a') * ('a' - 'Z' - 1)];
 }
 
 test_table(
-  get_const, get_const, (double, char),
+  get_const, getConst, (double, char),
   {
     {    299'792'458, 'c'},
-    {           M_PI, 'P'},
+    {             pi, 'P'},
     {8.3144626181532, 'R'},
-    {            M_E, 'E'},
+    {          euler, 'E'},
     {   1.380649e-23, 'k'}
 }
 )

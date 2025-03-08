@@ -4,7 +4,7 @@
 
 #pragma once
 
-void init_plotconfig();
+void initPlotCfg();
 void plotexpr(char const *);
-void plotexpr_implicit(char const *);
-void change_plotconfig(char const *);
+void plotexprImplicit(char const *);
+void changePlotCfg(char const *);

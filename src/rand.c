@@ -22,7 +22,7 @@ uint64_t xorsh() {
   return state = x;
 }
 
-double xorsh_0_1() {
+double xorsh0to1() {
   return (double)xorsh() / (double)~(uint64_t)0;
 }
 
@@ -30,7 +30,7 @@ void sxorsh(uint64_t s) {
   state = s;
 }
 
-[[gnu::constructor(101)]] void __init_xorsh() {
+[[gnu::constructor(101)]] void initXorsh() {
   sxorsh((uint64_t)clock());
   _ = xorsh();
 }
@@ -39,24 +39,24 @@ test (rand) {
   expect(true);
 
   test_filter("all,rand") {
-    constexpr size_t N = 10'000;
+    constexpr size_t n = 10'000;
     srand((unsigned)clock());
 
-    unsigned rand_arr[N];
-    unsigned xors_arr[N];
+    unsigned rand_arr[n];
+    unsigned xors_arr[n];
     double rand_av = 0;
     double xors_av = 0;
-    for (size_t i = 0; i < N; i++) {
+    for (size_t i = 0; i < n; i++) {
       rand_arr[i] = (unsigned _BitInt(31))rand();
       xors_arr[i] = (unsigned _BitInt(31))xorsh();
-      rand_av += rand_arr[i] / N;
-      xors_av += xors_arr[i] / N;
+      rand_av += rand_arr[i] / n;
+      xors_av += xors_arr[i] / n;
     }
     double rand_vari = 0;
     double xors_vari = 0;
-    for (size_t i = 0; i < N; i++) {
-      rand_vari += pow(rand_arr[i] - rand_av, 2) / N;
-      xors_vari += pow(xors_arr[i] - xors_av, 2) / N;
+    for (size_t i = 0; i < n; i++) {
+      rand_vari += pow(rand_arr[i] - rand_av, 2) / n;
+      xors_vari += pow(xors_arr[i] - xors_av, 2) / n;
     }
     puts("");
     printf("rand: av %lf vari %lf\n", rand_av, rand_vari);

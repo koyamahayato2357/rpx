@@ -5,8 +5,8 @@
 #pragma once
 #include <stddef.h>
 
-constexpr char ES = '\033';
-constexpr char BS = 127;
-constexpr char CTRL_D = 4;
+constexpr char es = '\033';
+constexpr char backspace = 127;
+constexpr char ctrld = 4;
 
 bool editline(int, char *);

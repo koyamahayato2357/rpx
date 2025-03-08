@@ -20,7 +20,7 @@
 #define getchar() ((char)getchar())
 
 // getchar() becomes like getch() in MSVC
-static void enable_rawmode(struct termios *orig_termios) {
+static void enableRawMode(struct termios *orig_termios) {
   struct termios raw;
   tcgetattr(STDIN_FILENO, orig_termios);
   raw = *orig_termios;
@@ -28,7 +28,7 @@ static void enable_rawmode(struct termios *orig_termios) {
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
 
-static void disable_rawmode(struct termios *orig_termios) {
+static void disableRawMode(struct termios *orig_termios) {
   tcsetattr(STDIN_FILENO, TCSAFLUSH, orig_termios);
 }
 
@@ -132,7 +132,7 @@ static void fwdw(char **cur, char const *len) {
          && !(isalnum(**cur) ^ wasalnum);
        (*cur)++);
 
-  skipspcs((char const **)cur);
+  skipSpaces((char const **)cur);
 }
 
 test (fwdw) {
@@ -180,7 +180,7 @@ test (bwdw) {
  */
 static void fwdW(char **cur, char *len) {
   *cur = strchr(*cur, ' ') ?: len;
-  skipspcs((char const **)cur);
+  skipSpaces((char const **)cur);
 }
 
 test (fwdW) {
@@ -223,7 +223,7 @@ test (bwdW) {
  * @param[in,out] cur Cursor pointer
  * @param[in,out] len End of line
  */
-static void handle_es(char key, char *buf, char **cur, char **len) {
+static void handleEs(char key, char *buf, char **cur, char **len) {
   switch (key) {
   case '3': // delete key
     if (getchar() != '~') break;
@@ -244,7 +244,7 @@ static void handle_es(char key, char *buf, char **cur, char **len) {
     *cur = buf;
     break;
   default:
-    disperr(__FUNCTION__, "unknown escape sequence: %c", key);
+    dispErr(__FUNCTION__, "unknown escape sequence: %c", key);
   }
 }
 
@@ -257,7 +257,7 @@ static void handle_es(char key, char *buf, char **cur, char **len) {
  * @param[out] begin Beginning of selected range of text object
  * @param[out] end End of selected range of text object
  */
-static void handle_txtobj(
+static void handleTxtObj(
   char txtobj, char *buf, char *cur, char *len, char **begin, char **end
 ) {
   switch (txtobj) {
@@ -316,7 +316,7 @@ static void handle_txtobj(
 static void
 inserts(size_t slen, char const *s, char **cur, char **len, size_t margin) {
   if (slen > margin) {
-    disperr(__FUNCTION__, "buffer depreletion");
+    dispErr(__FUNCTION__, "buffer depreletion");
     abort();
   }
   if (*cur != *len) memmove(*cur + slen, *cur, (size_t)(*len - *cur));
@@ -353,7 +353,7 @@ test (inserts) {
 static void insbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
   case '(': // autopair
-    inserts(2, "()", cur, len, (size_t)(buf + BUFSIZE - *len));
+    inserts(2, "()", cur, len, (size_t)(buf + buf_size - *len));
     (*cur)++;
     break;
 
@@ -362,7 +362,7 @@ static void insbind(char c, char *buf, char **cur, char **len) {
     break;
 
   case '[': // autopair
-    inserts(2, "[]", cur, len, (size_t)(buf + BUFSIZE - *len));
+    inserts(2, "[]", cur, len, (size_t)(buf + buf_size - *len));
     (*cur)++;
     break;
 
@@ -442,7 +442,7 @@ static void nrmbind(char c, char *buf, char **cur, char **len) {
     char input = getchar();
     char *dst, *src;
     if (input == 'i' || input == 'a') {
-      handle_txtobj(getchar(), buf, *cur, *len, &dst, &src);
+      handleTxtObj(getchar(), buf, *cur, *len, &dst, &src);
     } else {
       nrmbind(input, buf, &end, len);
       dst = lesser(*cur, end);
@@ -465,11 +465,11 @@ static void nrmbind(char c, char *buf, char **cur, char **len) {
     **cur = getchar();
     break;
   case '[':
-    handle_es(getchar(), buf, cur, len);
+    handleEs(getchar(), buf, cur, len);
     handle_printable = insbind;
     break;
   default:
-    disperr(__FUNCTION__, "unknown char: %c", c);
+    dispErr(__FUNCTION__, "unknown char: %c", c);
   }
 }
 
@@ -484,18 +484,18 @@ bool editline(int sz, char *buf) {
   char *cur = buf;
   char *len = buf;
 
-  struct termios orig_termios ondrop(disable_rawmode);
-  enable_rawmode(&orig_termios);
+  struct termios orig_termios ondrop(disableRawMode);
+  enableRawMode(&orig_termios);
 
   for (char c = getchar();; c = getchar()) {
-    if ((ctrl_d = (c == CTRL_D)) || c == '\n' || buf + sz < len) break;
+    if ((ctrl_d = (c == ctrld)) || c == '\n' || buf + sz < len) break;
 
     switch (c) {
-    case ES:
+    case es:
       handle_printable = nrmbind;
       break;
 
-    case BS:
+    case backspace:
       if (cur <= buf) continue;
       memmove(cur - 1, cur, (size_t)(len - cur + 1));
       cur--;

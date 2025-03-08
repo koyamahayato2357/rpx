@@ -7,10 +7,10 @@
 #include "matop.h"
 #include <stdio.h>
 
-constexpr size_t BUFSIZE = 64;
+constexpr size_t buf_size = 64;
 #define OP_CASE_ELEM(tok, op) \
   case *#op: \
-    while (rbp + 1 < rsp) elem_##tok(rbp + 1, rsp--); \
+    while (rbp + 1 < rsp) elem##tok(rbp + 1, rsp--); \
     break;
 #define OVERWRITE(cas, var, fn) \
   case cas: \
@@ -50,14 +50,14 @@ typedef struct {
   bool isnum;
 } real_t;
 
-void proc_alist(int, char const **);
-void reader_loop(FILE *);
-elem_t eval_expr_complex(char const *);
-void print_elem(elem_t);
-void print_real(double);
-void print_complex_complex(complex);
-void print_complex_polar(complex);
-void print_matrix(matrix_t);
-void print_lambda(char const *);
-void proc_cmds(char const *);
+void procAList(int, char const **);
+void readerLoop(FILE *);
+elem_t evalExprComplex(char const *);
+void printElem(elem_t);
+void printReal(double);
+void printComplexComplex(complex);
+void printComplexPolar(complex);
+void printMatrix(matrix_t);
+void printLambda(char const *);
+void procCmds(char const *);
 overloadable void printany(elem_t);

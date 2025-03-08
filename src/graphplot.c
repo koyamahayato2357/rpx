@@ -11,17 +11,17 @@
 
 constexpr double fontrow = 2;
 constexpr double fontcol = 1;
-constexpr double fontratio = fontcol / fontrow;
+constexpr double font_ratio = fontcol / fontrow;
 
 [[gnu::const]] static bool
-ispointgraph(double y0, double y1, double y, double dy) {
+isPointGraph(double y0, double y1, double y, double dy) {
   return (y > y0 && y0 > y - dy) || (y > y1 && y1 > y - dy)
       || (y0 > y && y > y1) || (y1 > y && y > y0)
       || (y0 > y - dy && y - dy > y1) || (y1 > y - dy && y - dy > y0);
 }
 
 test_table(
-  ispoint, ispointgraph, (bool, double, double, double, double),
+  ispoint, isPointGraph, (bool, double, double, double, double),
   {
     //        y0    y1    y   dy
     { true,  0.0,  1.0, 0.5, 1.0},
@@ -35,20 +35,20 @@ test_table(
 }
 )
 
-static void drawaxisx(double const xn, int const dsplysz, double const dx) {
+static void drawAxisX(double const xn, int const disp_size, double const dx) {
   putchar('\t');
   putchar('+');
-  for (int i = 0; i < dsplysz / fontratio; i++) putchar('-');
+  for (int i = 0; i < disp_size / font_ratio; i++) putchar('-');
   putchar('\n');
   putchar('\t');
   printf("%.3lf", xn);
-  for (int i = 0; i < dsplysz / fontratio / 2; i++) putchar(' ');
-  printf("%.3lf", xn + dx * dsplysz / 2 / fontratio);
+  for (int i = 0; i < disp_size / font_ratio / 2; i++) putchar(' ');
+  printf("%.3lf", xn + dx * disp_size / 2 / font_ratio);
   putchar('\n');
 }
 
 [[gnu::nonnull]] void plotexpr(char const *restrict expr) {
-  plotcfg_t pcfg = get_plotcfg();
+  plotcfg_t pcfg = getPlotCfg();
   machine_t ei;
 
   for (int i = 0; i < pcfg.dispy; i++) {
@@ -56,18 +56,18 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
     printf("%.3lf\t|", y);
     double x0 = pcfg.xn - pcfg.dx;
     real_t stack = (real_t){.elem = {.real = x0}, .isnum = true};
-    init_evalinfo(&ei);
+    initEvalinfo(&ei);
     ei.e.args = &stack - 7;
     ei.c.expr = expr;
-    rpx_eval(&ei);
+    rpxEval(&ei);
     double y0 = ei.s.rsp->elem.real;
-    for (int j = 0; j < pcfg.dispx / fontratio; j++) {
+    for (int j = 0; j < pcfg.dispx / font_ratio; j++) {
       stack.elem.real = pcfg.xn + pcfg.dx * j + pcfg.dx;
 
       ei.c.expr = expr;
-      rpx_eval(&ei);
+      rpxEval(&ei);
       double y1 = ei.s.rsp->elem.real;
-      putchar(ispointgraph(y0, y1, y, pcfg.dy) ? '*' : ' ');
+      putchar(isPointGraph(y0, y1, y, pcfg.dy) ? '*' : ' ');
       fflush(stdout);
       y0 = y1;
     }
@@ -75,11 +75,11 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
     putchar('\n');
   }
 
-  drawaxisx(pcfg.xn, pcfg.dispx, pcfg.dx);
+  drawAxisX(pcfg.xn, pcfg.dispx, pcfg.dx);
 }
 
-[[gnu::nonnull]] void plotexpr_implicit(char const *restrict expr) {
-  plotcfg_t pcfg = get_plotcfg();
+[[gnu::nonnull]] void plotexprImplicit(char const *restrict expr) {
+  plotcfg_t pcfg = getPlotCfg();
   machine_t ei;
 
   double y0 = pcfg.yx + pcfg.dy;
@@ -92,19 +92,19 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
       (real_t){.elem = {.real = y0}, .isnum = true},
       (real_t){.elem = {.real = x0}, .isnum = true},
     };
-    init_evalinfo(&ei);
+    initEvalinfo(&ei);
     ei.e.args = stack - 6;
     ei.c.expr = expr;
-    rpx_eval(&ei);
+    rpxEval(&ei);
     double res0 = ei.s.rsp->elem.real;
-    for (int j = 0; j < pcfg.dispx / fontratio; j++) {
+    for (int j = 0; j < pcfg.dispx / font_ratio; j++) {
       double x1 = pcfg.xn + pcfg.dx * (j + 1);
       stack[0] = (real_t){.elem = {.real = y1}, .isnum = true};
       stack[1] = (real_t){.elem = {.real = x1}, .isnum = true};
       ei.c.expr = expr;
-      rpx_eval(&ei);
+      rpxEval(&ei);
       double res1 = ei.s.rsp->elem.real;
-      putchar(ispointgraph(res0, res1, 0, pcfg.dy) ? '*' : ' ');
+      putchar(isPointGraph(res0, res1, 0, pcfg.dy) ? '*' : ' ');
       res0 = res1;
     }
 
@@ -112,44 +112,44 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
     y0 = y1;
   }
 
-  drawaxisx(pcfg.xn, pcfg.dispx, pcfg.dx);
+  drawAxisX(pcfg.xn, pcfg.dispx, pcfg.dx);
 }
 
-static void set_pbounds(
+static void setPlotBounds(
   double const xx, double const xn, double const yx, double const yn
 ) {
-  plotcfg_t pcfg = get_plotcfg();
+  plotcfg_t pcfg = getPlotCfg();
 
   pcfg.xx = xx;
   pcfg.xn = xn;
   pcfg.yx = yx;
   pcfg.yn = yn;
 
-  pcfg.dx = (xx - xn) / pcfg.dispx * fontratio;
+  pcfg.dx = (xx - xn) / pcfg.dispx * font_ratio;
   pcfg.dy = (yx - yn) / pcfg.dispy;
 
-  set_plotcfg(pcfg);
+  setPlotCfg(pcfg);
 }
 
-void init_plotconfig() {
-  struct winsize w = get_winsz();
-  int dispsz = (int)lesser((double)w.ws_row, w.ws_col * fontratio);
+void initPlotCfg() {
+  struct winsize w = getWinSize();
+  int dispsz = (int)lesser((double)w.ws_row, w.ws_col * font_ratio);
 
-  plotcfg_t pcfg = get_plotcfg();
+  plotcfg_t pcfg = getPlotCfg();
   pcfg.dispx = pcfg.dispy = dispsz - 5;
   pcfg.plotexpr = plotexpr;
-  set_plotcfg(pcfg);
-  set_pbounds(1, -1, 1, -1);
+  setPlotCfg(pcfg);
+  setPlotBounds(1, -1, 1, -1);
 }
 
-[[gnu::nonnull]] void change_plotconfig(char const *cmd) {
+[[gnu::nonnull]] void changePlotCfg(char const *cmd) {
   switch (*cmd++) {
   case 'd': { // display size
-    plotcfg_t pcfg = get_plotcfg();
+    plotcfg_t pcfg = getPlotCfg();
 
-    double newx = eval_expr_real(cmd).elem.real;
-    skip_untilcomma(&cmd);
-    double newy = eval_expr_real(cmd).elem.real;
+    double newx = evalExprReal(cmd).elem.real;
+    skipUntilComma(&cmd);
+    double newy = evalExprReal(cmd).elem.real;
 
     double centerx = (pcfg.xx + pcfg.xn) / 2;
     double centery = (pcfg.yx + pcfg.yn) / 2;
@@ -170,18 +170,18 @@ void init_plotconfig() {
     pcfg.dispx = (int)newx;
     pcfg.dispy = (int)newy;
 
-    set_plotcfg(pcfg);
+    setPlotCfg(pcfg);
   } break;
   case 'r': { // range
-    double newxx = eval_expr_real(cmd).elem.real;
-    skip_untilcomma(&cmd);
-    double newxn = eval_expr_real(cmd).elem.real;
-    skip_untilcomma(&cmd);
-    double newyx = eval_expr_real(cmd).elem.real;
-    skip_untilcomma(&cmd);
-    double newyn = eval_expr_real(cmd).elem.real;
+    double newxx = evalExprReal(cmd).elem.real;
+    skipUntilComma(&cmd);
+    double newxn = evalExprReal(cmd).elem.real;
+    skipUntilComma(&cmd);
+    double newyx = evalExprReal(cmd).elem.real;
+    skipUntilComma(&cmd);
+    double newyn = evalExprReal(cmd).elem.real;
 
-    set_pbounds(newxx, newxn, newyx, newyn);
+    setPlotBounds(newxx, newxn, newyx, newyn);
   } break;
   default:
     [[clang::unlikely]];

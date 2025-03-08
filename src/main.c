@@ -4,7 +4,6 @@
  */
 
 #include "main.h"
-#include "arthfn.h"
 #include "benchmarking.h"
 #include "editline.h"
 #include "elemop.h"
@@ -23,22 +22,22 @@
 #include <limits.h>
 #include <string.h>
 
-auto eval_f = eval_expr_real;
-auto print_complex = print_complex_complex;
+auto eval_f = evalExprReal;
+auto print_complex = printComplexComplex;
 
 int main(int argc, char const **argv) {
-  init_plotconfig();
-  load_initscript(nullptr);
+  initPlotCfg();
+  loadInitScript(nullptr);
 
-  proc_alist(argc, argv);
+  procAList(argc, argv);
 
-  reader_loop(stdin);
+  readerLoop(stdin);
 
   return 0;
 }
 
 //! @brief Display help message
-void startup_message() {
+void startupMsg() {
   puts("===========================================================");
   puts("     RPX - Reverse Polish notation calculator eXtended");
   puts("===========================================================");
@@ -71,14 +70,14 @@ void startup_message() {
  * @brief Process input
  * @param[in] input_buf input
  */
-[[gnu::nonnull]] void proc_input(char const *restrict input_buf) {
+[[gnu::nonnull]] void procInput(char const *restrict input_buf) {
   if (*input_buf == ':') {
-    proc_cmds(input_buf + 1);
+    procCmds(input_buf + 1);
     return;
   }
   elem_t res;
   res = eval_f(input_buf);
-  print_elem(res);
+  printElem(res);
 }
 
 /**
@@ -86,21 +85,21 @@ void startup_message() {
  * @param[in] argc arg count
  * @param[in] argv arg value
  */
-void proc_alist(int argc, char const **argv) {
+void procAList(int argc, char const **argv) {
   for (int i = 1; i < argc; i++) {
     if (argv[i][0] != '-') { // interpreted as a file name
       FILE *fp dropfile
         = fopen(argv[i], "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s ", argv[i]);
-      reader_loop(fp);
+      readerLoop(fp);
       continue;
     }
 
     switch (argv[i][1]) { // interpreted as a option
     case 'h':
-      startup_message();
+      startupMsg();
       break;
     case 'r':
-      proc_input(argv[++i]);
+      procInput(argv[++i]);
       break;
     case 'q':
       exit(0);
@@ -114,7 +113,7 @@ void proc_alist(int argc, char const **argv) {
  * @brief Read raw line from fp
  * @return is reached EOF
  */
-bool read_raw_line(char *buf, size_t len, FILE *fp) {
+bool readRawLine(char *buf, size_t len, FILE *fp) {
   return fgets(buf, (int)len, fp) != nullptr;
 }
 
@@ -122,7 +121,7 @@ bool read_raw_line(char *buf, size_t len, FILE *fp) {
  * @brief Read from stdin
  * @return is pressed ctrl_d
  */
-bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
+bool readerInteractiveLine(char *buf, size_t len, FILE *fp) {
   _ = fp;
   return editline((int)len, buf);
 }
@@ -131,11 +130,11 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
  * @brief File reading loop
  * @param[in] fp File stream
  */
-[[gnu::nonnull]] void reader_loop(FILE *restrict fp) {
-  char input_buf[BUFSIZE];
-  auto reader_fn = fp == stdin ? reader_interactive_line : read_raw_line;
-  while (reader_fn(input_buf, BUFSIZE, fp)) [[clang::likely]]
-    proc_input(input_buf);
+[[gnu::nonnull]] void readerLoop(FILE *restrict fp) {
+  char input_buf[buf_size];
+  auto reader_fn = fp == stdin ? readerInteractiveLine : readRawLine;
+  while (reader_fn(input_buf, buf_size, fp)) [[clang::likely]]
+    procInput(input_buf);
 }
 
 /**
@@ -144,21 +143,21 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
  * @return elem_t Expression evaluation result
  * @warning Possible stack overflow with very long expressions
  */
-[[gnu::nonnull]] elem_t eval_expr_complex(char const *expr) {
-  elem_t operand_stack[BUFSIZE] = {0};
+[[gnu::nonnull]] elem_t evalExprComplex(char const *expr) {
+  elem_t operand_stack[buf_size] = {0};
   elem_t *rsp = operand_stack, *rbp = operand_stack;
-  rtinfo_t info_c = get_rtinfo();
+  rtinfo_t info_c = getRuntimeInfo();
 
   for (;; expr++) {
     if (*expr == '[') {
       (++rsp)->rtype = RTYPE_MATR;
       expr++;
-      matrix_t val = {.matrix = zalloc(complex, MAT_INITSIZE)};
+      matrix_t val = {.matrix = zalloc(complex, mat_init_size)};
       matrix curelem = val.matrix;
       val.cols = (size_t)strtol(expr, (char **)&expr, 10);
       for (; *expr != ']';) {
-        *curelem++ = eval_expr_complex(expr).elem.comp;
-        skip_untilcomma(&expr);
+        *curelem++ = evalExprComplex(expr).elem.comp;
+        skipUntilComma(&expr);
       }
       val.rows = (size_t)(curelem - val.matrix) / val.cols;
       rsp->elem.matr = val;
@@ -183,11 +182,11 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       *rsp = *(rsp + 1);
       break;
 
-      OP_CASE_ELEM(add, +)
-      OP_CASE_ELEM(sub, -)
-      OP_CASE_ELEM(mul, *)
-      OP_CASE_ELEM(div, /)
-      OP_CASE_ELEM(pow, ^)
+      OP_CASE_ELEM(Add, +)
+      OP_CASE_ELEM(Sub, -)
+      OP_CASE_ELEM(Mul, *)
+      OP_CASE_ELEM(Div, /)
+      OP_CASE_ELEM(Pow, ^)
       OVERWRITE_COMP('A', fabs)
       OVERWRITE_COMP('s', sin)
       OVERWRITE_COMP('c', cos)
@@ -195,10 +194,10 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
 
     case '~': {
       _ drop = rsp->elem.matr.matrix;
-      rsp->elem.matr = inverse_matrix(&rsp->elem.matr);
+      rsp->elem.matr = inverseMatrix(&rsp->elem.matr);
     } break;
     case '=':
-      for (; rbp + 1 < rsp && elem_eq(rsp - 1, rsp); rsp--);
+      for (; rbp + 1 < rsp && elemEq(rsp - 1, rsp); rsp--);
       (rbp + 1)->elem.real = rbp + 1 == rsp;
       if (rbp + 1 != rsp) rsp = rbp + 1;
       break;
@@ -209,7 +208,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
         OVERWRITE_COMP('c', acos)
         OVERWRITE_COMP('t', atan)
       default:
-        disperr(__FUNCTION__, "unknown fn: %c", *expr);
+        dispErr(__FUNCTION__, "unknown fn: %c", *expr);
       }
       break;
 
@@ -219,7 +218,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
         OVERWRITE_COMP('c', cosh)
         OVERWRITE_COMP('t', tanh)
       default:
-        disperr(__FUNCTION__, "unknown fn: %c", *expr);
+        dispErr(__FUNCTION__, "unknown fn: %c", *expr);
       }
       break;
 
@@ -232,10 +231,10 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       rsp->elem.comp = log(rsp->elem.comp) / log(x);
     } break;
     case 'r': // to radian
-      rsp->elem.comp *= M_PI / 180;
+      rsp->elem.comp *= pi / 180;
       break;
     case 'd': // to degree
-      rsp->elem.comp *= 180 / M_PI;
+      rsp->elem.comp *= 180 / pi;
       break;
     case 'm': // negative sign
       rsp->elem.comp *= -1;
@@ -252,26 +251,26 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
     case '@':   // system functions
       switch (*++expr) {
       case 'a': // ANS
-        elem_set(++rsp, &info_c.hist[info_c.histi]);
+        elemSet(++rsp, &info_c.hist[info_c.histi]);
         break;
       case 'd':
         print_complex(rsp->elem.comp);
         break;
       case 'h': // history operation
-        elem_set(rsp, &info_c.hist[info_c.histi - (size_t)rsp->elem.real]);
+        elemSet(rsp, &info_c.hist[info_c.histi - (size_t)rsp->elem.real]);
         break;
       case 'n':
-        elem_set(++rsp, &(elem_t){.rtype = RTYPE_COMP, .elem = {.comp = NAN}});
+        elemSet(++rsp, &(elem_t){.rtype = RTYPE_COMP, .elem = {.comp = NAN}});
         break;
       case 'p': // prev stack value
         rsp++;
-        elem_set(rsp, rsp - 1);
+        elemSet(rsp, rsp - 1);
         break;
       case 'r':
-        (++rsp)->elem.comp = xorsh_0_1();
+        (++rsp)->elem.comp = xorsh0to1();
         break;
       case 's': // stack value operation
-        elem_set(rsp, rsp - (int)rsp->elem.real - 1);
+        elemSet(rsp, rsp - (int)rsp->elem.real - 1);
         break;
       default:
         [[clang::unlikely]];
@@ -279,18 +278,18 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
       break;
 
     case '\\': // special variables and CONSTANTS
-      (++rsp)->elem.comp = get_const(*++expr);
+      (++rsp)->elem.comp = getConst(*++expr);
       break;
 
     case '$': // register
       if (islower(*++expr)) [[clang::likely]] {
         elem_t *rhs = &info_c.reg[*expr - 'a'];
-        elem_set(++rsp, rhs);
+        elemSet(++rsp, rhs);
       }
       break;
 
     case '&':
-      elem_set(&info_c.reg[*++expr - 'a'], rsp);
+      elemSet(&info_c.reg[*++expr - 'a'], rsp);
       break;
 
       // TODO differential
@@ -301,7 +300,7 @@ bool reader_interactive_line(char *buf, size_t len, FILE *fp) {
     case ',': // delimiter
       goto end;
     default:
-      disperr(__FUNCTION__, "unknown char: %c", *expr);
+      dispErr(__FUNCTION__, "unknown char: %c", *expr);
     }
   }
 
@@ -310,13 +309,13 @@ end:
     elem_t *rhs = &info_c.hist[++info_c.histi];
     if (rhs->rtype == RTYPE_MATR) nfree(rhs->elem.matr.matrix);
     *rhs = *rsp;
-  } else if (info_c.histi < BUFSIZE)
+  } else if (info_c.histi < buf_size)
     info_c.hist[++info_c.histi].elem.comp = rsp->elem.comp;
-  set_rtinfo(info_c);
+  setRuntimeInfo(info_c);
   return *rsp;
 }
 
-#define eval_expr_complex_return_complex(expr) eval_expr_complex(expr).elem.comp
+#define eval_expr_complex_return_complex(expr) evalExprComplex(expr).elem.comp
 test_table(
   eval_complex, eval_expr_complex_return_complex, (complex, char const *),
   {
@@ -338,7 +337,7 @@ test (eval_expr_complex) {
   matrix_t resultm;
 
   // Test matrix addition
-  resultm = eval_expr_complex("[2 1,2,3,4,][2 5,6,7,8,]+").elem.matr;
+  resultm = evalExprComplex("[2 1,2,3,4,][2 5,6,7,8,]+").elem.matr;
   expecteq(6.0, resultm.matrix[0]);
   expecteq(8.0, resultm.matrix[1]);
   expecteq(10.0, resultm.matrix[2]);
@@ -346,7 +345,7 @@ test (eval_expr_complex) {
 
   // Test matrix multiplication
   char const *expr = "[2 1,2,3,4,][2 5,6,7,8,]*";
-  resultm = eval_expr_complex(expr).elem.matr;
+  resultm = evalExprComplex(expr).elem.matr;
   expecteq(2, resultm.rows);
   expecteq(2, resultm.cols);
   expecteq(19.0, resultm.matrix[0]);
@@ -356,7 +355,7 @@ test (eval_expr_complex) {
 
   // Test matrix inverse
   expr = "[2 1,2,3,4,]~";
-  resultm = eval_expr_complex(expr).elem.matr;
+  resultm = evalExprComplex(expr).elem.matr;
   expecteq(2, resultm.rows);
   expecteq(2, resultm.cols);
   expecteq(-2.0, resultm.matrix[0]);
@@ -366,7 +365,7 @@ test (eval_expr_complex) {
 
   // Scalar multiplication
   expr = "[3 5,6,7,] 5 *";
-  resultm = eval_expr_complex(expr).elem.matr;
+  resultm = evalExprComplex(expr).elem.matr;
   expecteq(1, resultm.rows);
   expecteq(3, resultm.cols);
   expecteq(25, resultm.matrix[0]);
@@ -375,49 +374,49 @@ test (eval_expr_complex) {
 }
 
 bench (eval_expr_complex) {
-  eval_expr_complex("1 2 3 4 5 +");
-  eval_expr_complex("4 5 ^");
-  eval_expr_complex("1s2^(1c2^)+");
-  eval_expr_complex("  5    6    10    - 5  /");
-  eval_expr_complex("5");
-  eval_expr_complex("@a");
-  eval_expr_complex("10 &x");
-  eval_expr_complex("$x 2 *");
-  eval_expr_complex("2 3 ^ (4 5 *) + (6 7 /) -");
-  eval_expr_complex("\\P 2 / s");
-  eval_expr_complex("\\P 4 / c");
-  eval_expr_complex("2 l2");
-  eval_expr_complex("100 lc");
-  eval_expr_complex("1 0 /");
+  evalExprComplex("1 2 3 4 5 +");
+  evalExprComplex("4 5 ^");
+  evalExprComplex("1s2^(1c2^)+");
+  evalExprComplex("  5    6    10    - 5  /");
+  evalExprComplex("5");
+  evalExprComplex("@a");
+  evalExprComplex("10 &x");
+  evalExprComplex("$x 2 *");
+  evalExprComplex("2 3 ^ (4 5 *) + (6 7 /) -");
+  evalExprComplex("\\P 2 / s");
+  evalExprComplex("\\P 4 / c");
+  evalExprComplex("2 l2");
+  evalExprComplex("100 lc");
+  evalExprComplex("1 0 /");
 }
 
 bench (eval_matrix) {
-  eval_expr_complex("[2 1,2,3,4,][2 5,6,7,8,]+");
-  eval_expr_complex("[3 4,1,4,6,5,7,3,6,7,]~");
-  eval_expr_complex("[1 4,5,][2 6,7,]*");
-  eval_expr_complex("[2 7,6,5,4,] 6 *");
-  eval_expr_complex("[2 9,0,5,1,] 4 ^");
-  eval_expr_complex("[2 5,4,3,2,][2 4,8,2,1,]/");
+  evalExprComplex("[2 1,2,3,4,][2 5,6,7,8,]+");
+  evalExprComplex("[3 4,1,4,6,5,7,3,6,7,]~");
+  evalExprComplex("[1 4,5,][2 6,7,]*");
+  evalExprComplex("[2 7,6,5,4,] 6 *");
+  evalExprComplex("[2 9,0,5,1,] 4 ^");
+  evalExprComplex("[2 5,4,3,2,][2 4,8,2,1,]/");
 }
 
 /**
  * @brief Output elem_t in appropriate format
  * @param[in] elem Output comtent
  */
-void print_elem(elem_t elem) {
+void printElem(elem_t elem) {
   switch (elem.rtype) {
   case RTYPE_REAL:
-    print_real(elem.elem.real);
+    printReal(elem.elem.real);
     break;
   case RTYPE_COMP:
     print_complex(elem.elem.comp);
     break;
   case RTYPE_MATR:
-    print_matrix(elem.elem.matr);
+    printMatrix(elem.elem.matr);
     free(elem.elem.matr.matrix);
     break;
   case RTYPE_LAMB:
-    print_lambda(elem.elem.lamb);
+    printLambda(elem.elem.lamb);
     free(elem.elem.lamb);
     break;
   default:
@@ -426,7 +425,7 @@ void print_elem(elem_t elem) {
 }
 
 overloadable void printany(elem_t elem) {
-  print_elem(elem);
+  printElem(elem);
 }
 
 overloadable bool eq(elem_t lhs, elem_t rhs) {
@@ -449,22 +448,22 @@ overloadable bool eq(elem_t lhs, elem_t rhs) {
  * @brief Output value of type double
  * @param[in] result Output value
  */
-void print_real(double result) {
-  if (isint(result)) PRINT("result: ", (long)result, "\n");
+void printReal(double result) {
+  if (isInt(result)) PRINT("result: ", (long)result, "\n");
   else PRINT("result: ", result, "\n");
 }
 
 /**
  * @brief Output value of type complex
  */
-void print_complex_complex(complex result) {
+void printComplexComplex(complex result) {
   PRINT("result: ", creal(result), " + ", cimag(result), "i\n");
 }
 
 /**
  * @brief Output value of type complex in phasor view
  */
-void print_complex_polar(complex result) {
+void printComplexPolar(complex result) {
   complex res = result;
   if (isnan(creal(res)) || isnan(cimag(res))) return;
 
@@ -476,7 +475,7 @@ void print_complex_polar(complex result) {
 /**
  * @brief Output value of type matrix_t
  */
-void print_matrix(matrix_t result) {
+void printMatrix(matrix_t result) {
   for (size_t i = 0; i < result.rows; i++) {
     for (size_t j = 0; j < result.cols; j++) {
       complex res = result.matrix[result.cols * i + j];
@@ -489,7 +488,7 @@ void print_matrix(matrix_t result) {
   }
 }
 
-[[gnu::nonnull]] void print_lambda(char const *result) {
+[[gnu::nonnull]] void printLambda(char const *result) {
   PRINT("result: ", result, "\n");
 }
 
@@ -497,50 +496,50 @@ void print_matrix(matrix_t result) {
  * @brief Process command
  * @param[in] cmd Command input
  */
-[[gnu::nonnull]] void proc_cmds(char const *restrict cmd) {
-  plotcfg_t pcfg = get_plotcfg();
+[[gnu::nonnull]] void procCmds(char const *restrict cmd) {
+  plotcfg_t pcfg = getPlotCfg();
 
   // TODO save registers
   switch (*cmd++) {
   case 't':   // toggle
     switch (*cmd) {
     case 'c': // complex mode
-      eval_f = eval_f == eval_expr_real ? eval_expr_complex : eval_expr_real;
+      eval_f = eval_f == evalExprReal ? evalExprComplex : evalExprReal;
       break;
     case 'p': // plotcfg explicit implicit
-      pcfg.plotexpr = pcfg.plotexpr == plotexpr ? plotexpr_implicit : plotexpr;
-      set_plotcfg(pcfg);
+      pcfg.plotExpr = pcfg.plotExpr == plotexpr ? plotexprImplicit : plotexpr;
+      setPlotCfg(pcfg);
       break;
     case 'P': // print_complex
-      print_complex = print_complex == print_complex_complex
-                      ? print_complex_polar
-                      : print_complex_complex;
+      print_complex = print_complex == printComplexComplex
+                      ? printComplexPolar
+                      : printComplexComplex;
       break;
     default:
       [[clang::unlikely]];
     }
     break;
   case 'o': {
-    char buf[BUFSIZE];
-    strncpy(buf, cmd, BUFSIZE);
+    char buf[buf_size];
+    strncpy(buf, cmd, buf_size);
     optexpr(buf);
     puts(buf);
   } break;
   case 'p':
-    skipspcs((char const **)&cmd);
+    skipSpaces((char const **)&cmd);
     if (*cmd == '\0') {
       plotexpr(pcfg.prevexpr);
       break;
     }
 
-    pcfg.plotexpr(cmd);
-    strncpy(pcfg.prevexpr, cmd, BUFSIZE);
-    set_plotcfg(pcfg);
+    pcfg.plotExpr(cmd);
+    strncpy(pcfg.prevexpr, cmd, buf_size);
+    setPlotCfg(pcfg);
     break;
   case 'r':   // rand
     switch (*cmd) {
     case 's': // set seed
-      sxorsh((uint64_t)eval_expr_real(cmd + 1).elem.real);
+      sxorsh((uint64_t)evalExprReal(cmd + 1).elem.real);
       break;
     default:
     }
@@ -548,13 +547,13 @@ void print_matrix(matrix_t result) {
   case 's':   // settings
     switch (*cmd) {
     case 'p': // plot
-      change_plotconfig(cmd + 1);
+      changePlotCfg(cmd + 1);
       break;
     default:
       [[clang::unlikely]];
     }
     break;
   default:
-    disperr(__FUNCTION__, "unknown command: %c", *(cmd - 1));
+    dispErr(__FUNCTION__, "unknown command: %c", *(cmd - 1));
   }
 }

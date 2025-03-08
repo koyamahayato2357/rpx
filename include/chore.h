@@ -8,16 +8,16 @@
 #include <dirent.h>
 #include <stdio.h>
 
-constexpr size_t ALPN = 'z' - 'a' + 1;
+constexpr size_t alpha_n = 'z' - 'a' + 1;
 
 #define HERE             __FILE__ ":" TOSTR(__LINE__)
 #define lesser(lhs, rhs) ((lhs) < (rhs) ? (lhs) : (rhs))
 #define bigger(lhs, rhs) ((lhs) > (rhs) ? (lhs) : (rhs))
 #define overloadable     [[clang::overloadable]]
 #define ondrop(cl)       [[gnu::cleanup(cl)]]
-#define drop             ondrop(free_cl)
-#define dropfile         ondrop(fclose_cl)
-#define dropdir          ondrop(closedir_cl)
+#define drop             ondrop(freecl)
+#define dropfile         ondrop(fclosecl)
+#define dropdir          ondrop(closedircl)
 #define _                auto CAT(_DISCARD_, __COUNTER__) [[gnu::unused]]
 
 // zig style alloc()
@@ -30,12 +30,12 @@ constexpr size_t ALPN = 'z' - 'a' + 1;
     p = nullptr; \
   } while (0)
 
-struct winsize get_winsz();
-[[gnu::const]] bool isint(double);
-[[gnu::nonnull]] overloadable void skipspcs(char const **);
-[[gnu::nonnull]] overloadable void skipspcs(char const **, size_t);
-[[gnu::nonnull]] void skip_untilcomma(char const **);
+struct winsize getWinSize();
+[[gnu::const]] bool isInt(double);
+[[gnu::nonnull]] overloadable void skipSpaces(char const **);
+[[gnu::nonnull]] overloadable void skipSpaces(char const **, size_t);
+[[gnu::nonnull]] void skipUntilComma(char const **);
 [[gnu::returns_nonnull, nodiscard("allocation")]] void *palloc(size_t);
-[[gnu::nonnull]] void free_cl(void *);
-[[gnu::nonnull]] void fclose_cl(FILE **);
-[[gnu::nonnull]] void closedir_cl(DIR **);
+[[gnu::nonnull]] void freecl(void *);
+[[gnu::nonnull]] void fclosecl(FILE **);
+[[gnu::nonnull]] void closedircl(DIR **);

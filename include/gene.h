@@ -18,9 +18,9 @@
 
 #define PRIM_TYPES void *
 
-#define APPLY_ADDSUB(M) M(add, +) M(sub, -)
-#define APPLY_ARTHM(M)  APPLY_ADDSUB(M) M(mul, *) M(div, /)
-#define APPLY_LTGT(M)   M(lt, <) M(gt, >)
+#define APPLY_ADDSUB(M) M(Add, +) M(Sub, -)
+#define APPLY_ARTHM(M)  APPLY_ADDSUB(M) M(Mul, *) M(Div, /)
+#define APPLY_LTGT(M)   M(Lt, <) M(Gt, >)
 
 MAP(DEF_GEN, TYPES)
 MAP(DEF_PRIM, PRIM_TYPES)

@@ -4,4 +4,4 @@
 
 #pragma once
 
-double get_const(char);
+double getConst(char);

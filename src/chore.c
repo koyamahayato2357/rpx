@@ -17,7 +17,7 @@
  * @brief Get terminal window size
  * @return Struct in which window size if stored
  */
-struct winsize get_winsz() {
+struct winsize getWinSize() {
   struct winsize w;
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
   return w;
@@ -35,21 +35,21 @@ overloadable void printany(struct winsize ws) {
     .ws_row = r, .ws_col = c, .ws_xpixel = x, .ws_ypixel = y \
   }
 
-test (get_winsz) { expectneq(ST_WS(0, 0, 0, 0), get_winsz()); }
+test (get_winsz) { expectneq(ST_WS(0, 0, 0, 0), getWinSize()); }
 
 /**
  * @brief Check if the decimal part is 0
  * @param[in] arg Checked double number
  * @return Is decimal part 0
  */
-inline bool isint(double arg) {
+inline bool isInt(double arg) {
   if (isinf(arg) || isnan(arg)) return false;
   if (arg < LONG_MIN || (double)LONG_MAX < arg) return false;
   return arg == (double)(long)arg;
 }
 
 test_table(
-  isint, isint, (bool, double),
+  isint, isInt, (bool, double),
   {
     { true,      5.0},
     { true,    3.000},
@@ -65,10 +65,10 @@ test_table(
 /**
  * @brief Skip pointer to first non-white-space char
  */
-overloadable void skipspcs(char const **restrict str) {
-  [[clang::always_inline]] skipspcs(str, ~0UL);
+overloadable void skipSpaces(char const **restrict str) {
+  [[clang::always_inline]] skipSpaces(str, ~0UL);
 }
-overloadable void skipspcs(char const **restrict str, size_t len) {
+overloadable void skipSpaces(char const **restrict str, size_t len) {
   for (size_t i = 0; i < len && isspace(**str); i++, (*str)++);
 }
 
@@ -76,7 +76,7 @@ overloadable void skipspcs(char const **restrict str, size_t len) {
  * @brief Skip pointer to the char following the comma
  * @param[in,out] s String pointer
  */
-void skip_untilcomma(char const **restrict s) {
+void skipUntilComma(char const **restrict s) {
   *s = strchr(*s, ',') orelse * s + strlen(*s) - 1;
   (*s)++;
 }
@@ -93,12 +93,12 @@ void *palloc(size_t sz) {
 /**
  * @brief free for drop
  */
-void free_cl(void *p) {
+void freecl(void *p) {
   free(*(void **)p);
 }
-void fclose_cl(FILE **fp) {
+void fclosecl(FILE **fp) {
   fclose(*fp);
 }
-void closedir_cl(DIR **fp) {
+void closedircl(DIR **fp) {
   closedir(*fp);
 }

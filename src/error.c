@@ -6,7 +6,7 @@
 #include <stdarg.h>
 
 overloadable void
-disperr(FILE *fp, char const *funcname, char const *errmsgfmt, ...) {
+dispErr(FILE *fp, char const *funcname, char const *errmsgfmt, ...) {
   va_list ap;
   va_start(ap);
 
@@ -26,9 +26,9 @@ disperr(FILE *fp, char const *funcname, char const *errmsgfmt, ...) {
   va_end(ap);
 }
 
-overloadable void disperr(char const *funcname, char const *errmsgfmt, ...) {
+overloadable void dispErr(char const *funcname, char const *errmsgfmt, ...) {
   va_list ap;
   va_start(ap);
-  disperr(stderr, funcname, errmsgfmt, ap);
+  dispErr(stderr, funcname, errmsgfmt, ap);
   va_end(ap);
 }

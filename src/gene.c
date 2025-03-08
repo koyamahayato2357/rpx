@@ -11,17 +11,17 @@
 
 constexpr double eps = 1e-5;
 
-static bool double_eq(double a, double b) {
+static bool doubleEq(double a, double b) {
   if (fabs(b) < eps) return fabs(a) < eps; // prevent 0-div when b is near 0
   if (a < 0 != b < 0) return false;        // mis signed
   return fabs(a / b - 1.0) < eps;          // cmp based on ratios
 }
-static bool complex_eq(complex a, complex b) {
-  return double_eq(creal(a), creal(b)) && double_eq(cimag(a), cimag(b));
+static bool complexEq(complex a, complex b) {
+  return doubleEq(creal(a), creal(b)) && doubleEq(cimag(a), cimag(b));
 }
 
 test_table(
-  double_eq, double_eq, (bool, double, double),
+  double_eq, doubleEq, (bool, double, double),
   {
     { true,      1.0,          1.0},
     { true,    1e-10,            0},
@@ -34,7 +34,7 @@ test_table(
 }
 )
 test_table(
-  complex_eq, complex_eq, (bool, complex, complex),
+  complex_eq, complexEq, (bool, complex, complex),
   {
     { true,                0,          0},
     { true,           1 + 3i, 1.0 + 3.0i},
@@ -84,10 +84,10 @@ EQ_DIRECTLY(bool)
 EQ_DIRECTLY(void *)
 
 bool eq(double x, double y) {
-  return double_eq(x, y);
+  return doubleEq(x, y);
 }
 bool eq(complex x, complex y) {
-  return complex_eq(x, y);
+  return complexEq(x, y);
 }
 bool eq(char *x, char *y) {
   return !strcmp(x, y);

@@ -7,10 +7,10 @@
 #include "main.h"
 #include "rtconf.h"
 
-constexpr size_t ARGN = 8;
+constexpr size_t arg_n = 8;
 
 typedef struct {
-  real_t payload[BUFSIZE];
+  real_t payload[buf_size];
   real_t *rbp, *rsp;
 } stack_t;
 
@@ -28,11 +28,11 @@ typedef struct {
 typedef struct {
   // to restore argv
   // register the list of args
-  real_t *callstack[ARGN];
+  real_t *callstack[arg_n];
   unsigned callstacki;
   // to restore rsp
   // register the number of args used
-  char argc[ARGN];
+  char argc[arg_n];
   unsigned argci;
 } dump_t;
 
@@ -46,6 +46,6 @@ typedef struct {
   dump_t d;
 } machine_t;
 
-[[gnu::nonnull]] elem_t eval_expr_real(char const *);
-[[gnu::nonnull]] void rpx_eval(machine_t *);
-[[gnu::nonnull]] void init_evalinfo(machine_t *);
+[[gnu::nonnull]] elem_t evalExprReal(char const *);
+[[gnu::nonnull]] void rpxEval(machine_t *);
+[[gnu::nonnull]] void initEvalinfo(machine_t *);

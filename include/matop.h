@@ -8,9 +8,9 @@
 #include "mathdef.h"
 #include <stdlib.h>
 
-#define dropmatr [[gnu::cleanup(free_matr)]]
+#define dropmatr [[gnu::cleanup(freeMatr)]]
 
-constexpr size_t MAT_INITSIZE = 32;
+constexpr size_t mat_init_size = 32;
 
 typedef complex *matrix;
 
@@ -20,21 +20,21 @@ typedef struct {
   matrix matrix;
 } matrix_t;
 
-[[nodiscard("allocation")]] matrix_t new_matrix(size_t, size_t);
-[[gnu::nonnull]] void free_matr(matrix_t *restrict);
-[[gnu::nonnull]] bool meq(matrix_t const *, matrix_t const *);
+[[nodiscard("allocation")]] matrix_t newMatrix(size_t, size_t);
+[[gnu::nonnull]] void freeMatr(matrix_t *restrict);
+[[gnu::nonnull]] bool mEq(matrix_t const *, matrix_t const *);
 
 [[nodiscard("allocation"), gnu::nonnull]] matrix_t
-madd(matrix_t const *, matrix_t const *);
+mAdd(matrix_t const *, matrix_t const *);
 
 [[nodiscard("allocation"), gnu::nonnull]] matrix_t
-msub(matrix_t const *, matrix_t const *);
+mSub(matrix_t const *, matrix_t const *);
 
 [[nodiscard("allocation"), gnu::nonnull]] matrix_t
-mmul(matrix_t const *, matrix_t const *);
+mMul(matrix_t const *, matrix_t const *);
 
 [[nodiscard("allocation"), gnu::nonnull]] matrix_t
-inverse_matrix(matrix_t const *);
+inverseMatrix(matrix_t const *);
 
 [[gnu::nonnull]] void smul(matrix_t *, complex);
 overloadable bool eq(matrix_t const *, matrix_t const *);
