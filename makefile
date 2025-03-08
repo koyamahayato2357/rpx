@@ -186,6 +186,9 @@ uninstall:
 doc: doc/Doxyfile
 	doxygen $<
 
+doc/Doxyfile:
+	doxygen -g $@
+
 fmt: ; clang-format -i $(SRCS) $(INCDIR)/*.h
 
 lint: ; clang-tidy $(SRCS) -- $(CFLAGS)
