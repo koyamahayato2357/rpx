@@ -69,13 +69,6 @@ ifdef ASAN
   LDFLAGS += -fsanitize=$(ASAN)
 endif
 
-ifdef LLVM
-  ASMFLAGS += -emit-llvm
-  ASMEXT := ll
-else
-  ASMEXT := s
-endif
-
 ifeq ($(TYPE),test)
   CFLAGS += -DTEST_MODE
 else ifeq ($(TYPE),bench)
@@ -113,6 +106,28 @@ OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
 DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
 ASMS = $(patsubst $(SRCDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
 
+# e.g.)
+# $ make asm OL=3
+# $ # edit asm files...
+# $ make BUILD_FROM_ASM=1 OL=3
+ifdef BUILD_FROM_ASM
+  ifdef LLVM
+    SRCPAT = $(ASMDIR)/%.ll
+  else
+    SRCPAT = $(ASMDIR)/%.s
+  endif
+  CFLAGS =
+else
+  SRCPAT = $(SRCDIR)/%.c
+endif
+
+ifdef LLVM
+  ASMFLAGS += -emit-llvm
+  ASMEXT := ll
+else
+  ASMEXT := s
+endif
+
 ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
   include $(wildcard $(DEPS))
 endif
@@ -126,7 +141,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) $(EXTRALDFLAGS) $^ -o $@
 
 # compile
-$(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR)/ $(DEPDIR)/
+$(TARGETDIR)/%.o: $(SRCPAT) | $(TARGETDIR)/ $(DEPDIR)/
 	$(CC) $< $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -c -o $@
 
 $(DEPS):
