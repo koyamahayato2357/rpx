@@ -120,7 +120,7 @@ ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
 endif
 
 # rules
-.PHONY: run asm clean-all clean install doc test lint fmt help release log llmfile compiledb
+.PHONY: run asm clean-all clean install doc test lint fmt help log llmfile compiledb
 .DEFAULT_GOAL := $(TARGET)
 
 # link
@@ -207,11 +207,6 @@ help:
 	@echo "$ make run OL=3 : release build"
 	@echo
 	@echo "build files: .build/HASH/{target,dep,asm}/*"
-
-release:
-	$(MAKE) run TYPE=test OPTLEVEL=3
-	$(MAKE) lint
-	$(MAKE) OPTLEVEL=3
 
 LLMFILE ?= llmfile.txt
 FILES ?= README.md makefile build.zig
