@@ -182,7 +182,7 @@ fmt: ; clang-format -i $(SRCS) $(INCDIR)/*.h
 
 lint:
 	clang-tidy $(SRCS) -- $(CFLAGS)
-	cppcheck $(SRCS) --enable=all -I$(INCDIR)
+	cppcheck $(SRCS) --enable=all --suppress=missingIncludeSystem -I$(INCDIR)
 	scan-build $(MAKE)
 
 FP ?= /dev/stdout
