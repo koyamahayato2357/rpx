@@ -128,7 +128,7 @@ $(TARGET): $(OBJS)
 
 # compile
 $(TARGETDIR)/%.o: $(SRCDIR)/%.c | $(TARGETDIR)/ $(DEPDIR)/
-	$(CC) $< -I$(INCDIR) $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -c -o $@
+	$(CC) $< $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -c -o $@
 
 $(DEPS):
 
