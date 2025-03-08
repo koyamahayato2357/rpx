@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-[[gnu::nonnull(3)]] void set_configpath(
+[[gnu::nonnull(3)]] static void set_configpath(
   char const *specified_cfgpath, size_t len, char *restrict cfgpath
 ) {
   char const *configdir = specified_cfgpath ?: "/.config/rpx/";

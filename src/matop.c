@@ -10,7 +10,7 @@
 #include "error.h"
 #include "gene.h"
 
-matrix_t NAN_matrix(size_t rows, size_t cols) {
+static matrix_t NAN_matrix(size_t rows, size_t cols) {
   matrix_t result = new_matrix(rows, cols);
   for (size_t i = 0; i < rows * cols; i++) result.matrix[i] = NAN;
   return result;
@@ -26,7 +26,7 @@ void free_matr(matrix_t *restrict x) {
   free(x->matrix);
 }
 
-bool mcheckdim(matrix_t const *lhs, matrix_t const *rhs) {
+static bool mcheckdim(matrix_t const *lhs, matrix_t const *rhs) {
   return lhs->rows == rhs->rows && lhs->cols == rhs->cols;
 }
 
@@ -101,7 +101,7 @@ matrix_t mmul(matrix_t const *restrict lhs, matrix_t const *restrict rhs) {
  * @brief Calculate determinant
  * @note No benefit of vectorization in the current implementation
  */
-double det(matrix_t const *restrict A) {
+static double det(matrix_t const *restrict A) {
   if (A->rows != A->cols) [[clang::unlikely]] {
     disperr(__FUNCTION__, "%s", codetomsg(ERR_NON_SQUARE_MATRIX));
     return 0;

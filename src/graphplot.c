@@ -13,18 +13,8 @@ constexpr double fontrow = 2;
 constexpr double fontcol = 1;
 constexpr double fontratio = fontcol / fontrow;
 
-void init_plotconfig() {
-  struct winsize w = get_winsz();
-  int dispsz = (int)lesser((double)w.ws_row, w.ws_col * fontratio);
-
-  plotcfg_t pcfg = get_plotcfg();
-  pcfg.dispx = pcfg.dispy = dispsz - 5;
-  pcfg.plotexpr = plotexpr;
-  set_plotcfg(pcfg);
-  set_pbounds(1, -1, 1, -1);
-}
-
-bool ispointgraph(double y0, double y1, double y, double dy) {
+[[gnu::const]] static bool
+ispointgraph(double y0, double y1, double y, double dy) {
   return (y > y0 && y0 > y - dy) || (y > y1 && y1 > y - dy)
       || (y0 > y && y > y1) || (y1 > y && y > y0)
       || (y0 > y - dy && y - dy > y1) || (y1 > y - dy && y - dy > y0);
@@ -125,7 +115,7 @@ static void drawaxisx(double const xn, int const dsplysz, double const dx) {
   drawaxisx(pcfg.xn, pcfg.dispx, pcfg.dx);
 }
 
-void set_pbounds(
+static void set_pbounds(
   double const xx, double const xn, double const yx, double const yn
 ) {
   plotcfg_t pcfg = get_plotcfg();
@@ -139,6 +129,17 @@ void set_pbounds(
   pcfg.dy = (yx - yn) / pcfg.dispy;
 
   set_plotcfg(pcfg);
+}
+
+void init_plotconfig() {
+  struct winsize w = get_winsz();
+  int dispsz = (int)lesser((double)w.ws_row, w.ws_col * fontratio);
+
+  plotcfg_t pcfg = get_plotcfg();
+  pcfg.dispx = pcfg.dispy = dispsz - 5;
+  pcfg.plotexpr = plotexpr;
+  set_plotcfg(pcfg);
+  set_pbounds(1, -1, 1, -1);
 }
 
 [[gnu::nonnull]] void change_plotconfig(char const *cmd) {

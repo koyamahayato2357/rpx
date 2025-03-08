@@ -33,8 +33,6 @@ msub(matrix_t const *, matrix_t const *);
 [[nodiscard("allocation"), gnu::nonnull]] matrix_t
 mmul(matrix_t const *, matrix_t const *);
 
-[[gnu::nonnull]] double det(matrix_t const *);
-
 [[nodiscard("allocation"), gnu::nonnull]] matrix_t
 inverse_matrix(matrix_t const *);
 

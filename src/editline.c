@@ -20,7 +20,7 @@
 #define getchar() ((char)getchar())
 
 // getchar() becomes like getch() in MSVC
-void enable_rawmode(struct termios *orig_termios) {
+static void enable_rawmode(struct termios *orig_termios) {
   struct termios raw;
   tcgetattr(STDIN_FILENO, orig_termios);
   raw = *orig_termios;
@@ -28,7 +28,7 @@ void enable_rawmode(struct termios *orig_termios) {
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
 }
 
-void disable_rawmode(struct termios *orig_termios) {
+static void disable_rawmode(struct termios *orig_termios) {
   tcsetattr(STDIN_FILENO, TCSAFLUSH, orig_termios);
 }
 
@@ -39,7 +39,7 @@ void disable_rawmode(struct termios *orig_termios) {
  * @param[in,out] cur Cursor pointer
  * @param[in] len End of line
  */
-void movecur(int n, char *buf, char **cur, char *len) {
+static void movecur(int n, char *buf, char **cur, char *len) {
   *cur = $if(n > len - *cur) len $else $if(-n > *cur - buf) buf $else * cur + n;
 }
 
@@ -66,7 +66,7 @@ test (movecur) {
  * @param[in] end End of erase range
  * @param[in,out] len End of line
  */
-[[gnu::nonnull]] void deletes(char *begin, char const *end, char **len) {
+[[gnu::nonnull]] static void deletes(char *begin, char const *end, char **len) {
   memcpy(begin, end, (size_t)(*len - end));
   *len -= end - begin;
   **len = '\0';
@@ -90,7 +90,7 @@ test (deletes) {
  * @param[in,out] cur Cursor pointer
  * @return Found or not
  */
-bool findmove(char c, int dir, char *buf, char **cur) {
+static bool findmove(char c, int dir, char *buf, char **cur) {
   char *old_cur = *cur;
   *cur
     = $if(dir > 0) strchr(*cur, c) $else memrchr(buf, c, (size_t)(*cur - buf));
@@ -122,7 +122,7 @@ test (findmove) {
  * @param[in,out] cur Cursor pointer
  * @param[in] len End of line
  */
-void fwdw(char **cur, char const *len) {
+static void fwdw(char **cur, char const *len) {
   if (*cur >= len) return;
 
   int wasalnum = isalnum(**cur);
@@ -151,7 +151,7 @@ test (fwdw) {
  * @param[in] buf Start of line
  * @param[in,out] cur Cursor pointer
  */
-void bwdw(char const *buf, char **cur) {
+static void bwdw(char const *buf, char **cur) {
   if (buf >= *cur) return;
 
   (*cur)--;
@@ -178,7 +178,7 @@ test (bwdw) {
  * @param[in,out] cur Cursor pointer
  * @param[in] len End of line
  */
-void fwdW(char **cur, char *len) {
+static void fwdW(char **cur, char *len) {
   *cur = strchr(*cur, ' ') ?: len;
   skipspcs((char const **)cur);
 }
@@ -199,7 +199,7 @@ test (fwdW) {
  * @param[in] buf Start of line
  * @param[in,out] cur Cursor pointer
  */
-void bwdW(char *buf, char **cur) {
+static void bwdW(char *buf, char **cur) {
   if (buf == *cur) return;
   for ((*cur)--; isspace(**cur) && buf < *cur; (*cur)--);
   *cur = memrchr(buf, ' ', (size_t)(*cur - buf)) ?: buf - 1;
@@ -223,7 +223,7 @@ test (bwdW) {
  * @param[in,out] cur Cursor pointer
  * @param[in,out] len End of line
  */
-void handle_es(char key, char *buf, char **cur, char **len) {
+static void handle_es(char key, char *buf, char **cur, char **len) {
   switch (key) {
   case '3': // delete key
     if (getchar() != '~') break;
@@ -257,7 +257,7 @@ void handle_es(char key, char *buf, char **cur, char **len) {
  * @param[out] begin Beginning of selected range of text object
  * @param[out] end End of selected range of text object
  */
-void handle_txtobj(
+static void handle_txtobj(
   char txtobj, char *buf, char *cur, char *len, char **begin, char **end
 ) {
   switch (txtobj) {
@@ -299,7 +299,7 @@ void handle_txtobj(
  * @param[in,out] len End of line
  * @details Possible buffer overrun
  */
-[[gnu::nonnull]] void insertc(char c, char **cur, char **len) {
+[[gnu::nonnull]] static void insertc(char c, char **cur, char **len) {
   if (*cur != *len) memmove(*cur + 1, *cur, (size_t)(*len - *cur));
   *(*cur)++ = c;
   *++*len = '\0';
@@ -313,7 +313,7 @@ void handle_txtobj(
  * @param[in,out] len End of line
  * @param[in] margin Number of characters can be added to the buffer
  */
-void
+static void
 inserts(size_t slen, char const *s, char **cur, char **len, size_t margin) {
   if (slen > margin) {
     disperr(__FUNCTION__, "buffer depreletion");
@@ -350,7 +350,7 @@ test (inserts) {
  * @param[in,out] cur Cursor pointer
  * @param[in,out] len End of line
  */
-void insbind(char c, char *buf, char **cur, char **len) {
+static void insbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
   case '(': // autopair
     inserts(2, "()", cur, len, (size_t)(buf + BUFSIZE - *len));
@@ -387,7 +387,7 @@ auto handle_printable = insbind;
  * @param[in,out] len End of line
  * @see `$ vim -c ":h *{char}*<CR>"`
  */
-void nrmbind(char c, char *buf, char **cur, char **len) {
+static void nrmbind(char c, char *buf, char **cur, char **len) {
   switch (c) {
   case 'h':
     movecur(-1, buf, cur, *len);
