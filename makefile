@@ -119,9 +119,8 @@ endif
 
 # rules
 .PHONY: run build clean-all clean install doc test lint fmt help release log llmfile
-.DEFAULT_GOAL := build
 
-build: $(TARGET)
+.DEFAULT_GOAL := $(TARGET)
 
 # link
 $(TARGET): $(OBJS)
