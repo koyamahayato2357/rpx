@@ -118,8 +118,7 @@ ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
 endif
 
 # rules
-.PHONY: run build clean-all clean install doc test lint fmt help release log llmfile
-
+.PHONY: run asm clean-all clean install doc test lint fmt help release log llmfile compiledb
 .DEFAULT_GOAL := $(TARGET)
 
 # link
