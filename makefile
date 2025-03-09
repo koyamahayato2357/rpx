@@ -217,7 +217,7 @@ help:
 	@echo "build files: .build/HASH/{target,dep,asm}/*"
 
 LLMFILE ?= llmfile.txt
-FILES ?= README.md makefile build.zig
+FILES ?= README.md makefile build.zig idea.txt
 DIRS ?= include src
 FILES_IN_DIRS := $(wildcard $(addsuffix /*, $(DIRS)))
 SORTED_FILES_IN_DIRS := $(sort $(notdir $(basename $(FILES_IN_DIRS))))
