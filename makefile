@@ -70,6 +70,13 @@ ifdef ASAN
   LDFLAGS += -fsanitize=$(ASAN)
 endif
 
+ifeq ($(MAKECMDGOALS),coverage)
+  CFLAGS += -fprofile-arcs -ftest-coverage
+  LDFLAGS += --coverage
+  TYPE := test
+  OPTLEVEL := 0
+endif
+
 ifeq ($(TYPE),test)
   CFLAGS += -DTEST_MODE
 else ifeq ($(TYPE),bench)
@@ -237,7 +244,8 @@ compile_commands.json: $(SRCS)
 
 compiledb: compile_commands.json
 
-coverage:
-	$(MAKE) TYPE=test OPTLEVEL=0 EXTRAFLAGS="-fprofile-arcs -ftest-coverage" EXTRALDFLAGS="--coverage"
-	lcov -d . -c -o $(BUILDDIR)/coverage.info --gcov-tool $(CURDIR)/tool/llvm-cov.sh
-	genhtml coverage.info --output-directory $(BUILDDIR)/coverage_report
+BROWSER ?= w3m
+coverage: run
+	lcov -d $(TARGETDIR) -c -o $(TARGETDIR)/$@.info --gcov-tool $(CURDIR)/tool/llvm-cov.sh
+	genhtml $(TARGETDIR)/$@.info --output-directory $(TARGETDIR)/$@
+	$(BROWSER) $(TARGETDIR)/$@/index.html
