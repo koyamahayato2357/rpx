@@ -27,6 +27,8 @@
 - clang-format
 - clang-tidy
 - doxygen
+- w3m
+- zig
 
 ## Installation
 ### use make
