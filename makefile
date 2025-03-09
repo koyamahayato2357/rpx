@@ -191,7 +191,7 @@ doc: doc/Doxyfile
 doc/Doxyfile:
 	doxygen -g $@
 
-fmt: ; clang-format -i $(SRCS) $(INCDIR)/*.h
+fmt: ; clang-format -Werror --dry-run $(SRCS) $(INCDIR)/*.h
 
 lint:
 	clang-tidy $(SRCS) -- $(CFLAGS)
