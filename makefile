@@ -245,12 +245,18 @@ compile_commands.json: $(SRCS)
 compiledb: compile_commands.json
 
 GCOV_TOOL ?= $(CURDIR)/tool/llvm-cov.sh
-$(GCOV_TOOL): $(dir $@)
+COVDIR ?= coverage-report
+
+$(GCOV_TOOL): | $(dir $@)
 	echo -e '#!/bin/sh\nexec llvm-cov gcov "$$@"' > $@
 	chmod +x $@
 
+%/$(COVDIR).info: $(GCOV_TOOL) run
+	lcov -d $* -c -o $@ --gcov-tool $<
+
+%/$(COVDIR): %/$(COVDIR).info
+	genhtml $< -o $@
+
 BROWSER ?= w3m
-coverage: $(GCOV_TOOL) run
-	lcov -d $(TARGETDIR) -c -o $(TARGETDIR)/$@.info --gcov-tool $<
-	genhtml $(TARGETDIR)/$@.info -o $(TARGETDIR)/$@
-	$(BROWSER) $(TARGETDIR)/$@/index.html
+coverage: $(TARGETDIR)/$(COVDIR)
+	$(BROWSER) $</index.html
