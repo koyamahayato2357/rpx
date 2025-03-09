@@ -223,6 +223,8 @@ help:
 	@echo
 	@echo "build files: .build/HASH/{target,dep,asm}/*"
 
+### llmfile
+
 LLMFILE ?= llmfile.txt
 FILES ?= README.md makefile build.zig idea.txt
 DIRS ?= include src
@@ -238,11 +240,15 @@ $(LLMFILE): $(LIST_FILES) # for the LLM to read
 
 llmfile: $(LLMFILE)
 
+### compiledb
+
 compile_commands.json: $(SRCS)
 	$(MAKE) clean
 	bear -- $(MAKE)
 
 compiledb: compile_commands.json
+
+### coverage
 
 GCOV_TOOL ?= $(CURDIR)/tool/llvm-cov.sh
 COVDIR ?= coverage-report
