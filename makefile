@@ -191,8 +191,6 @@ asm: $(ASMS) ## generate asm files
 $(ASMS): $(OUTDIR)/%.$(ASMEXT): $(SRCDIR)/%.c | $(OUTDIR)/
 	$(CC) $< $(ASMFLAGS) $(CFLAGS) $(EXTRAFLAGS) -o $@
 
-pre-commit: fmt test ## .git/hooks/pre-commit
-
 clean-all: ; rm -rf $(BUILDDIR)
 
 # e.g.) remove test build for opt level 3
@@ -224,6 +222,8 @@ lint:
 	clang-tidy $(SRCS) -- $(CFLAGS)
 	cppcheck $(SRCS) --enable=all --suppress=missingIncludeSystem -I$(INCDIR)
 	scan-build $(MAKE)
+
+pre-commit: fmt test ## .git/hooks/pre-commit
 
 FP ?= /dev/stdout
 log: ## show build flags
