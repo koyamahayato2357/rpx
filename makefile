@@ -95,6 +95,7 @@ else ifeq ($(strip $(TYPE)),bench)
 else ifeq ($(strip $(TYPE)),default)
 else
   $(call ERROR_INVALID_VALUE,TYPE,[test|bench])
+  $(call ERROR_INVALID_VALUE,TYPE,[test|bench|default])
 endif
 
 ifeq ($(strip $(OPTLEVEL)),g)
