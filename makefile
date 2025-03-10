@@ -1,6 +1,9 @@
 MAKEFLAGS += -j$(shell nproc)
 MAKEFLAGS += -r
 
+PHONY_TARGETS != grep -o "^[0-9a-z-]\\+:" $(MAKEFILE_LIST) | sed -e "s/://"
+.PHONY: $(PHONY_TARGETS)
+
 # Alias
 ifdef OL
   OPTLEVEL ?= $(OL)
@@ -137,7 +140,6 @@ ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
 endif
 
 # rules
-.PHONY: run asm clean-all clean install doc test lint fmt help log llmfile compiledb coverage
 .DEFAULT_GOAL := $(TARGET)
 
 # link
