@@ -154,8 +154,6 @@ $(OBJS): $(TARGETDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(DEPDIR)/%.d | $(TARGETDIR)/ $
 $(DEPS): $(DEPDIR)/%.d: $(SRCDIR)/%.c
 	$(CC) $< $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -o $@
 
-%/: ; mkdir -p $@
-
 # e.g.) run with valgrind
 # make run RUNNER=valgrind
 # e.g.) don't use gdb (default debug RUNNER) in debug run
@@ -276,3 +274,5 @@ $(GCOV_TOOL): | $(dir $(GCOV_TOOL))
 BROWSER ?= w3m
 coverage: $(TARGETDIR)/$(COVDIR)
 	$(BROWSER) $</index.html
+
+%/: ; mkdir -p $@
