@@ -23,6 +23,7 @@
 - lld
 - coreutils
 ### Optional
+- bear
 - ccache
 - clang-format
 - clang-tidy
