@@ -61,8 +61,10 @@ ASMFLAGS := -S -masm=intel
 DEPFLAGS = -MM -MP -MT $(TARGETDIR)/$*.o -MF $(DEPDIR)/$*.d
 
 # Enables macro in the source
-CFLAGS += -DVERSION=\"$(shell git describe --tags --always 2>/dev/null || echo "unknown")\"
-CFLAGS += -DDATE=\"$(shell date -I)\"
+VERSION != git describe --tags --always 2>/dev/null || echo "unknown"
+DATE != date -I
+CFLAGS += -DVERSION=\"$(VERSION)\"
+CFLAGS += -DDATE=\"$(DATE)\"
 CFLAGS += -DLOGLEVEL=$(LOGLEVEL)
 
 ifdef ASAN
