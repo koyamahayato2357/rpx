@@ -144,7 +144,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) $(EXTRALDFLAGS) $^ -o $@
 
 # compile
-$(TARGETDIR)/%.o: $(SRCPAT) | $(TARGETDIR)/ $(DEPDIR)/
+$(OBJS): $(TARGETDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) | $(TARGETDIR)/ $(DEPDIR)/
 	$(CC) $< $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -c -o $@
 
 $(DEPS):
@@ -166,7 +166,7 @@ test: ; $(MAKE) run TYPE=test
 
 asm: $(ASMS)
 
-$(ASMDIR)/%.$(ASMEXT): $(SRCDIR)/%.c | $(ASMDIR)/
+$(ASMS): $(ASMDIR)/%.$(ASMEXT): $(SRCDIR)/%.c | $(ASMDIR)/
 	$(CC) $< $(ASMFLAGS) $(CFLAGS) $(EXTRAFLAGS) -o $@
 
 clean-all: ; rm -rf $(BUILDDIR)
