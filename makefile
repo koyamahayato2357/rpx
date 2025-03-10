@@ -162,9 +162,7 @@ else
   $(call ERROR_INVALID_VALUE,BUILD_FROM_ASM)
 endif
 
-ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
-  include $(wildcard $(DEPS))
-endif
+include $(wildcard $(DEPS))
 
 ### build rules
 .DEFAULT_GOAL := $(TARGET)
