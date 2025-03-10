@@ -10,17 +10,17 @@ endef
 
 # Alias
 ifdef OL
-  OPTLEVEL ?= $(OL) ## optimization level [0-3|g] (default: g)
+  OPTLEVEL ?= $(OL)
 endif
 ifdef LL
   LOGLEVEL ?= $(LL)
 endif
 ifdef T
-  TYPE ?= $(T) ## build type [test|bench]
+  TYPE ?= $(T)
 endif
 
-OPTLEVEL ?= g
-TYPE ?= normal
+OPTLEVEL ?= g ## optimization level [0-3|g] (default: g)
+TYPE ?= default ## build type [test|bench|default]
 
 CLANG21 != command -v clang-21
 CLANG20 != command -v clang-20
