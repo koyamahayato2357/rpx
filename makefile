@@ -6,13 +6,13 @@ PHONY_TARGETS != grep -o "^[0-9a-z-]\\+:" $(MAKEFILE_LIST) | sed -e "s/://"
 
 # Alias
 ifdef OL
-  OPTLEVEL ?= $(OL)
+  OPTLEVEL ?= $(OL) ## optimization level [0-3|g] (default: g)
 endif
 ifdef LL
   LOGLEVEL ?= $(LL)
 endif
 ifdef T
-  TYPE ?= $(T)
+  TYPE ?= $(T) ## build type [test|bench]
 endif
 
 OPTLEVEL ?= g
@@ -79,7 +79,7 @@ ifeq ($(MAKECMDGOALS),coverage)
   OPTLEVEL := 0
 endif
 
-ifeq ($(TYPE),test)
+ifeq ($(strip $(TYPE)),test)
   CFLAGS += -DTEST_MODE
 else ifeq ($(TYPE),bench)
   CFLAGS += -DBENCHMARK_MODE
@@ -157,16 +157,16 @@ $(DEPS): $(DEPDIR)/%.d: $(SRCDIR)/%.c
 # make run RUNNER=valgrind
 # e.g.) don't use gdb (default debug RUNNER) in debug run
 # make run RUNNER=
-run: $(TARGET)
+run: $(TARGET) ## run target
 	$(RUNNER) $<
 
 # `make run-foo` is same as `make run RUNNER=foo`
 run-%: $(TARGET)
 	$* $<
 
-test: ; $(MAKE) run TYPE=test
+test: ; $(MAKE) run TYPE=test ## run test
 
-asm: $(ASMS)
+asm: $(ASMS) ## generate asm files
 
 $(ASMS): $(ASMDIR)/%.$(ASMEXT): $(SRCDIR)/%.c | $(ASMDIR)/
 	$(CC) $< $(ASMFLAGS) $(CFLAGS) $(EXTRAFLAGS) -o $@
@@ -191,8 +191,7 @@ install: install-bin install-example
 uninstall:
 	rm $(PREFIX)/bin/$(PROJECT_NAME)
 
-# generate doc
-doc: doc/Doxyfile
+doc: doc/Doxyfile ## generate doc
 	doxygen $<
 
 doc/Doxyfile:
@@ -206,7 +205,7 @@ lint:
 	scan-build $(MAKE)
 
 FP ?= /dev/stdout
-log:
+log: ## show build flags
 	@echo "Compiler: $(CC)" > $(FP)
 	@echo "CFLAGS: $(CFLAGS)" >> $(FP)
 	@echo "LDFLAGS: $(LDFLAGS)" >> $(FP)
@@ -215,11 +214,11 @@ log:
 	@echo "OBJS: $(OBJS)" >> $(FP)
 	@echo "DEPS: $(DEPS)" >> $(FP)
 
-info: $(TARGET)
+info: $(TARGET) ## show target info
 	@echo "target file size:"
 	@size $(TARGET)
 
-help:
+help: ## show help
 	@echo "TYPE=[test|bench]"
 	@echo "ASAN=[address|alignment|...]"
 	@echo "OPTLEVEL=[0-3|g] (default: g)"
@@ -239,13 +238,13 @@ FILES_IN_DIRS := $(wildcard $(addsuffix /*, $(DIRS)))
 SORTED_FILES_IN_DIRS := $(sort $(notdir $(basename $(FILES_IN_DIRS))))
 REAL_PATH_FILES_IN_DIRS := $(foreach f,$(SORTED_FILES_IN_DIRS),$(shell find $(DIRS) -name $f.?))
 LIST_FILES ?= $(FILES) $(REAL_PATH_FILES_IN_DIRS)
-$(LLMFILE): $(LIST_FILES) # for the LLM to read
+$(LLMFILE): $(LIST_FILES)
 	echo $^ | sed 's/ /\n/g' > $@
 	echo >> $@ # newline
 	# `head` automatically inserts the file name at the start of the file
 	head -n 9999 $^ >> $@
 
-llmfile: $(LLMFILE)
+llmfile: $(LLMFILE) ## for the llm to read
 
 ### compiledb
 
@@ -253,7 +252,7 @@ compile_commands.json: $(SRCS)
 	$(MAKE) clean
 	bear -- $(MAKE)
 
-compiledb: compile_commands.json
+compiledb: compile_commands.json ## for lsp
 
 ### coverage
 
@@ -271,7 +270,7 @@ $(GCOV_TOOL): | $(dir $(GCOV_TOOL))
 	genhtml $< -o $@
 
 BROWSER ?= w3m # w3m is sufficient for viewing
-coverage: $(TARGETDIR)/$(COVDIR)
+coverage: $(TARGETDIR)/$(COVDIR) ## report test coverage
 	$(BROWSER) $</index.html
 
 %/: ; mkdir -p $@
