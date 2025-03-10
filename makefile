@@ -30,7 +30,7 @@ ifneq ($(CCACHE),) # if CCACHE is enabled
 endif
 
 PROJECT_NAME := $(notdir $(CURDIR))
-SRCDIR := src
+CDIR := src
 INCDIR := include
 BUILDDIR := .build
 PREFIX ?= /usr/local
@@ -108,10 +108,10 @@ ASMDIR := $(OUTDIR)/asm
 TARGET := $(TARGETDIR)/$(PROJECT_NAME)
 
 # source files
-SRCS = $(wildcard $(SRCDIR)/*.c)
-OBJS = $(patsubst $(SRCDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
-DEPS = $(patsubst $(SRCDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
-ASMS = $(patsubst $(SRCDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
+SRCS = $(wildcard $(CDIR)/*.c)
+OBJS = $(patsubst $(CDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
+DEPS = $(patsubst $(CDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
+ASMS = $(patsubst $(CDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
 
 ifdef LLVM
   ASMFLAGS += -emit-llvm
@@ -125,10 +125,12 @@ endif
 # $ # edit asm files...
 # $ make BUILD_FROM_ASM=1 OL=3
 ifdef BUILD_FROM_ASM
-  SRCPAT = $(ASMDIR)/%.$(ASMEXT)
+  SRCDIR = $(ASMDIR)
+  SRCEXT = $(ASMEXT)
   CFLAGS =
 else
-  SRCPAT = $(SRCDIR)/%.c
+  SRCDIR = $(CDIR)
+  SRCEXT = c
 endif
 
 ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
