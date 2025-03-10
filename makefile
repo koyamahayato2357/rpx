@@ -1,4 +1,5 @@
 MAKEFLAGS += -j$(shell nproc)
+MAKEFLAGS += -r
 
 # Alias
 ifdef OL
