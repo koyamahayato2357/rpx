@@ -1,4 +1,4 @@
-MAKEFLAGS += -j$(shell nproc)
+MAKEFLAGS += -j
 MAKEFLAGS += -r
 
 PHONY_TARGETS != grep -o "^[0-9a-z-]\\+:" $(MAKEFILE_LIST) | sed -e "s/://"
