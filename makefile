@@ -14,9 +14,9 @@ endif
 
 OPTLEVEL ?= g
 
-CLANG21 := $(shell command -v clang-21)
-CLANG20 := $(shell command -v clang-20)
-CLANG19 := $(shell command -v clang-19)
+CLANG21 != command -v clang-21
+CLANG20 != command -v clang-20
+CLANG19 != command -v clang-19
 
 # if CC is not defined
 ifeq ($(origin $(CC)),undefined)
@@ -97,9 +97,9 @@ ifdef TEST_FILTER
 endif
 
 # generate output path
-GITBRANCH := $(shell git branch --show-current 2>/dev/null)
+GITBRANCH != git branch --show-current 2>/dev/null
 SEED = $(CC)$(EXTRAFLAGS)$(CFLAGS)$(LDFLAGS)$(GITBRANCH)
-HASH := $(shell echo '$(SEED)' | md5sum | cut -d' ' -f1)
+HASH != echo '$(SEED)' | md5sum | cut -d' ' -f1
 OUTDIR := $(BUILDDIR)/$(HASH)
 TARGETDIR := $(OUTDIR)/target
 DEPDIR := $(OUTDIR)/dep
