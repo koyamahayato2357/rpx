@@ -306,6 +306,12 @@ BROWSER ?= w3m # w3m is sufficient for viewing
 coverage: $(OUTDIR)/$(COVDIR) ## report test coverage
 	$(BROWSER) $</index.html
 
+### perf
+
+perf: $(TARGET) ## run perf analysis
+	perf record -g ./$(TARGET)
+	perf report
+
 ### profile
 
 $(OUTDIR)/profile.txt: run
