@@ -260,7 +260,7 @@ compiledb: compile_commands.json
 GCOV_TOOL ?= $(CURDIR)/tool/llvm-cov.sh
 COVDIR ?= coverage-report
 
-$(GCOV_TOOL): | $(dir $@)
+$(GCOV_TOOL): | $(dir $(GCOV_TOOL))
 	echo -e '#!/bin/sh\nexec llvm-cov gcov "$$@"' > $@
 	chmod +x $@
 
