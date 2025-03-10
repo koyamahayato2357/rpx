@@ -6,7 +6,7 @@ PHONY_TARGETS != grep -o "^[0-9a-z-]\\+:" $(MAKEFILE_LIST) | sed -e "s/://"
 .PHONY: $(PHONY_TARGETS)
 
 define ERROR_INVALID_VALUE
-  $(error invalid value: $$($1) must be $(or $2,[yn]) but $($1) found)
+  $(error invalid value for $$($1): expected one of $(or $2,[yn]) but got $($1))
 endef
 
 # Alias
@@ -68,7 +68,7 @@ OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination 
               -fuse-ld=lld -Wl,--gc-sections,--icf=all -s
 DEBUGFLAGS := -gfull -fstandalone-debug -ftrivial-auto-var-init=pattern -fstack-protector-all
 ASMFLAGS := -S -masm=intel
-DEPFLAGS = -MM -MP -MT $(TARGETDIR)/$*.o -MF $(DEPDIR)/$*.d
+DEPFLAGS = -MM -MP -MT $(OUTDIR)/$*.o -MF $(OUTDIR)/$*.d
 
 # Enables macro in the source
 VERSION != git describe --tags --always 2>/dev/null || echo "unknown"
@@ -120,11 +120,8 @@ GITBRANCH != git branch --show-current 2>/dev/null
 SEED = $(CC)$(EXTRAFLAGS)$(CFLAGS)$(LDFLAGS)$(GITBRANCH)
 HASH != echo '$(SEED)' | md5sum | cut -d' ' -f1
 OUTDIR := $(BUILDDIR)/$(HASH)
-TARGETDIR := $(OUTDIR)/target
-DEPDIR := $(OUTDIR)/dep
-ASMDIR := $(OUTDIR)/asm
 
-TARGET := $(TARGETDIR)/$(PROJECT_NAME)
+TARGET := $(OUTDIR)/$(PROJECT_NAME)
 
 EMIT_LLVM ?= n ## use llvmIR instead of asm [yn] (default: n)
 ifeq ($(strip $(EMIT_LLVM)),y)
@@ -138,9 +135,9 @@ endif
 
 # source files
 SRCS := $(wildcard $(CDIR)/*.c)
-OBJS := $(patsubst $(CDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
-DEPS := $(patsubst $(CDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
-ASMS := $(patsubst $(CDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
+OBJS := $(patsubst $(CDIR)/%.c,$(OUTDIR)/%.o,$(SRCS))
+DEPS := $(OBJS:.o=.d)
+ASMS := $(OBJS:.o=.$(ASMEXT))
 
 # e.g.)
 # $ make asm OL=3
@@ -148,7 +145,7 @@ ASMS := $(patsubst $(CDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
 # $ make BUILD_FROM_ASM=y OL=3
 BUILD_FROM_ASM ?= n ## use asm instead of c files [yn] (default: n)
 ifeq ($(strip $(BUILD_FROM_ASM)),y)
-  SRCDIR := $(ASMDIR)
+  SRCDIR := $(OUTDIR)
   SRCEXT := $(ASMEXT)
   CFLAGS =
 else ifeq ($(strip $(BUILD_FROM_ASM)),n)
@@ -170,10 +167,10 @@ $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) $(EXTRALDFLAGS) $^ -o $@
 
 # compile
-$(OBJS): $(TARGETDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(DEPDIR)/%.d | $(TARGETDIR)/ $(DEPDIR)/
+$(OBJS): $(OUTDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(OUTDIR)/%.d | $(OUTDIR)/
 	$(CC) $< $(CFLAGS) $(EXTRAFLAGS) -c -o $@
 
-$(DEPS): $(DEPDIR)/%.d: $(SRCDIR)/%.c
+$(DEPS): $(OUTDIR)/%.d: $(SRCDIR)/%.c | $(OUTDIR)/
 	$(CC) $< $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -o $@
 
 # e.g.) run with valgrind
@@ -187,12 +184,14 @@ run: $(TARGET) ## run target
 run-%: $(TARGET)
 	$* $<
 
-test: ; $(MAKE) run TYPE=test ## run test
+test: ; $(MAKE) run TYPE=test RUNNER= ## run test
 
 asm: $(ASMS) ## generate asm files
 
-$(ASMS): $(ASMDIR)/%.$(ASMEXT): $(SRCDIR)/%.c | $(ASMDIR)/
+$(ASMS): $(OUTDIR)/%.$(ASMEXT): $(SRCDIR)/%.c | $(OUTDIR)/
 	$(CC) $< $(ASMFLAGS) $(CFLAGS) $(EXTRAFLAGS) -o $@
+
+pre-commit: fmt test ## .git/hooks/pre-commit
 
 clean-all: ; rm -rf $(BUILDDIR)
 
@@ -206,7 +205,7 @@ endif
 install-bin: $(TARGET) | $(PREFIX)/bin/
 	cp $^ $|
 
-install-example: | ~/.config/$(PROJECT_NAME)/
+install-example: | $(HOME)/.config/$(PROJECT_NAME)/
 	cp example/* $|
 
 install: install-bin install-example
@@ -217,8 +216,7 @@ uninstall:
 doc: doc/Doxyfile ## generate doc
 	doxygen $<
 
-doc/Doxyfile:
-	doxygen -g $@
+doc/Doxyfile: ; doxygen -g $@
 
 fmt: ; clang-format -Werror --dry-run $(SRCS) $(INCDIR)/*.h
 
@@ -246,13 +244,15 @@ help: ## show help
 	@echo "$ make test     # run test"
 	@echo "$ make run OL=3 # run release build"
 	@echo
-	@echo "build files: .build/HASH/{target,dep,asm}/*"
+	@echo "build files: .build/HASH/*"
 	@echo
 	@echo "Variables:"
-	@grep "^[^\t]* ## " $(MAKEFILE_LIST) | sed -En "s/^ *([0-9A-Z_]+) .?= .*## (.*)$$/\\1 = \\2/p"
+	@grep "^[^\t].* ## " $(MAKEFILE_LIST) \
+	| sed -En "s/^ *([0-9A-Z_]+) .?= .*## (.*)$$/\\1 = \\2/p"
 	@echo
 	@echo "Targets:"
-	@grep "^[^\t]* ## " $(MAKEFILE_LIST) | sed -En "s/^([0-9a-z-]+): .*## (.*)$$/\\1: \\2/p"
+	@grep "^[^\t].* ## " $(MAKEFILE_LIST) \
+	| sed -En "s/^([0-9a-z-]+): .*## (.*)$$/\\1: \\2/p" \
 
 ### llmfile
 
@@ -298,7 +298,7 @@ $(GCDA_FILES): run
 	genhtml $< -o $@
 
 BROWSER ?= w3m # w3m is sufficient for viewing
-coverage: $(TARGETDIR)/$(COVDIR) ## report test coverage
+coverage: $(OUTDIR)/$(COVDIR) ## report test coverage
 	$(BROWSER) $</index.html
 
 %/: ; mkdir -p $@
