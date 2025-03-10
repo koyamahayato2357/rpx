@@ -22,10 +22,9 @@ CLANG19 != command -v clang-19
 ifeq ($(origin $(CC)),undefined)
   CC := $(or $(CLANG21),$(CLANG20),$(CLANG19),$(CC))
 endif
-# e.g.) disable ccache
-# $ make CCACHE=
-CCACHE ?= $(shell command -v ccache)
-ifneq ($(CCACHE),) # if CCACHE is enabled
+
+ifndef DISABLE_CCACHE
+  CCACHE != command -v ccache
   CC := $(CCACHE) $(CC)
 endif
 
