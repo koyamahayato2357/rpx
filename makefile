@@ -4,6 +4,10 @@ MAKEFLAGS += -r
 PHONY_TARGETS != grep -o "^[0-9a-z-]\\+:" $(MAKEFILE_LIST) | sed -e "s/://"
 .PHONY: $(PHONY_TARGETS)
 
+define ERROR_INVALID_VALUE
+  $(error invalid value: $$($1) must be $(or $2,[yn]) but $($1) found)
+endef
+
 # Alias
 ifdef OL
   OPTLEVEL ?= $(OL) ## optimization level [0-3|g] (default: g)
@@ -16,6 +20,7 @@ ifdef T
 endif
 
 OPTLEVEL ?= g
+TYPE ?= normal
 
 CLANG21 != command -v clang-21
 CLANG20 != command -v clang-20
@@ -23,9 +28,13 @@ CLANG19 != command -v clang-19
 
 CC := $(or $(CLANG21),$(CLANG20),$(CLANG19),$(error CC not found))
 
-ifndef DISABLE_CCACHE
+DISABLE_CCACHE ?= n
+ifeq ($(DISABLE_CCACHE),n)
   CCACHE != command -v ccache
   CC := $(CCACHE) $(CC)
+else ifeq ($(DISABLE_CCACHE),y)
+else
+  $(call ERROR_INVALID_VALUE,DISABLE_CCACHE)
 endif
 
 PROJECT_NAME := $(notdir $(CURDIR))
@@ -83,15 +92,21 @@ ifeq ($(strip $(TYPE)),test)
   CFLAGS += -DTEST_MODE
 else ifeq ($(TYPE),bench)
   CFLAGS += -DBENCHMARK_MODE
+else ifeq ($(TYPE),normal)
+else
+  $(call ERROR_INVALID_VALUE,TYPE,[test|bench])
 endif
 
 ifeq ($(OPTLEVEL),g)
   CFLAGS += $(DEBUGFLAGS)
   LDFLAGS += $(DEBUGFLAGS)
   RUNNER ?= gdb
-else ifneq ($(OPTLEVEL),0)
+else ifneq ($(filter 1 2 3,$(OPTLEVEL)),)
   CFLAGS += $(OPTFLAGS)
   LDFLAGS += $(OPTLDFLAGS)
+else ifeq ($(OPTLEVEL),0)
+else
+  $(call ERROR_INVALID_VALUE,OPTLEVEL,[0-3|g])
 endif
 
 ifdef TEST_FILTER
@@ -109,11 +124,14 @@ ASMDIR := $(OUTDIR)/asm
 
 TARGET := $(TARGETDIR)/$(PROJECT_NAME)
 
-ifdef LLVM
+LLVM ?= n
+ifeq ($(LLVM),y)
   ASMFLAGS += -emit-llvm
   ASMEXT := ll
-else
+else ifeq ($(LLVM),n)
   ASMEXT := s
+else
+  $(call ERROR_INVALID_VALUE,LLVM)
 endif
 
 # source files
