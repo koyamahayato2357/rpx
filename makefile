@@ -41,7 +41,7 @@ PROJECT_NAME := $(notdir $(CURDIR))
 CDIR := src
 INCDIR := include
 BUILDDIR := .build
-PREFIX ?= /usr/local
+PREFIX ?= /usr/local ## install prefix (default: /usr/local)
 
 # compiler flags
 CFLAGS := -std=c2y -I$(INCDIR) -O$(OPTLEVEL)
@@ -97,10 +97,10 @@ else
   $(call ERROR_INVALID_VALUE,TYPE,[test|bench])
 endif
 
-ifeq ($(OPTLEVEL),g)
+ifeq ($(strip $(OPTLEVEL)),g)
   CFLAGS += $(DEBUGFLAGS)
   LDFLAGS += $(DEBUGFLAGS)
-  RUNNER ?= gdb
+  RUNNER ?= gdb ## runner (default in debug run: gdb)
 else ifneq ($(filter 1 2 3,$(OPTLEVEL)),)
   CFLAGS += $(OPTFLAGS)
   LDFLAGS += $(OPTLDFLAGS)
