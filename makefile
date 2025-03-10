@@ -223,10 +223,10 @@ doc/Doxyfile: ; doxygen -g $@
 
 fmt: ; clang-format -Werror --dry-run $(SRCS) $(INCDIR)/*.h
 
-lint:
-	clang-tidy $(SRCS) -- $(CFLAGS)
-	cppcheck $(SRCS) --enable=all --suppress=missingIncludeSystem -I$(INCDIR)
-	scan-build $(MAKE)
+lint: $(SRCS)
+	clang-tidy $^ -- $(CFLAGS)
+	cppcheck $^ --enable=all --suppress=missingIncludeSystem -I$(INCDIR)
+	flawfinder $^
 
 pre-commit: fmt test ## .git/hooks/pre-commit
 
