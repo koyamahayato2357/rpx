@@ -109,18 +109,18 @@ ASMDIR := $(OUTDIR)/asm
 
 TARGET := $(TARGETDIR)/$(PROJECT_NAME)
 
-# source files
-SRCS := $(wildcard $(CDIR)/*.c)
-OBJS := $(patsubst $(CDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
-DEPS := $(patsubst $(CDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
-ASMS := $(patsubst $(CDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
-
 ifdef LLVM
   ASMFLAGS += -emit-llvm
   ASMEXT := ll
 else
   ASMEXT := s
 endif
+
+# source files
+SRCS := $(wildcard $(CDIR)/*.c)
+OBJS := $(patsubst $(CDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
+DEPS := $(patsubst $(CDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
+ASMS := $(patsubst $(CDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
 
 # e.g.)
 # $ make asm OL=3
