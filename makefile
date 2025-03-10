@@ -95,7 +95,6 @@ else ifeq ($(strip $(TYPE)),bench)
   CFLAGS += -DBENCHMARK_MODE
 else ifeq ($(strip $(TYPE)),default)
 else
-  $(call ERROR_INVALID_VALUE,TYPE,[test|bench])
   $(call ERROR_INVALID_VALUE,TYPE,[test|bench|default])
 endif
 
