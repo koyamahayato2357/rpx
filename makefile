@@ -111,6 +111,13 @@ else
   $(call ERROR_INVALID_VALUE,OPTLEVEL,[0-3|g])
 endif
 
+ifeq ($(MAKECMDGOALS),profile)
+  CFLAGS += -pg
+  LDFLAGS += -pg
+  CFLAGS := $(filter-out -fomit-frame-pointer,$(CFLAGS))
+  LDFLAGS := $(filter-out -s,$(LDFLAGS))
+endif
+
 ifdef TEST_FILTER
   CFLAGS += -DTEST_FILTER="\"$(TEST_FILTER)\""
 endif
@@ -300,5 +307,13 @@ $(GCDA_FILES): run
 BROWSER ?= w3m # w3m is sufficient for viewing
 coverage: $(OUTDIR)/$(COVDIR) ## report test coverage
 	$(BROWSER) $</index.html
+
+### profile
+
+$(OUTDIR)/profile.txt: run
+	gprof $(TARGET)
+
+profile: $(OUTDIR)/profile.txt
+	less $<
 
 %/: ; mkdir -p $@
