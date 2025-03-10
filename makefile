@@ -178,9 +178,13 @@ ifneq ($(realpath $(OUTDIR)),)
 	rm -rf $(OUTDIR)
 endif
 
-install: $(TARGET) | $(PREFIX)/bin/ ~/.config/$(PROJECT_NAME)/
-	cp $^ $(PREFIX)/bin/
-	cp example/* ~/.config/$(PROJECT_NAME)/
+install-bin: $(TARGET) | $(PREFIX)/bin/
+	cp $^ $|
+
+install-example: | ~/.config/$(PROJECT_NAME)/
+	cp example/* $|
+
+install: install-bin install-example
 
 uninstall:
 	rm $(PREFIX)/bin/$(PROJECT_NAME)
