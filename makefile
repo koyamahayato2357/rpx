@@ -313,8 +313,14 @@ perf: $(TARGET) ## run perf analysis
 
 ### profile
 
-$(OUTDIR)/profile.txt: run
-	gprof $(TARGET)
+gmon.out: $(TARGET)
+	./$<
+
+$(OUTDIR)/gmon.out: gmon.out | $(OUTDIR)/
+	mv $< $@
+
+$(OUTDIR)/profile.txt: $(OUTDIR)/gmon.out
+	gprof $(TARGET) $< > $@
 
 profile: $(OUTDIR)/profile.txt
 	less $<
