@@ -59,7 +59,7 @@ OPTLDFLAGS := -flto=full -fwhole-program-vtables -fvirtual-function-elimination 
               -fuse-ld=lld -Wl,--gc-sections,--icf=all -s
 DEBUGFLAGS := -gfull -fstandalone-debug -ftrivial-auto-var-init=pattern -fstack-protector-all
 ASMFLAGS := -S -masm=intel
-DEPFLAGS = -MMD -MP -MT $(TARGETDIR)/$*.o -MF $(DEPDIR)/$*.d
+DEPFLAGS = -MM -MP -MT $(TARGETDIR)/$*.o -MF $(DEPDIR)/$*.d
 
 # Enables macro in the source
 CFLAGS += -DVERSION=\"$(shell git describe --tags --always 2>/dev/null || echo "unknown")\"
@@ -147,10 +147,11 @@ $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) $(EXTRALDFLAGS) $^ -o $@
 
 # compile
-$(OBJS): $(TARGETDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) | $(TARGETDIR)/ $(DEPDIR)/
-	$(CC) $< $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -c -o $@
+$(OBJS): $(TARGETDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(DEPDIR)/%.d | $(TARGETDIR)/ $(DEPDIR)/
+	$(CC) $< $(CFLAGS) $(EXTRAFLAGS) -c -o $@
 
-$(DEPS):
+$(DEPS): $(DEPDIR)/%.d: $(SRCDIR)/%.c
+	$(CC) $< $(CFLAGS) $(EXTRAFLAGS) $(DEPFLAGS) -o $@
 
 %/: ; mkdir -p $@
 
