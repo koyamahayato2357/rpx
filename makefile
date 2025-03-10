@@ -139,7 +139,7 @@ ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
   include $(wildcard $(DEPS))
 endif
 
-# rules
+### build rules
 .DEFAULT_GOAL := $(TARGET)
 
 # link
