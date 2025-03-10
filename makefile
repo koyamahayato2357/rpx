@@ -219,15 +219,17 @@ info: $(TARGET) ## show target info
 	@size $(TARGET)
 
 help: ## show help
-	@echo "TYPE=[test|bench]"
-	@echo "ASAN=[address|alignment|...]"
-	@echo "OPTLEVEL=[0-3|g] (default: g)"
-	@echo
 	@echo "$ make          # debug build"
 	@echo "$ make test     # run test"
 	@echo "$ make run OL=3 # run release build"
 	@echo
 	@echo "build files: .build/HASH/{target,dep,asm}/*"
+	@echo
+	@echo "Variables:"
+	@grep "^[^\t]* ## " $(MAKEFILE_LIST) | sed -En "s/^ *([0-9A-Z_]+) .?= .*## (.*)$$/\\1 = \\2/p"
+	@echo
+	@echo "Targets:"
+	@grep "^[^\t]* ## " $(MAKEFILE_LIST) | sed -En "s/^([0-9a-z-]+): .*## (.*)$$/\\1: \\2/p"
 
 ### llmfile
 
