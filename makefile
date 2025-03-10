@@ -268,7 +268,7 @@ $(GCOV_TOOL): | $(dir $(GCOV_TOOL))
 %/$(COVDIR): %/$(COVDIR).info
 	genhtml $< -o $@
 
-BROWSER ?= w3m
+BROWSER ?= w3m # w3m is sufficient for viewing
 coverage: $(TARGETDIR)/$(COVDIR)
 	$(BROWSER) $</index.html
 
