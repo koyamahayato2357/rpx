@@ -18,10 +18,7 @@ CLANG21 != command -v clang-21
 CLANG20 != command -v clang-20
 CLANG19 != command -v clang-19
 
-# if CC is not defined
-ifeq ($(origin $(CC)),undefined)
-  CC := $(or $(CLANG21),$(CLANG20),$(CLANG19),$(CC))
-endif
+CC := $(or $(CLANG21),$(CLANG20),$(CLANG19),$(error CC not found))
 
 ifndef DISABLE_CCACHE
   CCACHE != command -v ccache
