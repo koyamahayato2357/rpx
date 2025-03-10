@@ -283,7 +283,10 @@ $(GCOV_TOOL): | $(dir $(GCOV_TOOL))
 	echo -e '#!/bin/sh\nexec llvm-cov gcov "$$@"' > $@
 	chmod +x $@
 
-%/$(COVDIR).info: $(GCOV_TOOL) run
+GCDA_FILES := $(OBJS:.o=.gcda)
+$(GCDA_FILES): run
+
+%/$(COVDIR).info: $(GCOV_TOOL) $(GCDA_FILES)
 	lcov -d $* -c -o $@ --gcov-tool $<
 
 %/$(COVDIR): %/$(COVDIR).info
