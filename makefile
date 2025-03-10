@@ -41,8 +41,8 @@ WARNFLAGS := tautological-compare extra all error implicit-fallthrough \
 			 bitwise-instead-of-logical conversion dangling deprecated \
 			 documentation microsoft switch-enum switch-default type-limits \
 			 unreachable-code-aggressive sign-compare pedantic documentation-pedantic
-WARNNOFLAGS = dollar-in-identifier-extension gnu
-SECURITYFLAGS = PIE no-plt
+WARNNOFLAGS := dollar-in-identifier-extension gnu
+SECURITYFLAGS := PIE no-plt
 
 CFLAGS += $(addprefix -W, $(WARNFLAGS)) \
 		  $(addprefix -Wno-, $(WARNNOFLAGS)) \
@@ -108,10 +108,10 @@ ASMDIR := $(OUTDIR)/asm
 TARGET := $(TARGETDIR)/$(PROJECT_NAME)
 
 # source files
-SRCS = $(wildcard $(CDIR)/*.c)
-OBJS = $(patsubst $(CDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
-DEPS = $(patsubst $(CDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
-ASMS = $(patsubst $(CDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
+SRCS := $(wildcard $(CDIR)/*.c)
+OBJS := $(patsubst $(CDIR)/%.c,$(TARGETDIR)/%.o,$(SRCS))
+DEPS := $(patsubst $(CDIR)/%.c,$(DEPDIR)/%.d,$(SRCS))
+ASMS := $(patsubst $(CDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
 
 ifdef LLVM
   ASMFLAGS += -emit-llvm
@@ -125,12 +125,12 @@ endif
 # $ # edit asm files...
 # $ make BUILD_FROM_ASM=1 OL=3
 ifdef BUILD_FROM_ASM
-  SRCDIR = $(ASMDIR)
-  SRCEXT = $(ASMEXT)
+  SRCDIR := $(ASMDIR)
+  SRCEXT := $(ASMEXT)
   CFLAGS =
 else
-  SRCDIR = $(CDIR)
-  SRCEXT = c
+  SRCDIR := $(CDIR)
+  SRCEXT := c
 endif
 
 ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
