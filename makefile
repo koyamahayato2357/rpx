@@ -86,6 +86,7 @@ endif
 
 ifeq ($(OPTLEVEL),g)
   CFLAGS += $(DEBUGFLAGS)
+  LDFLAGS += $(DEBUGFLAGS)
   RUNNER ?= gdb
 else ifneq ($(OPTLEVEL),0)
   CFLAGS += $(OPTFLAGS)
