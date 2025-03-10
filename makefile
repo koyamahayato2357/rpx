@@ -28,11 +28,11 @@ CLANG19 != command -v clang-19
 
 CC := $(or $(CLANG21),$(CLANG20),$(CLANG19),$(error CC not found))
 
-DISABLE_CCACHE ?= n
-ifeq ($(DISABLE_CCACHE),n)
+DISABLE_CCACHE ?= n ## disable ccache [yn] (default: n)
+ifeq ($(strip $(DISABLE_CCACHE)),n)
   CCACHE != command -v ccache
   CC := $(CCACHE) $(CC)
-else ifeq ($(DISABLE_CCACHE),y)
+else ifeq ($(strip $(DISABLE_CCACHE)),y)
 else
   $(call ERROR_INVALID_VALUE,DISABLE_CCACHE)
 endif
@@ -90,9 +90,9 @@ endif
 
 ifeq ($(strip $(TYPE)),test)
   CFLAGS += -DTEST_MODE
-else ifeq ($(TYPE),bench)
+else ifeq ($(strip $(TYPE)),bench)
   CFLAGS += -DBENCHMARK_MODE
-else ifeq ($(TYPE),normal)
+else ifeq ($(strip $(TYPE)),default)
 else
   $(call ERROR_INVALID_VALUE,TYPE,[test|bench])
 endif
@@ -104,7 +104,7 @@ ifeq ($(OPTLEVEL),g)
 else ifneq ($(filter 1 2 3,$(OPTLEVEL)),)
   CFLAGS += $(OPTFLAGS)
   LDFLAGS += $(OPTLDFLAGS)
-else ifeq ($(OPTLEVEL),0)
+else ifeq ($(strip $(OPTLEVEL)),0)
 else
   $(call ERROR_INVALID_VALUE,OPTLEVEL,[0-3|g])
 endif
@@ -124,14 +124,14 @@ ASMDIR := $(OUTDIR)/asm
 
 TARGET := $(TARGETDIR)/$(PROJECT_NAME)
 
-LLVM ?= n
-ifeq ($(LLVM),y)
+EMIT_LLVM ?= n ## use llvmIR instead of asm [yn] (default: n)
+ifeq ($(strip $(EMIT_LLVM)),y)
   ASMFLAGS += -emit-llvm
   ASMEXT := ll
-else ifeq ($(LLVM),n)
+else ifeq ($(strip $(EMIT_LLVM)),n)
   ASMEXT := s
 else
-  $(call ERROR_INVALID_VALUE,LLVM)
+  $(call ERROR_INVALID_VALUE,EMIT_LLVM)
 endif
 
 # source files
@@ -143,14 +143,17 @@ ASMS := $(patsubst $(CDIR)/%.c,$(ASMDIR)/%.$(ASMEXT),$(SRCS))
 # e.g.)
 # $ make asm OL=3
 # $ # edit asm files...
-# $ make BUILD_FROM_ASM=1 OL=3
-ifdef BUILD_FROM_ASM
+# $ make BUILD_FROM_ASM=y OL=3
+BUILD_FROM_ASM ?= n ## use asm instead of c files [yn] (default: n)
+ifeq ($(strip $(BUILD_FROM_ASM)),y)
   SRCDIR := $(ASMDIR)
   SRCEXT := $(ASMEXT)
   CFLAGS =
-else
+else ifeq ($(strip $(BUILD_FROM_ASM)),n)
   SRCDIR := $(CDIR)
   SRCEXT := c
+else
+  $(call ERROR_INVALID_VALUE,BUILD_FROM_ASM)
 endif
 
 ifneq ($(filter $(TARGET) run, $(MAKECMDGOALS)),)
