@@ -52,14 +52,14 @@ extern int TEST_count;
 
 // generate function parameter
  #define PMAP(tok, _, ...) \
-   t->tok __VA_OPT__(, DEFER(_PMAP)()(tok##p, __VA_ARGS__))
+   t->tok __VA_OPT__(, _PMAP EMP()()(tok##p, __VA_ARGS__))
  #define _PMAP() PMAP
 
 // generate struct member
 // e.g.) T1 p /* expected */, T2 pp /* arg1 */, T3 ppp /* arg2 */, ...
  #define SMAP(tok, _1, ...) \
    _1 tok; \
-   __VA_OPT__(DEFER(_SMAP)()(tok##p, __VA_ARGS__))
+   __VA_OPT__(_SMAP EMP()()(tok##p, __VA_ARGS__))
  #define _SMAP() SMAP
 
  #define CALL(fn, ...) fn(EVAL(PMAP(pp, __VA_ARGS__)))

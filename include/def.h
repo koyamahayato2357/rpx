@@ -7,8 +7,7 @@
 #define _TOSTR(x) #x
 #define TOSTR(x)  _TOSTR(x)
 
-#define EMPTY()
-#define DEFER(M)    M EMPTY()
+#define EMP()
 #define EXPAND(...) __VA_ARGS__
 
 // max depth: 4 ^ 5 = 1024
@@ -34,7 +33,7 @@
 
 #define BOOL(x) NOT(NOT(x))
 
-#define PRIM_MAP(M, _1, ...) M(_1) __VA_OPT__(DEFER(_MAP)()(M, __VA_ARGS__))
+#define PRIM_MAP(M, _1, ...) M(_1) __VA_OPT__(_MAP EMP()()(M, __VA_ARGS__))
 
 #define _MAP()   PRIM_MAP
 #define MAP(...) EVAL(PRIM_MAP(__VA_ARGS__))

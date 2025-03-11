@@ -27,7 +27,7 @@ MAP(DEF_PRIM, PRIM_TYPES)
 
 #define _PRINTREC1(first, ...) \
   printany(first); \
-  __VA_OPT__(DEFER(_PRINTREC2)()(__VA_ARGS__))
+  __VA_OPT__(_PRINTREC2 EMP()()(__VA_ARGS__))
 #define _PRINTREC2() _PRINTREC1
 #define PRINT(...) \
   do { EVAL(_PRINTREC1(__VA_ARGS__)) } while (0)
