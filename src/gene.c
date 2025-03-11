@@ -70,7 +70,8 @@ void printany(long long x) {
   printf("%lld", x);
 }
 void printany(void *x) {
-  printf("0x%p", x);
+  if (x) printf("0x%p", x);
+  else printf("`nullptr`");
 }
 
 #define EQ_DIRECTLY(T) \
