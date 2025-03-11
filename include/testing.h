@@ -80,7 +80,10 @@ extern int TEST_count;
      for (size_t i = 0; i < sizeof data / sizeof(S); i++) { \
        S *t = data + i; \
        int *TEST_failed /* for expecteq */ = &failed; \
+       int pre = failed; \
        expecteq(t->p, CALL(fn, CDR signature)); \
+       if (pre != failed) \
+         PRINT(" at test case ", i); \
      } \
      if (failed) { \
        PRINT_FAILED(failed); \
