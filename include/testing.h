@@ -82,8 +82,7 @@ extern int TEST_count;
        int *TEST_failed /* for expecteq */ = &failed; \
        int pre = failed; \
        expecteq(t->p, CALL(fn, CDR signature)); \
-       if (pre != failed) \
-         PRINT(" at test case ", i); \
+       if (pre != failed) PRINT(" at test case ", i); \
      } \
      if (failed) { \
        PRINT_FAILED(failed); \
