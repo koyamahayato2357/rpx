@@ -73,6 +73,33 @@ void printany(void *x) {
   if (x) printf("0x%p", x);
   else printf("`nullptr`");
 }
+void printanyf(int x) {
+  PRINT(x);
+}
+void printanyf(size_t x) {
+  PRINT(x, "LU");
+}
+void printanyf(double x) {
+  PRINT(x);
+}
+void printanyf(char *x) {
+  PRINT('"', x, '"');
+}
+void printanyf(char x) {
+  PRINT("'", x, "'");
+}
+void printanyf(bool x) {
+  PRINT(x);
+}
+void printanyf(long x) {
+  PRINT(x, "L");
+}
+void printanyf(long long x) {
+  PRINT(x, "LL");
+}
+void printanyf(void *x) {
+  PRINT(x);
+}
 
 #define EQ_DIRECTLY(T) \
   bool eq(T x, T y) { \

@@ -11,6 +11,7 @@
 
 #define DEF_PRIM(T) \
   overloadable void printany(T); \
+  overloadable void printanyf(T); \
   overloadable bool eq(T, T);
 #define DEF_GEN(T) DEF_PRIM(T) DEF_PRIM(T *)
 

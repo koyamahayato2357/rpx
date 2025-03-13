@@ -30,6 +30,9 @@ overloadable bool eq(struct winsize l, struct winsize r) {
 overloadable void printany(struct winsize ws) {
   _ = ws;
 }
+overloadable void printanyf(struct winsize ws) {
+  _ = ws;
+}
 #define ST_WS(r, c, x, y) \
   (struct winsize) { \
     .ws_row = r, .ws_col = c, .ws_xpixel = x, .ws_ypixel = y \

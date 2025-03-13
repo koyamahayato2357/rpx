@@ -110,10 +110,11 @@ extern int TEST_count;
      auto const rhs = actual; \
      if (eq(lhs, rhs)) break; \
      puts("\n ├┬ Expected equal at " HERE); \
-     PRINT(" │├─ " ESCGRN "Expected" ESCLR ": ", lhs, "\n"); \
-     PRINT( \
-       " │└─ " ESCRED "Actual" ESCLR ":   ", rhs, ESCRED ESBLD " [NG]" ESCLR \
-     ); \
+     printf(" │├─ " ESCGRN "Expected" ESCLR ": "); \
+     printanyf(lhs); \
+     printf("\n │└─ " ESCRED "Actual" ESCLR ":   "); \
+     printanyf(rhs); \
+     printf(ESCRED ESBLD " [NG]" ESCLR); \
      (*TEST_failed)++; \
    } while (0)
 
@@ -132,7 +133,9 @@ extern int TEST_count;
      puts("┐"); \
      printf(" │└─ Right side: `" #actual "` ─"); \
      for (int __i = 0; __i < __rpad; __i++) printf("─"); \
-     PRINT("┴─➤ ", lhs, ESCRED ESBLD " [NG]" ESCLR); \
+     printf("┴─➤ "); \
+     printanyf(lhs); \
+     printf(ESCRED ESBLD " [NG]" ESCLR); \
      (*TEST_failed)++; \
    } while (0)
 
