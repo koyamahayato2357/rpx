@@ -20,7 +20,7 @@ extern int TEST_count;
  #define TEST_HEADER " ■ " ESCBLU "Testing " ESCLR
  #define ALIGN_COL(name) \
    do { \
-     int col = 4 - ((int)strlen(#name) + 6) / 8; \
+     int col = 4 - ((int)strlen(#name) + 3) / 8; \
      for (int i = 0; i < col; i++) putchar('\t'); \
    } while (0)
  #define PRINT_FAILED(cnt) PRINT("\n └" ESCRED ESBLD "[NG:", cnt, "]\n" ESCLR)
@@ -31,7 +31,7 @@ extern int TEST_count;
    static void TEST_test##name(int *); \
    [[gnu::constructor]] static void TEST_run##name() { \
      TEST_count++; \
-     printf(TEST_HEADER ESBLD #name ESCLR "..."); \
+     printf(TEST_HEADER ESBLD #name ESCLR); \
      int failed = 0; \
      TEST_test##name(&failed); \
      if (failed) { \
@@ -73,7 +73,7 @@ extern int TEST_count;
  #define test_table(name, fn, signature, ...) \
    [[gnu::constructor]] static void TEST_tabletest##name() { \
      TEST_count++; \
-     printf(TEST_HEADER ESBLD #name ESCLR "..."); \
+     printf(TEST_HEADER ESBLD #name ESCLR); \
      int failed = 0; \
      typedef STDEF signature S; \
      S data[] = __VA_ARGS__; \
