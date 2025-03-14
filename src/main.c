@@ -29,7 +29,7 @@ int main(int argc, char const **argv) {
   initPlotCfg();
   loadInitScript(nullptr);
 
-  procAList(argc, argv);
+  procAList(argc, argv + 1);
 
   readerLoop(stdin);
 
@@ -86,27 +86,26 @@ void startupMsg() {
  * @param[in] argv arg value
  */
 void procAList(int argc, char const **argv) {
-  for (int i = 1; i < argc; i++) {
-    if (argv[i][0] != '-') { // interpreted as a file name
-      FILE *fp dropfile
-        = fopen(argv[i], "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s ", argv[i]);
-      readerLoop(fp);
-      continue;
-    }
+  if (argc == 0) return;
 
-    switch (argv[i][1]) { // interpreted as a option
+  if (**argv != '-') { // interpreted as a file name
+    FILE *fp dropfile
+      = fopen(*argv, "r") ?: p$panic(ERR_FILE_NOT_FOUND, "%s ", *argv);
+    readerLoop(fp);
+  } else switch ((*argv)[1]) { // interpreted as a option
     case 'h':
       startupMsg();
       break;
     case 'r':
-      procInput(argv[++i]);
+      procInput(*++argv);
       break;
     case 'q':
       exit(0);
     default:
-      panic(ERR_UNKNOWN_OPTION, "%c ", argv[i][1]);
+      panic(ERR_UNKNOWN_OPTION, "%c ", (*argv)[1]);
     }
-  }
+
+  procAList(argc - 1, argv + 1);
 }
 
 /**
@@ -133,8 +132,9 @@ bool readerInteractiveLine(char *buf, size_t len, FILE *fp) {
 [[gnu::nonnull]] void readerLoop(FILE *restrict fp) {
   char input_buf[buf_size];
   auto reader_fn = fp == stdin ? readerInteractiveLine : readRawLine;
-  while (reader_fn(input_buf, buf_size, fp)) [[clang::likely]]
-    procInput(input_buf);
+  if (!reader_fn(input_buf, buf_size, fp)) return;
+  procInput(input_buf);
+  [[clang::likely]] readerLoop(fp);
 }
 
 /**
