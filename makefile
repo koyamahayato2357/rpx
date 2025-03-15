@@ -145,6 +145,12 @@ OBJS := $(patsubst $(CDIR)/%.c,$(OUTDIR)/%.o,$(SRCS))
 DEPS := $(OBJS:.o=.d)
 ASMS := $(OBJS:.o=.$(ASMEXT))
 
+LIBS ?=
+LIB_CFLAGS != pkg-config --cflag $(LIBS) 2>/dev/null
+LIB_LDFLAGS != pkg-config --libs $(LIBS) 2>/dev/null
+CFLAGS += $(LIB_CFLAGS)
+LDFLAGS += $(LIB_LDFLAGS)
+
 # e.g.)
 # $ make asm OL=3
 # $ # edit asm files...
