@@ -218,7 +218,8 @@ uninstall:
 doc: doc/Doxyfile ## generate doc
 	doxygen $<
 
-doc/Doxyfile: ; doxygen -g $@
+doc/Doxyfile: doc/
+	doxygen -g $@
 
 fmt: ; clang-format -Werror --dry-run $(SRCS) $(INCDIR)/*.h
 
