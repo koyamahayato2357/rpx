@@ -27,7 +27,7 @@ CLANG21 != command -v clang-21
 CLANG20 != command -v clang-20
 CLANG19 != command -v clang-19
 
-CC := $(or $(CLANG21),$(CLANG20),$(CLANG19),$(error CC not found))
+CC := $(or $(CLANG21),$(CLANG20),$(CLANG19),$(error CC not found: install clang (>=19)))
 
 DISABLE_CCACHE ?= n ## disable ccache [yn] (default: n)
 ifeq ($(strip $(DISABLE_CCACHE)),n)
