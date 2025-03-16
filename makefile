@@ -1,5 +1,5 @@
 NPROC != nproc
-MAKEFLAGS += -j$(NPROC)
+MAKEFLAGS += -j$(or $(NPROC))
 MAKEFLAGS += -r -R
 
 PHONY_TARGETS != grep -o "^[0-9a-z-]\\+:" $(MAKEFILE_LIST) | sed -e "s/://"
@@ -268,7 +268,7 @@ help: ## show help
 ### llmfile
 
 LLMFILE ?= llmfile.txt
-FILES ?= README.md makefile build.zig idea.txt
+FILES ?= README.md makefile
 DIRS ?= include src
 FILES_IN_DIRS := $(wildcard $(addsuffix /*, $(DIRS)))
 SORTED_FILES_IN_DIRS := $(sort $(notdir $(basename $(FILES_IN_DIRS))))
@@ -332,6 +332,6 @@ $(OUTDIR)/profile.txt: $(OUTDIR)/gmon.out
 profile: $(OUTDIR)/profile.txt
 	less $<
 
-## fallback
+### fallback
 
 %/: ; mkdir -p $@

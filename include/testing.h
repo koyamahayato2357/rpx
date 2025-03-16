@@ -9,7 +9,6 @@
 
 #ifdef TEST_MODE
  #include "ansiesc.h"
- #include "errcode.h"
  #include "gene.h"
  #include <stdio.h>
  #include <string.h>
