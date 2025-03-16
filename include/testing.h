@@ -55,7 +55,7 @@ extern int TEST_count;
  #define _PMAP() PMAP
 
 // generate struct member
-// e.g.) T1 p /* expected */, T2 pp /* arg1 */, T3 ppp /* arg2 */, ...
+// e.g.) T1 p /* expected */; T2 pp /* arg1 */; T3 ppp /* arg2 */; ...
  #define SMAP(tok, _1, ...) \
    _1 tok; \
    __VA_OPT__(_SMAP EMP()()(tok##p, __VA_ARGS__))
