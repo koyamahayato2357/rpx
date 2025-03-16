@@ -332,6 +332,6 @@ $(OUTDIR)/profile.txt: $(OUTDIR)/gmon.out
 profile: $(OUTDIR)/profile.txt
 	less $<
 
-### fallback
+### last resort
 
 %/: ; mkdir -p $@
